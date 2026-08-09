@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutList, KanbanSquare, FileText, User } from "lucide-react";
-import type { ReactNode } from "react";
+import { LayoutList, KanbanSquare, FileText, User, ChevronDown as ChevronDownIcon, RotateCcw } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { SyloMark } from "@/components/SyloMark";
 import type { StepStatus } from "@/lib/wayfind-data";
@@ -21,7 +21,7 @@ export function Workspace({ children, wide = false }: { children: ReactNode; wid
     <div className="flex min-h-screen">
       <aside className="glass-panel sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r px-4 py-5 md:flex">
         <Link to="/" className="tap mb-6 flex items-center gap-2.5 rounded-full px-3 py-1.5">
-          <SyloMark className="h-5 w-5" />
+          <SyloMark className="h-5 w-5" animated />
           <span className="text-lg font-semibold tracking-tight">Sylo</span>
         </Link>
         <nav className="flex flex-col gap-1">
@@ -42,7 +42,7 @@ export function Workspace({ children, wide = false }: { children: ReactNode; wid
         </nav>
         <div className="mt-auto px-3 pb-1">
           <Link to="/roadmap-builder" className="nav-item tap px-0 text-xs text-muted-foreground hover:text-foreground">
-            Rebuild roadmap
+            <RotateCcw className="h-3.5 w-3.5" /> Rebuild roadmap
           </Link>
         </div>
       </aside>
@@ -67,7 +67,7 @@ function MobileHeader({ pathname }: { pathname: string }) {
     <header className="glass-panel sticky top-0 z-50 flex flex-col border-b px-4 py-3 md:hidden">
       <div className="flex items-center justify-between">
         <Link to="/" className="tap flex items-center gap-2.5 rounded-full py-1">
-          <SyloMark className="h-5 w-5" />
+          <SyloMark className="h-5 w-5" animated />
           <span className="text-lg font-semibold tracking-tight">Sylo</span>
         </Link>
         <Link
@@ -133,14 +133,48 @@ export function PageHeader({
   );
 }
 
-export function StatusTag({ status }: { status: StepStatus }) {
+export function StatusTag({ status, onChange }: { status: StepStatus; onChange?: (s: StepStatus) => void }) {
   const map = {
     "not-started": { label: "Not started", cls: "bg-tag-gray text-tag-gray-foreground" },
     "in-progress": { label: "In progress", cls: "bg-tag-blue text-tag-blue-foreground" },
     complete: { label: "Complete", cls: "bg-tag-green text-tag-green-foreground" },
   } as const;
   const s = map[status];
-  return <span className={cn("tag", s.cls)}>{s.label}</span>;
+  const [open, setOpen] = useState(false);
+
+  if (!onChange) {
+    return <span className={cn("tag", s.cls)}>{s.label}</span>;
+  }
+
+  return (
+    <span className="relative inline-block">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={cn("tag cursor-pointer select-none", s.cls)}
+      >
+        {s.label}
+        <ChevronDownIcon className="ml-1 inline h-3 w-3 opacity-60" />
+      </button>
+      {open && (
+        <span className="absolute left-0 top-full z-50 mt-1 flex flex-col rounded-lg border bg-card p-1 shadow-lg">
+          {(Object.keys(map) as StepStatus[]).map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => { onChange(key); setOpen(false); }}
+              className={cn(
+                "tap rounded-md px-3 py-1.5 text-left text-xs font-medium whitespace-nowrap",
+                key === status ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground",
+              )}
+            >
+              {map[key].label}
+            </button>
+          ))}
+        </span>
+      )}
+    </span>
+  );
 }
 
 export function Tag({

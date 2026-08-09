@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { WayfindProvider } from "../lib/sylo-store";
 
+import { AskSylo } from "../components/ask-sylo";
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -136,6 +138,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <WayfindProvider>
         <Outlet />
+        <AskSylo />
       </WayfindProvider>
     </QueryClientProvider>
   );

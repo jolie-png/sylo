@@ -17,6 +17,7 @@ import {
   type Persona,
   type StepStatus,
 } from "./wayfind-data";
+import { getOpportunityById } from "./opportunities-db";
 import type { GeneratedRoadmap } from "./roadmap.functions";
 
 export type Profile = {
@@ -26,6 +27,8 @@ export type Profile = {
   trackId: string;
   goalText: string;
   personaName?: string;
+  /** Student's display name. */
+  name?: string;
   /** Free-text: resume bullet points, past experience, anything relevant. */
   experience?: string;
   /** Self-reported GPA (optional, never judged — used to filter eligibility). */
@@ -111,6 +114,8 @@ type State = {
   removeCustomStep: (id: string) => void;
   /** Student curation only. Never touches roadmap.steps or the ranked next move. */
   togglePinned: (id: string) => void;
+  /** Reorder roadmap steps by moving a step from one index to another. */
+  reorderSteps: (fromIndex: number, toIndex: number) => void;
 };
 
 const Ctx = createContext<State | null>(null);
@@ -202,7 +207,10 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resolveOpportunity = useCallback(
-    (id: string) => liveOpportunities.find((o) => o.id === id) ?? getOpportunity(id),
+    (id: string) =>
+      liveOpportunities.find((o) => o.id === id) ??
+      getOpportunity(id) ??
+      (getOpportunityById(id) as Opportunity | undefined),
     [liveOpportunities],
   );
 
@@ -285,6 +293,17 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     setPinnedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }, []);
 
+  const reorderSteps = useCallback((fromIndex: number, toIndex: number) => {
+    setRoadmapState((prev) => {
+      if (!prev) return prev;
+      const steps = [...prev.steps];
+      const [moved] = steps.splice(fromIndex, 1);
+      if (!moved) return prev;
+      steps.splice(toIndex, 0, moved);
+      return { ...prev, steps };
+    });
+  }, []);
+
   const value = useMemo(
     () => ({
       profile,
@@ -306,6 +325,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       updateCustomStep,
       removeCustomStep,
       togglePinned,
+      reorderSteps,
     }),
     [
       profile,
@@ -326,6 +346,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       updateCustomStep,
       removeCustomStep,
       togglePinned,
+      reorderSteps,
     ],
   );
 

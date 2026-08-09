@@ -89,10 +89,10 @@ function ProfilePage() {
   ];
 
   return (
-    <Workspace>
+    <Workspace wide>
       <PageHeader
         icon={<User className="h-5 w-5" />}
-        title={profile.personaName ? `${profile.personaName}'s Profile` : "My Profile"}
+        title={profile.name || profile.personaName ? `${profile.name || profile.personaName}'s Profile` : "My Profile"}
         subtitle="Changes here propagate to your dashboard and progress tracker."
       />
 
@@ -105,6 +105,15 @@ function ProfilePage() {
       ) : null}
 
       <div className="mt-6 divide-y rounded-2xl border bg-card p-5">
+        <div className="flex items-start justify-between gap-6 py-3 text-sm first:pt-0">
+          <span className="w-36 shrink-0 pt-1.5 text-muted-foreground">Name</span>
+          <input
+            value={profile.name ?? ""}
+            onChange={(e) => update({ name: e.target.value })}
+            placeholder="Your name"
+            className="flex-1 rounded-xl border bg-background px-3 py-1.5 text-right text-sm outline-none transition-colors focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+          />
+        </div>
         {rows.map((row) => {
           const value = profile[row.key];
           const isOther = row.allowOther && !row.options.includes(value);

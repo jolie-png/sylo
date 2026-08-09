@@ -94,7 +94,7 @@ function Builder() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-16">
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <div className="glass px-6 py-8 sm:px-10 sm:py-12">
         <Link
           to="/"
@@ -236,18 +236,22 @@ function Builder() {
             </p>
           ) : null}
 
+          {/* Resume upload is always visible */}
+          <div className="mt-4">
+            <ResumeUpload
+              onParsed={(data) => {
+                if (data.experience?.trim()) setExperience(data.experience);
+                if (data.skills?.trim()) setSkills(data.skills);
+                if (data.priorWork?.trim()) setPriorWork(data.priorWork);
+                if (data.clubs?.trim()) setClubs(data.clubs);
+                if (data.alreadyDone?.trim()) setAlreadyDone(data.alreadyDone);
+                setMoreOpen(true);
+              }}
+            />
+          </div>
+
           {moreOpen ? (
             <div className="mt-4 space-y-4 pl-0">
-              <ResumeUpload
-                onParsed={(data) => {
-                  // Auto-fill the local state from resume data
-                  if (data.experience?.trim()) setExperience(data.experience);
-                  if (data.skills?.trim()) setSkills(data.skills);
-                  if (data.priorWork?.trim()) setPriorWork(data.priorWork);
-                  if (data.clubs?.trim()) setClubs(data.clubs);
-                  if (data.alreadyDone?.trim()) setAlreadyDone(data.alreadyDone);
-                }}
-              />
               <ContextField
                 label="Experience & background"
                 placeholder="e.g. Built a React app for a class project, tutored intro CS for two semesters…"

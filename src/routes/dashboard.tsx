@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ChevronRight, ChevronDown, Compass, Plus, Pencil, Trash2, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
+import { ChevronRight, ChevronDown, Compass, Plus, Pencil, Trash2, AlertCircle, RefreshCw, Loader2, GripVertical } from "lucide-react";
 import {
   Workspace,
   PageHeader,
@@ -53,6 +53,7 @@ function Dashboard() {
     resolveOpportunity,
     browsableOpportunities,
     liveOpportunities,
+    reorderSteps,
   } = useWayfind();
   const navigate = useNavigate();
   const [showAlternates, setShowAlternates] = useState(false);
@@ -61,6 +62,8 @@ function Dashboard() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [targetDate, setTargetDate] = useState("");
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
 
   useEffect(() => {
     if (hydrated && (!profile || !roadmap)) navigate({ to: "/roadmap-builder" });
@@ -87,7 +90,7 @@ function Dashboard() {
   );
 
   return (
-    <Workspace>
+    <Workspace wide>
       <PageHeader
         icon={<Compass className="h-5 w-5" />}
         title="Your Sylo Roadmap"
@@ -143,7 +146,7 @@ function Dashboard() {
       )}
 
 
-      <ProgressStrip
+      {/* <ProgressStrip
         tiles={[
           ...roadmap.steps.map((s) => ({
             id: s.id,
@@ -160,7 +163,7 @@ function Dashboard() {
             own: true,
           })),
         ]}
-      />
+      /> */}
 
 
       {topOp?.gapLabel ? (
@@ -219,7 +222,24 @@ function Dashboard() {
           if (!op) return null;
           const done = step.status === "complete";
           return (
-            <li key={step.id}>
+            <li
+              key={step.id}
+              draggable
+              onDragStart={() => setDragIdx(i)}
+              onDragEnd={() => { setDragIdx(null); setOverIdx(null); }}
+              onDragOver={(e) => { e.preventDefault(); setOverIdx(i); }}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (dragIdx !== null && dragIdx !== i) reorderSteps(dragIdx, i);
+                setDragIdx(null);
+                setOverIdx(null);
+              }}
+              className={cn(
+                "transition-opacity",
+                dragIdx === i && "opacity-40",
+                overIdx === i && dragIdx !== i && "border-t-2 border-primary/50",
+              )}
+            >
               {i > 0 ? (
                 <div className="flex justify-start pl-7" aria-hidden="true">
                   <WavyConnector />
@@ -227,12 +247,15 @@ function Dashboard() {
               ) : null}
               <div
                 className={cn(
-                  "card-tonal relative flex items-start gap-3.5 rounded-2xl pl-5 pr-4 py-4",
+                  "card-tonal relative flex cursor-grab items-start gap-3.5 rounded-2xl pl-5 pr-4 py-4 active:cursor-grabbing",
                   done && "bg-primary/[0.07] ring-1 ring-inset ring-primary/15",
                 )}
               >
                 <StatusAccentBar status={step.status} />
-                <span className="w-5 shrink-0 pt-1 text-sm tabular-nums text-muted-foreground">{i + 1}</span>
+                <span className="flex w-5 shrink-0 flex-col items-center gap-0.5 pt-1">
+                  <GripVertical className="h-3 w-3 text-muted-foreground/50" />
+                  <span className="text-sm tabular-nums text-muted-foreground">{i + 1}</span>
+                </span>
                 <NotionCheckbox
                   checked={done}
                   onChange={() => toggleComplete(step.opportunityId)}
@@ -254,7 +277,7 @@ function Dashboard() {
                     <StatusTag status={step.status} />
                     {op.origin === "live" ? <FoundViaSearchBadge /> : null}
                     {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}
-                    {op.courseCode ? <Tag tone="blue">Course</Tag> : null}
+                    {/* {op.courseCode ? <Tag tone="blue">Course</Tag> : null} */}
                   </div>
                   <p className="mt-1.5 pl-0 text-sm leading-relaxed text-muted-foreground">{step.reasoning}</p>
                   {op.id !== topOp?.id && op.unlocks?.length ? (
@@ -263,12 +286,12 @@ function Dashboard() {
                     </p>
                   ) : null}
 
-                  {op.courseCode ? (
+                  {/* {op.courseCode ? (
                     <p className="mt-2 text-[13px] text-muted-foreground">
                       <span className="font-medium text-foreground">Course: {op.courseCode}</span>
                       {op.leverage ? <> · {op.leverage}</> : null}
                     </p>
-                  ) : null}
+                  ) : null} */}
                 </div>
               </div>
             </li>
@@ -492,19 +515,33 @@ function Dashboard() {
             return (
               <div key={year} className="card-tonal rounded-2xl p-5">
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground/80">
-                  General guidance
+                  What to do
                 </p>
-                <p className="mt-1 text-sm font-medium text-muted-foreground">{year} year</p>
-                <ul className="mt-4 space-y-3.5">
+                <p className="mt-1 text-sm font-semibold tracking-tight">{year} year</p>
+                <ul className="mt-4 space-y-6">
                   {items.map((m) => (
                     <li key={m.focus}>
-                      <p className="text-[13px] font-semibold tracking-tight text-foreground/80">
+                      <p className="text-[14px] font-semibold tracking-tight text-foreground">
                         {m.focus}
                       </p>
                       <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
-                        <span className="text-muted-foreground/70">What usually matters: </span>
                         {m.lookOutFor}
                       </p>
+                      <ol className="mt-3 space-y-2 pl-4">
+                        {m.actions.map((action, i) => (
+                          <li key={i} className="flex gap-2 text-[13px] leading-relaxed text-foreground/80">
+                            <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded bg-secondary text-[10px] font-medium tabular-nums text-muted-foreground">
+                              {i + 1}
+                            </span>
+                            <span>{action}</span>
+                          </li>
+                        ))}
+                      </ol>
+                      <div className="mt-3 rounded-lg border border-primary/10 bg-primary/5 px-3 py-2">
+                        <p className="text-[12px] font-medium text-primary/90">
+                          Done when: <span className="font-normal text-foreground/70">{m.doneWhen}</span>
+                        </p>
+                      </div>
                     </li>
                   ))}
                 </ul>

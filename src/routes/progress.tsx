@@ -7,6 +7,10 @@ import {
   ChevronRight,
   ChevronsDownUp,
   ChevronsUpDown,
+  Plus,
+  Pencil,
+  Trash2,
+  X,
 } from "lucide-react";
 import { StatusAccentBar, StatusDot } from "@/components/roadmap-connector";
 import {
@@ -74,7 +78,9 @@ function Progress() {
     toggleComplete,
     hydrated,
     customSteps,
+    addCustomStep,
     updateCustomStep,
+    removeCustomStep,
     resolveOpportunity,
   } = useWayfind();
   const navigate = useNavigate();
@@ -83,6 +89,11 @@ function Progress() {
   const [overCol, setOverCol] = useState<StepStatus | null>(null);
   const [collapsedCols, setCollapsedCols] = useState<Record<string, boolean>>({});
   const [openCards, setOpenCards] = useState<Record<string, boolean>>({});
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newNote, setNewNote] = useState("");
+  const [newDate, setNewDate] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (hydrated && (!profile || !roadmap)) navigate({ to: "/roadmap-builder" });
@@ -128,6 +139,71 @@ function Progress() {
           </button>
         ))}
       </div>
+
+      {/* Add step button + form */}
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setShowAddForm((v) => !v)}
+          className="tap inline-flex items-center gap-1.5 rounded-full border border-dashed border-foreground/25 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          <Plus className="h-4 w-4" /> Add a step
+        </button>
+      </div>
+
+      {showAddForm && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!newTitle.trim()) return;
+            addCustomStep({ title: newTitle.trim(), note: newNote.trim() || undefined, targetDate: newDate.trim() || undefined });
+            setNewTitle("");
+            setNewNote("");
+            setNewDate("");
+            setShowAddForm(false);
+          }}
+          className="mt-3 space-y-3 rounded-2xl border border-dashed border-foreground/25 bg-muted/60 p-4"
+        >
+          <input
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            placeholder="Step title (required)"
+            aria-label="Step title"
+            autoFocus
+            className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+          />
+          <textarea
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            placeholder="Note (optional)"
+            aria-label="Note"
+            rows={2}
+            className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+          />
+          <input
+            type="date"
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+            aria-label="Target date (optional)"
+            className="rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+          />
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              className="tap rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground"
+            >
+              Add step
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowAddForm(false)}
+              className="tap rounded-full border px-4 py-1.5 text-sm font-medium text-muted-foreground"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
 
       {view === "long view" ? (
         <LongViewBoard
@@ -284,8 +360,8 @@ function Progress() {
                     return (
                       <div
                         key={s.id}
-                        draggable
-                        onDragStart={() => setDrag({ id: s.id, custom: true })}
+                        draggable={editingId !== s.id}
+                        onDragStart={() => { if (editingId !== s.id) setDrag({ id: s.id, custom: true }); }}
                         onDragEnd={() => {
                           setDrag(null);
                           setOverCol(null);
@@ -294,64 +370,121 @@ function Progress() {
                         className={cn(
                           "relative cursor-grab rounded-xl border border-dashed border-foreground/25 bg-card px-3 py-3 pl-4 transition-colors duration-150 hover:bg-accent active:cursor-grabbing",
                           drag?.id === s.id && "drag-lift drop-placeholder",
+                          editingId === s.id && "cursor-default",
                         )}
                       >
                         <StatusAccentBar status={s.status} />
-                        <p className="text-sm font-semibold leading-snug tracking-tight">{s.title}</p>
-                        <div className="mt-2">
-                          <OwnGoalBadge />
-                        </div>
-                        <div className="mt-2 flex items-center gap-2">
-                          {s.note ? (
+
+                        {editingId === s.id ? (
+                          <div className="space-y-2">
+                            <input
+                              value={s.title}
+                              onChange={(e) => updateCustomStep(s.id, { title: e.target.value })}
+                              aria-label="Edit title"
+                              autoFocus
+                              className="w-full rounded-lg border bg-background px-2.5 py-1.5 text-sm outline-none focus:border-primary/40"
+                            />
+                            <textarea
+                              value={s.note ?? ""}
+                              onChange={(e) => updateCustomStep(s.id, { note: e.target.value })}
+                              aria-label="Edit note"
+                              rows={2}
+                              className="w-full rounded-lg border bg-background px-2.5 py-1.5 text-sm outline-none focus:border-primary/40"
+                            />
+                            <input
+                              type="date"
+                              value={s.targetDate ?? ""}
+                              onChange={(e) => updateCustomStep(s.id, { targetDate: e.target.value })}
+                              aria-label="Edit target date"
+                              className="rounded-lg border bg-background px-2.5 py-1.5 text-sm outline-none focus:border-primary/40"
+                            />
                             <button
                               type="button"
-                              onClick={() => setOpenCards((o) => ({ ...o, [s.id]: !o[s.id] }))}
-                              className="tap inline-flex items-center gap-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground"
+                              onClick={() => setEditingId(null)}
+                              className="tap rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground"
                             >
-                              {expanded ? (
-                                <ChevronDown className="h-3.5 w-3.5" />
-                              ) : (
-                                <ChevronRight className="h-3.5 w-3.5" />
-                              )}
-                              {expanded ? "Hide detail" : "Detail"}
+                              Done
                             </button>
-                          ) : null}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const order: StepStatus[] = [
-                                "not-started",
-                                "in-progress",
-                                "complete",
-                              ];
-                              updateCustomStep(s.id, {
-                                status: order[(order.indexOf(s.status) + 1) % 3],
-                              });
-                            }}
-                            className="tap inline-flex rounded-md text-xs font-medium text-primary hover:underline"
-                          >
-                            Advance
-                          </button>
-                        </div>
-                        {expanded && s.note ? (
-                          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                            {s.note}
-                          </p>
-                        ) : null}
-                        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2 text-[11px] text-muted-foreground">
-                          <StatusDot status={s.status} withLabel />
-                          {due ? (
-                            <span
-                              className={cn(
-                                "inline-flex shrink-0 items-center gap-1 whitespace-nowrap tabular-nums",
-                                due.urgent && "text-tag-amber-foreground",
-                              )}
-                            >
-                              <Clock className="h-3.5 w-3.5" />
-                              {due.text}
-                            </span>
-                          ) : null}
-                        </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-start justify-between gap-2">
+                              <p className="text-sm font-semibold leading-snug tracking-tight">{s.title}</p>
+                              <div className="flex shrink-0 gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingId(s.id)}
+                                  aria-label={`Edit ${s.title}`}
+                                  className="tap rounded-md p-1 text-muted-foreground hover:text-foreground"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removeCustomStep(s.id)}
+                                  aria-label={`Delete ${s.title}`}
+                                  className="tap rounded-md p-1 text-muted-foreground hover:text-destructive"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              </div>
+                            </div>
+                            <div className="mt-2">
+                              <OwnGoalBadge />
+                            </div>
+                            <div className="mt-2 flex items-center gap-2">
+                              {s.note ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setOpenCards((o) => ({ ...o, [s.id]: !o[s.id] }))}
+                                  className="tap inline-flex items-center gap-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground"
+                                >
+                                  {expanded ? (
+                                    <ChevronDown className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <ChevronRight className="h-3.5 w-3.5" />
+                                  )}
+                                  {expanded ? "Hide detail" : "Detail"}
+                                </button>
+                              ) : null}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const order: StepStatus[] = [
+                                    "not-started",
+                                    "in-progress",
+                                    "complete",
+                                  ];
+                                  updateCustomStep(s.id, {
+                                    status: order[(order.indexOf(s.status) + 1) % 3],
+                                  });
+                                }}
+                                className="tap inline-flex rounded-md text-xs font-medium text-primary hover:underline"
+                              >
+                                Advance
+                              </button>
+                            </div>
+                            {expanded && s.note ? (
+                              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                                {s.note}
+                              </p>
+                            ) : null}
+                            <div className="mt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2 text-[11px] text-muted-foreground">
+                              <StatusDot status={s.status} withLabel />
+                              {due ? (
+                                <span
+                                  className={cn(
+                                    "inline-flex shrink-0 items-center gap-1 whitespace-nowrap tabular-nums",
+                                    due.urgent && "text-tag-amber-foreground",
+                                  )}
+                                >
+                                  <Clock className="h-3.5 w-3.5" />
+                                  {due.text}
+                                </span>
+                              ) : null}
+                            </div>
+                          </>
+                        )}
                       </div>
                     );
                   })}

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
-import { OpportunityDatabaseBrowser } from "@/components/opportunity-database-browser";
+import { OpportunityFeed } from "@/components/opportunity-feed";
 
 export const Route = createFileRoute("/opportunities")({
   head: () => ({
@@ -10,13 +10,13 @@ export const Route = createFileRoute("/opportunities")({
       {
         name: "description",
         content:
-          "Browse curated programs, fellowships, internships, and early-talent pipelines. Filtered by track, year, and deadline.",
+          "Browse curated programs, fellowships, insight days, and early-talent pipelines. Pin the deadlines you don't want to miss.",
       },
       { property: "og:title", content: "Explore Opportunities — Sylo" },
       {
         property: "og:description",
         content:
-          "Search verified student programs, fellowships, and pipelines across every career track.",
+          "Discover pipeline programs, scholarships, diversity cohorts, and fellowship windows — all in one place.",
       },
     ],
   }),
@@ -25,10 +25,10 @@ export const Route = createFileRoute("/opportunities")({
 
 function OpportunitiesPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-canvas">
+    <div className="min-h-screen bg-canvas">
       {/* Header */}
       <header className="sticky top-0 z-40 h-11 border-b bg-card">
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4">
+        <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
           <div className="flex items-center gap-3">
             <Link
               to="/"
@@ -50,9 +50,19 @@ function OpportunitiesPage() {
         </div>
       </header>
 
-      {/* Browser */}
-      <main className="flex-1">
-        <OpportunityDatabaseBrowser />
+      {/* Main content */}
+      <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+        <div className="mb-6">
+          <h1 className="text-xl font-bold tracking-tight">
+            Programs &amp; Pipelines
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Fellowships, insight days, diversity cohorts, scholarships, and early-ID
+            deadlines you don't want to miss. Pin the ones that matter to you.
+          </p>
+        </div>
+
+        <OpportunityFeed />
       </main>
     </div>
   );

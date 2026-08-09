@@ -80,12 +80,12 @@ function Landing() {
                     <ArrowRight className="h-5 w-5" />
                   </span>
                 </Link>
-                <Link
+                {/* <Link
                   to="/opportunities"
                   className="tap text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                 >
                   Or browse all programs &amp; pipelines →
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>
@@ -171,16 +171,7 @@ function Landing() {
           </div>
         </section>
 
-        <section className="py-14 sm:py-18">
-          <div className="mx-auto max-w-2xl rounded-xl border bg-card p-8 text-center shadow-[var(--shadow-card)] sm:p-10">
-            <blockquote className="text-lg font-medium leading-relaxed text-foreground sm:text-xl">
-              &ldquo;I didn&apos;t even know my school had an equivalent program. Sylo found it in one click, and told me exactly why it mattered.&rdquo;
-            </blockquote>
-            <p className="mt-4 text-sm text-muted-foreground">
-              — Maya, Biology sophomore · Sylo demo persona
-            </p>
-          </div>
-        </section>
+
 
         <div className="flex justify-center py-2">
           <WavyRouteLine height={192} className="text-primary/60" />
@@ -189,7 +180,7 @@ function Landing() {
         <section className="py-20 sm:py-28">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Your path deserves better than a checklist.
+              The invisible advisor every well-connected student already has.<br /><span className="text-primary">Now it&apos;s yours.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground text-balance">
               No sign-up required. Real roadmaps in seconds.
@@ -197,10 +188,12 @@ function Landing() {
             <div className="mt-8">
               <Link
                 to="/roadmap-builder"
-                className="tap group inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground hover:bg-primary/95"
+                className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground hover:bg-primary/95"
               >
-                Build my roadmap
-                <ArrowRight className="h-5 w-5" />
+                <span>Build My Roadmap</span>
+                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
+                  <ArrowRight className="h-5 w-5" />
+                </span>
               </Link>
             </div>
           </div>

@@ -54,28 +54,32 @@ function Details() {
   const [showReasons, setShowReasons] = useState(true);
 
   useEffect(() => {
-    if (hydrated && (!profile || !roadmap)) navigate({ to: "/roadmap-builder" });
-  }, [hydrated, profile, roadmap, navigate]);
+    // Only redirect if there's no id — viewing a specific opportunity should always work
+    if (hydrated && !id && (!profile || !roadmap)) navigate({ to: "/roadmap-builder" });
+  }, [hydrated, id, profile, roadmap, navigate]);
 
-  if (!profile || !roadmap) return null;
+  // No-id browse mode requires profile+roadmap
+  if (!id && (!profile || !roadmap)) return null;
+
+  // When id is present, allow viewing even without roadmap
 
   // No id in the URL → browse every opportunity on the student's own track.
   if (!id) {
     return (
-      <Workspace>
+      <Workspace wide>
         <PageHeader
           icon={<FileText className="h-5 w-5" />}
           title="Opportunities"
-          subtitle="Everything verified on your track. Open one for the full detail view."
+          subtitle="Fellowships, insight days, diversity cohorts, scholarships, and early-ID deadlines you don't want to miss. Pin the ones that matter to you."
         />
-        {browsableOpportunities(profile.trackId).length ? (
+        {browsableOpportunities(profile!.trackId).length ? (
           <p className="mt-4 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground">
             {liveOpportunities.length
               ? "Cards tagged “Found via search” were looked up for your goal and school just now. Everything else is from Sylo’s curated dataset and is open to any student at your stage."
               : "Sylo matched you to opportunities open to any student at your stage — not listings scraped specifically for your school."}
           </p>
         ) : null}
-        <OpportunityBrowser trackId={profile.trackId} />
+        <OpportunityBrowser trackId={profile!.trackId} />
       </Workspace>
     );
   }
@@ -83,12 +87,12 @@ function Details() {
   const targetId = id;
   const custom = customSteps.find((s) => s.id === targetId);
   const op = resolveOpportunity(targetId);
-  const step = roadmap.steps.find((s) => s.opportunityId === targetId);
-  const track = getTrack(profile.trackId);
+  const step = roadmap?.steps.find((s) => s.opportunityId === targetId);
+  const track = profile ? getTrack(profile.trackId) : null;
 
   if (custom) {
     return (
-      <Workspace>
+      <Workspace wide>
         <PageHeader
           icon={<FileText className="h-5 w-5" />}
           title={custom.title}
@@ -163,9 +167,9 @@ function Details() {
     );
   }
 
-  if (!op || !step) {
+  if (!op) {
     return (
-      <Workspace>
+      <Workspace wide>
         <BackToOpportunities />
         <PageHeader icon={<FileText className="h-5 w-5" />} title="Opportunity Details" subtitle="Pick a step from your roadmap." />
         <Link to="/dashboard" className="tap mt-6 inline-block rounded-md text-sm font-medium text-primary hover:underline">
@@ -175,10 +179,81 @@ function Details() {
     );
   }
 
+  // Opportunity exists but isn't on the student's roadmap — show detail without status controls
+  if (!step) {
+    return (
+      <Workspace wide>
+        <BackToOpportunities />
+        <PageHeader
+          icon={<FileText className="h-5 w-5" />}
+          title={op.name}
+          subtitle={op.leverage}
+          meta={[op.category, op.access === "translated" ? "Local equivalent" : "Direct access", op.timeframe]}
+        />
+
+        {op.origin === "live" ? (
+          <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2">
+            <FoundViaSearchBadge />
+            <span className="text-[13px] leading-relaxed text-muted-foreground">
+              This one came from a live search, not Sylo&apos;s curated dataset.
+            </span>
+          </div>
+        ) : null}
+
+        <div className="mt-6">
+          <PropertyRow label="Requirements">
+            <span className="flex flex-wrap justify-end gap-1.5">
+              {op.requirements.map((r) => (
+                <Tag key={r}>{r}</Tag>
+              ))}
+            </span>
+          </PropertyRow>
+          <PropertyRow label="Deadline">
+            <Tag tone="amber">{op.timeframe}</Tag>
+          </PropertyRow>
+          <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
+          <PropertyRow label="Contact">
+            {op.contact && !op.contact.includes("@campus.edu") ? op.contact : <span className="text-muted-foreground">Check your campus portal</span>}
+          </PropertyRow>
+          <PropertyRow label="Link">
+            {op.link ? (
+              <a href={op.link} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 hover:text-primary/80">
+                {op.link.replace(/^https?:\/\//, "").split("/")[0]}
+              </a>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </PropertyRow>
+          {op.brandEquivalent && (
+            <PropertyRow label="Equivalent to">
+              <Tag>{op.brandEquivalent}</Tag>
+            </PropertyRow>
+          )}
+          {op.missingHere && (
+            <PropertyRow label="Why this instead">{op.missingHere}</PropertyRow>
+          )}
+        </div>
+
+        {step === undefined && (
+          <p className="mt-6 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] text-muted-foreground">
+            This opportunity isn&apos;t on your roadmap yet. Build a roadmap to see where it fits in your sequence.
+          </p>
+        )}
+
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <BackToOpportunities />
+          <Link to="/dashboard" className="tap inline-block rounded-md text-sm font-medium text-primary hover:underline">
+            ← Back to dashboard
+          </Link>
+        </div>
+      </Workspace>
+    );
+  }
+
 
 
   return (
-    <Workspace>
+    <Workspace wide>
       <BackToOpportunities />
       <PageHeader
         icon={<FileText className="h-5 w-5" />}
@@ -260,7 +335,7 @@ function Details() {
             </span>
           </PropertyRow>
         ) : null}
-        {op.courseCode ? (
+        {/* {op.courseCode ? (
           <PropertyRow label="Course">
             <span className="flex flex-wrap items-baseline gap-2">
               <span className="font-medium">{op.courseCode}</span>
@@ -269,13 +344,13 @@ function Details() {
               ) : null}
             </span>
           </PropertyRow>
-        ) : null}
+        ) : null} */}
       </div>
 
       <section className="mt-10">
         <h2 className="border-b pb-3 text-lg font-semibold tracking-tight">Why this matters for you</h2>
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-          You&apos;re a {profile.year} {profile.major} major at {profile.school} heading toward{" "}
+          You&apos;re a {profile?.year} {profile?.major} major at {profile?.school} heading toward{" "}
           {track?.label}. {step.reasoning}
         </p>
       </section>
@@ -287,7 +362,7 @@ function Details() {
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="card-tonal rounded-2xl p-4">
-              <p className="text-sm font-semibold tracking-tight">Missing at {profile.school}</p>
+              <p className="text-sm font-semibold tracking-tight">Missing at {profile?.school}</p>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 {op.brandEquivalent} — {op.missingHere}
               </p>
@@ -324,7 +399,7 @@ function Details() {
             </>
           )}{" "}
           This one came out{" "}
-          {op.id === roadmap.topOpportunityId ? "first" : `at position ${roadmap.steps.findIndex((s) => s.opportunityId === op.id) + 1}`}
+          {op.id === roadmap?.topOpportunityId ? "first" : `at position ${(roadmap?.steps.findIndex((s) => s.opportunityId === op.id) ?? 0) + 1}`}
           .
         </p>
         <button
@@ -344,8 +419,8 @@ function Details() {
                 <li>• No eligibility requirements were published where Sylo could find them.</li>
               )}
               <li>
-                • Matched against your search: {profile.year} {profile.major} major at{" "}
-                {profile.school}.
+                • Matched against your search: {profile?.year} {profile?.major} major at{" "}
+                {profile?.school}.
               </li>
               <li>
                 •{" "}
@@ -357,11 +432,11 @@ function Details() {
             </ul>
           ) : (
             <ul className="mt-3 space-y-2 pl-6 text-sm text-muted-foreground">
-              <li>• Your year ({profile.year}) meets the eligibility line: {op.requirements[0]}.</li>
+              <li>• Your year ({profile?.year}) meets the eligibility line: {op.requirements[0]}.</li>
               <li>• Your goal ({track?.label}) is the track this opportunity is tagged to.</li>
-              <li>• Your school ({profile.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly, with no substitution needed."}</li>
+              <li>• Your school ({profile?.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly, with no substitution needed."}</li>
               <li>• Its window ({op.timeframe}) closes sooner than most other steps in your sequence.</li>
-              {profile.major ? <li>• Your major ({profile.major}) supplies the coursework this expects.</li> : null}
+              {profile?.major ? <li>• Your major ({profile?.major}) supplies the coursework this expects.</li> : null}
             </ul>
           )
         ) : null}

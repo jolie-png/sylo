@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   Search,
   ExternalLink,
@@ -8,6 +8,8 @@ import {
   X,
   ChevronDown,
   CheckCircle2,
+  MessageCircle,
+  TrendingUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -20,6 +22,10 @@ import {
   type OpportunityFilters,
 } from "@/lib/opportunities-db";
 import { TRACKS } from "@/lib/wayfind-data";
+import {
+  searchRedditOpportunities,
+  type RedditOpportunityPost,
+} from "@/lib/reddit-opportunities";
 
 // ---------------------------------------------------------------------------
 // Confidence badge colors
@@ -143,6 +149,9 @@ export function OpportunityDatabaseBrowser() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [redditPosts, setRedditPosts] = useState<RedditOpportunityPost[]>([]);
+  const [redditLoading, setRedditLoading] = useState(false);
+  const [showReddit, setShowReddit] = useState(false);
 
   const allTags = useMemo(() => getAllTags(), []);
 
@@ -195,10 +204,29 @@ export function OpportunityDatabaseBrowser() {
     setSelectedTags([]);
   }, []);
 
+  const loadRedditPosts = useCallback(async () => {
+    if (redditLoading) return;
+    setRedditLoading(true);
+    try {
+      const result = await searchRedditOpportunities({
+        data: {
+          query: query || "program deadline fellowship application",
+          limit: 5,
+        },
+      });
+      setRedditPosts(result.posts);
+      setShowReddit(true);
+    } catch (err) {
+      console.warn("[reddit] Failed to load posts:", err);
+    } finally {
+      setRedditLoading(false);
+    }
+  }, [query, redditLoading]);
+
   return (
     <div className="flex h-full flex-col">
       {/* Search bar */}
-      <div className="sticky top-0 z-10 border-b bg-card px-4 py-3 sm:px-6">
+      <div className="sticky top-0 z-10 border-b bg-card px-4 py-3 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
@@ -344,7 +372,7 @@ export function OpportunityDatabaseBrowser() {
       </div>
 
       {/* Results */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+      <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <p className="mb-4 text-xs text-muted-foreground">
             {results.length} {results.length === 1 ? "opportunity" : "opportunities"} found
@@ -361,7 +389,7 @@ export function OpportunityDatabaseBrowser() {
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {results.map((op) => (
                 <OpportunityCard
                   key={op.id}
@@ -371,6 +399,67 @@ export function OpportunityDatabaseBrowser() {
                 />
               ))}
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Reddit Intel section */}
+      <div className="border-t bg-muted/20 px-4 py-4 sm:px-6">
+        <div className="mx-auto max-w-5xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4 text-orange-500" />
+              <h3 className="text-sm font-semibold tracking-tight">Reddit Intel</h3>
+              <span className="text-[10px] text-muted-foreground">
+                What students are saying about programs &amp; deadlines right now
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={loadRedditPosts}
+              disabled={redditLoading}
+              className="tap rounded-lg border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              {redditLoading ? "Scanning..." : showReddit ? "Refresh" : "Load Reddit Intel"}
+            </button>
+          </div>
+
+          {showReddit && redditPosts.length > 0 && (
+            <div className="mt-3 space-y-2">
+              {redditPosts.map((post) => (
+                <a
+                  key={post.id}
+                  href={post.permalink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tap block rounded-lg border bg-card p-3 transition-colors hover:border-orange-200 hover:bg-orange-50/30"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-medium leading-snug">{post.title}</p>
+                    <div className="flex shrink-0 items-center gap-2 text-[10px] text-muted-foreground">
+                      <span className="flex items-center gap-0.5">
+                        <TrendingUp className="h-2.5 w-2.5" /> {post.score}
+                      </span>
+                      <span className="flex items-center gap-0.5">
+                        <MessageCircle className="h-2.5 w-2.5" /> {post.numComments}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-medium text-orange-700">
+                      r/{post.subreddit}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">{post.insight}</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+
+          {showReddit && redditPosts.length === 0 && !redditLoading && (
+            <p className="mt-3 text-xs text-muted-foreground">
+              No relevant posts found right now. Try a different search term.
+            </p>
           )}
         </div>
       </div>
@@ -452,8 +541,8 @@ function OpportunityDetailPanel({
   onClose: () => void;
 }) {
   return (
-    <div className="border-t bg-card px-4 py-5 sm:px-6">
-      <div className="mx-auto max-w-5xl">
+    <div className="border-t bg-card px-4 py-5 sm:px-8">
+      <div className="mx-auto max-w-6xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-bold tracking-tight">{record.name}</h2>

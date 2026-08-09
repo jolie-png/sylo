@@ -23,7 +23,7 @@ function PathsPage() {
     <Workspace wide>
       <PageHeader
         icon={<Sparkles className="h-5 w-5" />}
-        title="Success maps"
+        title="Success Maps"
         subtitle="Real roadmaps from students who made it to where you want to go."
       />
 

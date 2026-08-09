@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { Workspace, PageHeader } from "@/components/workspace";
 import { SUCCESS_STORIES, type SuccessStory } from "@/lib/success-stories";
-import { SyloMark } from "@/components/SyloMark";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/paths")({
@@ -20,52 +20,34 @@ function PathsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <header className="sticky top-0 z-40 h-11 border-b bg-card">
-        <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <SyloMark className="h-5 w-5" animated />
-            <span className="text-sm font-medium tracking-tight">Sylo</span>
-          </Link>
-          <Link
-            to="/roadmap-builder"
-            className="tap rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground"
-          >
-            Build yours
-          </Link>
-        </div>
-      </header>
+    <Workspace>
+      <PageHeader
+        icon={<Sparkles className="h-5 w-5" />}
+        title="Paths that worked"
+        subtitle="Real roadmaps from students who got where they wanted to go."
+      />
 
-      <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-        <h1 className="text-[32px] font-bold leading-tight tracking-[-0.03em] sm:text-[44px]">
-          Paths that worked.
-        </h1>
-        <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Real roadmaps from students who got where they wanted to go. See what they did, when they did it, and why it mattered.
-        </p>
+      <div className="mt-8 space-y-4">
+        {SUCCESS_STORIES.map((story) => (
+          <StoryCard
+            key={story.id}
+            story={story}
+            expanded={expanded === story.id}
+            onToggle={() => setExpanded(expanded === story.id ? null : story.id)}
+          />
+        ))}
+      </div>
 
-        <div className="mt-10 space-y-4">
-          {SUCCESS_STORIES.map((story) => (
-            <StoryCard
-              key={story.id}
-              story={story}
-              expanded={expanded === story.id}
-              onToggle={() => setExpanded(expanded === story.id ? null : story.id)}
-            />
-          ))}
-        </div>
-
-        <div className="mt-14 text-center">
-          <p className="text-sm text-muted-foreground">Your path is next.</p>
-          <Link
-            to="/roadmap-builder"
-            className="tap mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
-          >
-            Build my roadmap <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </main>
-    </div>
+      <div className="mt-10 rounded-2xl border border-dashed border-foreground/20 bg-muted/30 p-6 text-center">
+        <p className="text-sm text-muted-foreground">Your path is next.</p>
+        <Link
+          to="/roadmap-builder"
+          className="tap mt-3 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+        >
+          Build my roadmap <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+    </Workspace>
   );
 }
 

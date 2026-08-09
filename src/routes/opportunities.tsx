@@ -37,7 +37,7 @@ function OpportunitiesPage() {
               <ArrowLeft className="h-3.5 w-3.5" />
             </Link>
             <div className="flex items-center gap-2">
-              <SyloMark className="h-5 w-5" animated={false} />
+              <SyloMark className="h-5 w-5" animated={true} />
               <span className="text-sm font-medium tracking-tight">Opportunities</span>
             </div>
           </div>

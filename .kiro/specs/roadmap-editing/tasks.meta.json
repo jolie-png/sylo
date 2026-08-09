@@ -1,0 +1,372 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Add `stepNotes` state and `setStepNote` mutation to `WayfindProvider`": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182020
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259192632
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259318789
+      }
+    ],
+    "1.2 Add `stepNotes` to localStorage persistence and hydration": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182097
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259323922
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259465565
+      }
+    ],
+    "1.3 Write property tests for stepNotes store logic": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182187
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259470977
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259685367
+      }
+    ],
+    "2.1 Add `AcademicTerm` type, `SEASONS` constant, and `academicTermOptions` function to `src/lib/terms.ts`": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182307
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259193507
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259319615
+      }
+    ],
+    "2.2 Add `isIsoDate` and `formatTargetDate` utility functions to `src/lib/terms.ts`": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182467
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259324736
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259466499
+      }
+    ],
+    "2.3 Write property tests for academic term utilities": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182566
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259471672
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259686061
+      }
+    ],
+    "3. Checkpoint": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182666
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260073869
+      }
+    ],
+    "4.1 Create `InlineNoteEditor` component at `src/components/inline-note-editor.tsx`": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182759
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259472504
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259687084
+      }
+    ],
+    "4.2 Create `NoteIndicator` component at `src/components/note-indicator.tsx`": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259182854
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259473223
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259687791
+      }
+    ],
+    "4.3 Create `AcademicTermSelector` component at `src/components/academic-term-selector.tsx`": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259183029
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259474125
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259688655
+      }
+    ],
+    "5.1 Add inline note editing to Sylo_Step cards in `src/routes/dashboard.tsx`": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259183141
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259701088
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259893977
+      }
+    ],
+    "5.2 Add `NoteIndicator` to Sylo_Step cards when a note exists": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259183253
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259702033
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259894682
+      }
+    ],
+    "6.1 Replace date picker with `AcademicTermSelector` in Custom_Step creation form": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259183373
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259898483
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260056102
+      }
+    ],
+    "6.2 Replace date picker with `AcademicTermSelector` in Custom_Step editing form": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259183474
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259899400
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260056864
+      }
+    ],
+    "6.3 Update Custom_Step card display to use `formatTargetDate`": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259183588
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259900045
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260057633
+      }
+    ],
+    "6.4 Add `NoteIndicator` to Custom_Step cards when a note exists": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259183999
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259900846
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260058539
+      }
+    ],
+    "7. Checkpoint": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259184156
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260074448
+      }
+    ],
+    "8.1 Write property tests for note display behavior": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259184207
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260075035
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260181343
+      }
+    ],
+    "8.2 Write property tests for academic term persistence": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259184260
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260075843
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260180690
+      }
+    ],
+    "9. Final checkpoint": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259184400
+      },
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260194825
+      }
+    ],
+    "1. Extend store layer with stepNotes support": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259685452
+      }
+    ],
+    "2. Implement academic term utilities": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259686133
+      }
+    ],
+    "4. Create UI components": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259688723
+      }
+    ],
+    "5. Integrate into dashboard — Sylo_Step cards": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786259894764
+      }
+    ],
+    "6. Integrate into dashboard — Custom_Step cards": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260058746
+      }
+    ],
+    "8. Write integration tests for the full feature": [
+      {
+        "executionId": "99651d76-37a3-4eea-a084-e406e2b83f0e",
+        "chatSessionId": "sess_9be10c0b-0c9d-4c92-a129-9e0e15cfd1b1",
+        "timestamp": 1786260181406
+      }
+    ]
+  }
+}

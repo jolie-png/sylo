@@ -6,7 +6,6 @@ import {
   Plus,
   ExternalLink,
   Search,
-  Database,
 } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { cn } from "@/lib/utils";
@@ -46,6 +45,29 @@ const SUGGESTIONS = [
 export function AskSylo() {
   const [open, setOpen] = useState(false);
   const { addCustomStep } = useWayfind();
+
+  // Allow other components to open the chat via a custom event
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setOpen(true);
+      const query = (e as CustomEvent).detail?.query;
+      if (query) {
+        // Small delay so the panel renders before sending
+        setTimeout(() => handleSend(query), 100);
+      }
+    };
+    window.addEventListener("open-ask-sylo", handler);
+    return () => window.removeEventListener("open-ask-sylo", handler);
+  }, [handleSend]);
+  // Draggable position (bottom-right anchor)
+  const [pos, setPos] = useState({ right: 24, bottom: 24 });
+  const dragRef = useRef<{ startX: number; startY: number; startRight: number; startBottom: number } | null>(null);
+  // Panel drag state (separate so dragging the panel doesn't move the button)
+  const [panelPos, setPanelPos] = useState<{ right: number; bottom: number } | null>(null);
+  const panelDragRef = useRef<{ startX: number; startY: number; startRight: number; startBottom: number } | null>(null);
+  // Panel resize state
+  const [panelSize, setPanelSize] = useState({ width: 352, height: 544 });
+  const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -144,12 +166,30 @@ export function AskSylo() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — draggable anywhere */}
       {!open && (
         <button
           type="button"
-          onClick={() => setOpen(true)}
-          className="tap fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg transition-transform hover:scale-105"
+          onPointerDown={(e) => {
+            dragRef.current = { startX: e.clientX, startY: e.clientY, startRight: pos.right, startBottom: pos.bottom };
+            (e.target as HTMLElement).setPointerCapture(e.pointerId);
+          }}
+          onPointerMove={(e) => {
+            if (!dragRef.current) return;
+            const dx = dragRef.current.startX - e.clientX;
+            const dy = dragRef.current.startY - e.clientY;
+            const newRight = Math.max(16, Math.min(window.innerWidth - 72, dragRef.current.startRight + dx));
+            const newBottom = Math.max(16, Math.min(window.innerHeight - 72, dragRef.current.startBottom + dy));
+            setPos({ right: newRight, bottom: newBottom });
+          }}
+          onPointerUp={(e) => {
+            if (!dragRef.current) return;
+            const moved = Math.abs(dragRef.current.startX - e.clientX) > 5 || Math.abs(dragRef.current.startY - e.clientY) > 5;
+            dragRef.current = null;
+            if (!moved) setOpen(true);
+          }}
+          style={{ right: `${pos.right}px`, bottom: `${pos.bottom}px` }}
+          className="tap fixed z-50 flex h-14 w-14 cursor-grab items-center justify-center rounded-full bg-primary shadow-lg transition-none active:cursor-grabbing hover:scale-105"
           aria-label="Ask Sylo"
         >
           <MessageCircle className="h-6 w-6 text-primary-foreground" />
@@ -158,11 +198,57 @@ export function AskSylo() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 flex h-[34rem] w-[22rem] flex-col rounded-2xl border bg-card shadow-2xl sm:w-[24rem]">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b px-4 py-3">
+        <div style={{ right: `${(panelPos ?? pos).right}px`, bottom: `${(panelPos ?? pos).bottom}px`, width: `${panelSize.width}px`, height: `${panelSize.height}px` }} className="fixed z-50 flex flex-col rounded-2xl border bg-card shadow-2xl">
+          {/* Resize handle — top-left corner (invisible) */}
+          <div
+            className="absolute -left-1 -top-1 z-10 h-4 w-4 cursor-nw-resize"
+            style={{ touchAction: "none" }}
+            onPointerDown={(e) => {
+              resizeRef.current = { startX: e.clientX, startY: e.clientY, startW: panelSize.width, startH: panelSize.height };
+              (e.target as HTMLElement).setPointerCapture(e.pointerId);
+              e.preventDefault();
+            }}
+            onPointerMove={(e) => {
+              if (!resizeRef.current) return;
+              const dx = resizeRef.current.startX - e.clientX;
+              const dy = resizeRef.current.startY - e.clientY;
+              const newW = Math.max(280, Math.min(700, resizeRef.current.startW + dx));
+              const newH = Math.max(300, Math.min(900, resizeRef.current.startH + dy));
+              setPanelSize({ width: newW, height: newH });
+            }}
+            onPointerUp={(e) => {
+              resizeRef.current = null;
+              (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+            }}
+          />
+          {/* Header — drag handle */}
+          <div
+            className="flex cursor-grab items-center justify-between border-b px-4 py-3 select-none active:cursor-grabbing"
+            style={{ touchAction: "none" }}
+            onPointerDown={(e) => {
+              // Only start drag from the header area, not the close button
+              if ((e.target as HTMLElement).closest("button")) return;
+              const p = panelPos ?? pos;
+              panelDragRef.current = { startX: e.clientX, startY: e.clientY, startRight: p.right, startBottom: p.bottom };
+              e.currentTarget.setPointerCapture(e.pointerId);
+              e.preventDefault();
+            }}
+            onPointerMove={(e) => {
+              if (!panelDragRef.current) return;
+              const dx = panelDragRef.current.startX - e.clientX;
+              const dy = panelDragRef.current.startY - e.clientY;
+              const newRight = Math.max(0, panelDragRef.current.startRight + dx);
+              const newBottom = Math.max(0, panelDragRef.current.startBottom + dy);
+              setPanelPos({ right: newRight, bottom: newBottom });
+            }}
+            onPointerUp={(e) => {
+              if (!panelDragRef.current) return;
+              panelDragRef.current = null;
+              e.currentTarget.releasePointerCapture(e.pointerId);
+            }}
+          >
             <div className="flex items-center gap-2">
-              <SyloMark className="h-5 w-5" animated={false} />
+              <SyloMark className="h-5 w-5" animated={true} />
               <div>
                 <p className="text-sm font-semibold tracking-tight">Ask Sylo</p>
                 <p className="text-[10px] text-muted-foreground">
@@ -172,7 +258,7 @@ export function AskSylo() {
             </div>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => { setOpen(false); setPanelPos(null); }}
               className="tap rounded-full p-1.5 text-muted-foreground hover:text-foreground"
               aria-label="Close chat"
             >
@@ -193,7 +279,7 @@ export function AskSylo() {
                 ) : (
                   <div className="flex gap-2">
                     <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted">
-                      <SyloMark className="h-3.5 w-3.5" animated={false} />
+                      <SyloMark className="h-3.5 w-3.5" animated={true} />
                     </div>
                     <div className="min-w-0 flex-1">
                       {msg.loading ? (
@@ -379,10 +465,7 @@ export function AskSylo() {
                 <Send className="h-3.5 w-3.5" />
               </button>
             </form>
-            <p className="mt-1.5 text-center text-[9px] text-muted-foreground">
-              <Database className="mr-0.5 inline h-2.5 w-2.5" />
-              Searches Sylo's database first · Web fallback if needed
-            </p>
+
           </div>
         </div>
       )}

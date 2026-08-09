@@ -43,3 +43,74 @@ export function padTerms(terms: Term[], count: number): Term[] {
   while (out.length < count && out.length > 0) out.push(nextTerm(out[out.length - 1]));
   return out;
 }
+
+// ─── Academic term scheduling ───────────────────────────────────────────────
+
+export type AcademicTerm = {
+  /** e.g. "Fall Junior" — used as the stored value */
+  value: string;
+  /** e.g. "Fall Junior Year" — used for display */
+  label: string;
+};
+
+export const SEASONS = ["Fall", "Spring", "Summer"] as const;
+export type Season = (typeof SEASONS)[number];
+
+/**
+ * Generate all academic term options ordered chronologically
+ * starting from the student's current year.
+ *
+ * The canonical season order within a single academic year is
+ * Fall → Spring → Summer (Fall starts the year).
+ *
+ * Returns exactly `3 × years.length` options.
+ */
+export function academicTermOptions(
+  currentYear: string,
+  years: string[]
+): AcademicTerm[] {
+  const startIndex = years.indexOf(currentYear);
+  // If currentYear isn't found, default to the beginning
+  const offset = startIndex >= 0 ? startIndex : 0;
+
+  const options: AcademicTerm[] = [];
+  for (let i = 0; i < years.length; i++) {
+    const yearIndex = (offset + i) % years.length;
+    const year = years[yearIndex];
+    for (const season of SEASONS) {
+      options.push({
+        value: `${season} ${year}`,
+        label: `${season} ${year} Year`,
+      });
+    }
+  }
+  return options;
+}
+
+/**
+ * Detect whether a targetDate string is an ISO date (YYYY-MM-DD format).
+ */
+export function isIsoDate(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+/**
+ * Format a targetDate for display:
+ * - ISO dates → human-readable locale date string
+ * - Academic term strings → term label with "Year" appended
+ * - Empty/undefined → empty string
+ * - Unrecognized → raw string as-is (graceful fallback)
+ */
+export function formatTargetDate(value: string | undefined): string {
+  if (!value || value.trim() === "") return "";
+
+  if (isIsoDate(value)) {
+    const d = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(d.getTime())) return value;
+    return d.toLocaleDateString();
+  }
+
+  // Academic term string — append "Year" if not already present
+  if (value.endsWith("Year")) return value;
+  return `${value} Year`;
+}

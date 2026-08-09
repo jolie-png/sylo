@@ -20,10 +20,20 @@ import {
 
 const TRACK_VALUES = [
   "physician-scientist",
+  "nursing",
+  "public-health",
   "product-manager",
+  "management-consulting",
+  "marketing",
   "software-engineer",
+  "data-science",
+  "cybersecurity",
   "investment-banking",
+  "private-equity",
+  "financial-planning",
   "research-phd",
+  "biotech-research",
+  "environmental-science",
   "something-else",
 ] as const;
 

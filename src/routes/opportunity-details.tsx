@@ -13,6 +13,7 @@ import {
 import { useWayfind } from "@/lib/sylo-store";
 import { getTrack } from "@/lib/wayfind-data";
 import { OpportunityBrowser } from "@/components/opportunity-browser";
+import { DeadlinePill } from "@/components/deadline-badges";
 
 export const Route = createFileRoute("/opportunity-details")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -76,7 +77,7 @@ function Details() {
           <p className="mt-4 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground">
             {liveOpportunities.length
               ? "Cards tagged “Found via search” were looked up for your goal and school just now. Everything else is from Sylo’s curated dataset and is open to any student at your stage."
-              : "Sylo matched you to opportunities open to any student at your stage — not listings scraped specifically for your school."}
+              : "Every step below comes from Sylo's verified dataset — real programs matched to your major, year, and goal."}
           </p>
         ) : null}
         <OpportunityBrowser trackId={profile!.trackId} />
@@ -202,14 +203,18 @@ function Details() {
 
         <div className="mt-6">
           <PropertyRow label="Requirements">
-            <span className="flex flex-wrap justify-end gap-1.5">
-              {op.requirements.map((r) => (
-                <Tag key={r}>{r}</Tag>
+            <span className="flex flex-wrap items-center justify-end gap-x-1.5 text-sm text-foreground">
+              {op.requirements.map((r, i) => (
+                <span key={r} className="inline-flex items-center gap-x-1.5">
+                  {i > 0 && <span className="text-foreground">·</span>}
+                  {r}
+                </span>
               ))}
             </span>
           </PropertyRow>
           <PropertyRow label="Deadline">
             <Tag tone="amber">{op.timeframe}</Tag>
+            <DeadlinePill deadline={op.deadline} />
           </PropertyRow>
           <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
           <PropertyRow label="Contact">
@@ -274,29 +279,30 @@ function Details() {
 
       <div className="mt-6">
         <PropertyRow label="Status">
-          <span className="inline-flex items-center gap-2">
-            <StatusTag status={step.status} />
-            <select
-              value={step.status}
-              onChange={(e) => setStatus(op.id, e.target.value as typeof step.status)}
-              className="tap rounded-xl border bg-background px-2 py-1 text-xs hover:border-primary/40 focus:border-primary/40"
-              aria-label="Change status"
-            >
-              <option value="not-started">Not started</option>
-              <option value="in-progress">In progress</option>
-              <option value="complete">Complete</option>
-            </select>
-          </span>
+          <select
+            value={step.status}
+            onChange={(e) => setStatus(op.id, e.target.value as typeof step.status)}
+            className="tap rounded-xl border bg-background px-2 py-1 text-xs hover:border-primary/40 focus:border-primary/40"
+            aria-label="Change status"
+          >
+            <option value="not-started">Not started</option>
+            <option value="in-progress">In progress</option>
+            <option value="complete">Complete</option>
+          </select>
         </PropertyRow>
         <PropertyRow label="Requirements">
-          <span className="flex flex-wrap justify-end gap-1.5">
-            {op.requirements.map((r) => (
-              <Tag key={r}>{r}</Tag>
+          <span className="flex flex-wrap items-center justify-end gap-x-1.5 text-sm text-foreground">
+            {op.requirements.map((r, i) => (
+              <span key={r} className="inline-flex items-center gap-x-1.5">
+                {i > 0 && <span className="text-foreground">·</span>}
+                {r}
+              </span>
             ))}
           </span>
         </PropertyRow>
         <PropertyRow label="Deadline">
           <Tag tone="amber">{op.timeframe}</Tag>
+          <DeadlinePill deadline={op.deadline} />
         </PropertyRow>
         <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
         <PropertyRow label="Contact">

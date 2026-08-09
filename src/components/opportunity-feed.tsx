@@ -6,7 +6,16 @@ import { useWayfind } from "@/lib/sylo-store";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
-import { TRACKS, type Opportunity } from "@/lib/wayfind-data";
+import { type Opportunity, type TrackId } from "@/lib/wayfind-data";
+
+/** General categories shown as filter pills in the opportunity feed. */
+const OPPORTUNITY_CATEGORIES: { id: string; label: string; trackIds: TrackId[] }[] = [
+  { id: "healthcare", label: "Healthcare", trackIds: ["physician-scientist", "nursing", "public-health"] },
+  { id: "business", label: "Business", trackIds: ["product-manager", "management-consulting", "marketing"] },
+  { id: "engineering", label: "Engineering", trackIds: ["software-engineer", "data-science", "cybersecurity"] },
+  { id: "finance", label: "Finance", trackIds: ["investment-banking", "private-equity", "financial-planning"] },
+  { id: "science", label: "Science", trackIds: ["research-phd", "biotech-research", "environmental-science"] },
+];
 
 /**
  * Full opportunity feed — Pinterest-style masonry grid of ALL opportunities
@@ -29,7 +38,10 @@ export function OpportunityFeed() {
 
   // Apply filters
   const filtered = all.filter((op) => {
-    if (trackFilter && op.track !== trackFilter) return false;
+    if (trackFilter) {
+      const cat = OPPORTUNITY_CATEGORIES.find((c) => c.id === trackFilter);
+      if (cat && !cat.trackIds.includes(op.track as TrackId)) return false;
+    }
     if (query) {
       const q = query.toLowerCase();
       const searchable = `${op.name} ${op.category} ${op.leverage ?? ""} ${op.timeframe ?? ""}`.toLowerCase();
@@ -89,21 +101,21 @@ export function OpportunityFeed() {
               : "border-transparent bg-muted text-muted-foreground hover:text-foreground",
           )}
         >
-          All Tracks
+          All
         </button>
-        {TRACKS.filter((t) => t.id !== "something-else").map((t) => (
+        {OPPORTUNITY_CATEGORIES.map((cat) => (
           <button
-            key={t.id}
+            key={cat.id}
             type="button"
-            onClick={() => setTrackFilter(trackFilter === t.id ? null : t.id)}
+            onClick={() => setTrackFilter(trackFilter === cat.id ? null : cat.id)}
             className={cn(
               "tap rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-              trackFilter === t.id
+              trackFilter === cat.id
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-transparent bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
-            {t.label}
+            {cat.label}
           </button>
         ))}
       </div>

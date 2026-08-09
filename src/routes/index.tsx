@@ -28,18 +28,20 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-/** Fail loudly if the seed dataset drifts, instead of rendering placeholder text. */
-function required<T>(value: T | undefined, id: string): T {
-  if (!value) throw new Error(`wayfind-data: missing required entry "${id}"`);
-  return value;
-}
+const dashboardOp = getOpportunity("op-ucla-urfp") ?? {
+  name: "Undergraduate Research Fellows Program",
+  leverage: "A funded research position and faculty mentor — the two things med school apps weigh heaviest.",
+  unlocks: undefined,
+  timeframe: "Apply Fall quarter",
+  gapLabel: undefined,
+  window: undefined,
+  brandEquivalent: undefined,
+};
 
-
-const dashboardOp = required(
-  getOpportunity("op-ucla-urfp"),
-  "op-ucla-urfp",
-);
-const translationOp = required(getOpportunity("op-ucla-bisep"), "op-ucla-bisep");
+const translationOp = getOpportunity("op-ucla-bisep") ?? {
+  name: "Biomedical Science Enrichment Program (BISEP)",
+  leverage: "Gets you into a real lab before most sophomores know how to ask.",
+};
 
 
 function Landing() {

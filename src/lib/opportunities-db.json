@@ -7,14 +7,26 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-10-15",
-    "timeframe": "Window closes Oct — program runs Feb",
-    "requirements": ["Freshman or Sophomore", "Underrepresented background"],
+    "timeframe": "Window closes Oct \u2014 program runs Feb",
+    "requirements": [
+      "Freshman or Sophomore",
+      "Underrepresented background"
+    ],
     "contact": "https://www.goldmansachs.com/careers/students",
     "link": "https://www.goldmansachs.com/careers/students/programs/americas/undergraduate-camp.html",
-    "timeline": "Apply fall → attend multi-day summit in Feb → fast-track to sophomore internship interviews.",
+    "timeline": "Apply fall \u2192 attend multi-day summit in Feb \u2192 fast-track to sophomore internship interviews.",
     "leverage": "Nearly half of sophomore IB interns attended this insight program first. Miss the Oct deadline and you're out for the cycle.",
-    "tags": ["insight-day", "diversity", "early-ID", "deadline-critical", "finance"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "insight-day",
+      "diversity",
+      "early-ID",
+      "deadline-critical",
+      "finance"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -29,14 +41,27 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-10-01",
-    "timeframe": "Single annual window — closes early Oct",
-    "requirements": ["Sophomore", "Underrepresented minority", "Interest in business/finance/consulting"],
+    "timeframe": "Single annual window \u2014 closes early Oct",
+    "requirements": [
+      "Sophomore",
+      "Underrepresented minority",
+      "Interest in business/finance/consulting"
+    ],
     "contact": "https://mlt.org",
     "link": "https://mlt.org/career-prep/",
     "timeline": "18-month program starting spring of sophomore year. One cohort per year.",
-    "leverage": "80%+ of MLT fellows land top-tier internships. This is the single highest-conversion diversity pipeline for finance and consulting — one deadline, one shot per year.",
-    "tags": ["diversity-cohort", "fellowship", "deadline-critical", "finance", "consulting", "mentorship"],
-    "yearRelevance": ["Sophomore"],
+    "leverage": "80%+ of MLT fellows land top-tier internships. This is the single highest-conversion diversity pipeline for finance and consulting \u2014 one deadline, one shot per year.",
+    "tags": [
+      "diversity-cohort",
+      "fellowship",
+      "deadline-critical",
+      "finance",
+      "consulting",
+      "mentorship"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -51,14 +76,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-11-01",
-    "timeframe": "Window: Sept–Nov (one annual cohort)",
-    "requirements": ["Freshman, Sophomore, or Junior", "Underrepresented in corporate America", "US-based"],
+    "timeframe": "Window: Sept\u2013Nov (one annual cohort)",
+    "requirements": [
+      "Freshman, Sophomore, or Junior",
+      "Underrepresented in corporate America",
+      "US-based"
+    ],
     "contact": "https://www.seo-usa.org",
     "link": "https://www.seo-usa.org/career/",
     "timeline": "Training + mentorship + guaranteed internship placement at top finance/consulting firms following summer.",
     "leverage": "SEO places 100% of fellows into paid summer internships at firms like Goldman, JPMorgan, McKinsey. Miss the Nov deadline and you wait a full year.",
-    "tags": ["diversity-cohort", "fellowship", "placement-guaranteed", "deadline-critical", "finance", "consulting"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior"],
+    "tags": [
+      "diversity-cohort",
+      "fellowship",
+      "placement-guaranteed",
+      "deadline-critical",
+      "finance",
+      "consulting"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -74,13 +114,26 @@
     "school": "any",
     "deadline": "2026-10-30",
     "timeframe": "Window: Oct (program runs in spring)",
-    "requirements": ["Freshman or Sophomore", "Interest in math, CS, or quantitative trading"],
+    "requirements": [
+      "Freshman or Sophomore",
+      "Interest in math, CS, or quantitative trading"
+    ],
     "contact": "https://www.janestreet.com/join-jane-street/programs-and-events/",
     "link": "https://www.janestreet.com/join-jane-street/programs-and-events/",
-    "timeline": "1-week NYC immersion → get fast-tracked for summer internship interviews. Jane Street doesn't recruit at career fairs.",
+    "timeline": "1-week NYC immersion \u2192 get fast-tracked for summer internship interviews. Jane Street doesn't recruit at career fairs.",
     "leverage": "Jane Street's only pipeline for underclassmen. If you don't apply through an insight program, there's no other way in as a freshman or sophomore.",
-    "tags": ["insight-day", "quant", "early-ID", "deadline-critical", "finance", "trading"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "insight-day",
+      "quant",
+      "early-ID",
+      "deadline-critical",
+      "finance",
+      "trading"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -95,14 +148,26 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-10-15",
-    "timeframe": "Window: Sept–Oct (one annual cycle)",
-    "requirements": ["Sophomore", "Various diversity focuses per fellowship track"],
+    "timeframe": "Window: Sept\u2013Oct (one annual cycle)",
+    "requirements": [
+      "Sophomore",
+      "Various diversity focuses per fellowship track"
+    ],
     "contact": "https://www.deshaw.com/careers",
     "link": "https://fellowships.deshaw.com/",
     "timeline": "Multi-day program + $1,500 stipend + direct pathway to summer internship. One cycle per year.",
-    "leverage": "Paid fellowship that acts as a pre-interview — D.E. Shaw hires heavily from these cohorts. Each fellowship targets different underrepresented groups.",
-    "tags": ["fellowship", "diversity-cohort", "stipend", "deadline-critical", "quant", "finance"],
-    "yearRelevance": ["Sophomore"],
+    "leverage": "Paid fellowship that acts as a pre-interview \u2014 D.E. Shaw hires heavily from these cohorts. Each fellowship targets different underrepresented groups.",
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "stipend",
+      "deadline-critical",
+      "quant",
+      "finance"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -118,13 +183,25 @@
     "school": "any",
     "deadline": "2026-11-15",
     "timeframe": "Window closes mid-Nov (one cohort per year)",
-    "requirements": ["Sophomore women", "Interest in asset management or finance"],
+    "requirements": [
+      "Sophomore women",
+      "Interest in asset management or finance"
+    ],
     "contact": "https://www.girlswhoinvest.org",
     "link": "https://www.girlswhoinvest.org/summer-intensive-program",
-    "timeline": "4-week intensive training → guaranteed paid internship at a partner asset management firm.",
+    "timeline": "4-week intensive training \u2192 guaranteed paid internship at a partner asset management firm.",
     "leverage": "The most reliable pipeline for women into buy-side finance. Training + guaranteed placement. Miss November and you're out.",
-    "tags": ["fellowship", "women", "placement-guaranteed", "deadline-critical", "finance", "scholarship"],
-    "yearRelevance": ["Sophomore"],
+    "tags": [
+      "fellowship",
+      "women",
+      "placement-guaranteed",
+      "deadline-critical",
+      "finance",
+      "scholarship"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -140,13 +217,24 @@
     "school": "any",
     "deadline": "2026-09-15",
     "timeframe": "Window: Sept (training starts spring, internship following summer)",
-    "requirements": ["Sophomore", "Completed one CodePath course preferred"],
+    "requirements": [
+      "Sophomore",
+      "Completed one CodePath course preferred"
+    ],
     "contact": "https://www.codepath.org",
     "link": "https://www.codepath.org/courses/internship-for-tech-excellence",
-    "timeline": "Free training → guaranteed internship placement at partner companies. One cohort per year.",
-    "leverage": "Eliminates the cold-apply grind — CodePath trains you and places you directly. 90%+ placement rate. Sept deadline means you need to act now.",
-    "tags": ["fellowship", "diversity-cohort", "placement-guaranteed", "deadline-critical", "free-training"],
-    "yearRelevance": ["Sophomore"],
+    "timeline": "Free training \u2192 guaranteed internship placement at partner companies. One cohort per year.",
+    "leverage": "Eliminates the cold-apply grind \u2014 CodePath trains you and places you directly. 90%+ placement rate. Sept deadline means you need to act now.",
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "placement-guaranteed",
+      "deadline-critical",
+      "free-training"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -162,13 +250,25 @@
     "school": "any",
     "deadline": "2026-10-30",
     "timeframe": "Window: Oct (one annual cohort)",
-    "requirements": ["Sophomore", "Underrepresented in tech", "US citizen or permanent resident"],
+    "requirements": [
+      "Sophomore",
+      "Underrepresented in tech",
+      "US citizen or permanent resident"
+    ],
     "contact": "https://www.seo-usa.org",
     "link": "https://www.seo-usa.org/tech-developer",
     "timeline": "6-week immersion + interview prep + direct placement at top tech firms. Miss Oct and wait a year.",
-    "leverage": "One of the highest-conversion diversity tech pipelines — comprehensive training plus direct placement. You don't cold-apply after this.",
-    "tags": ["fellowship", "diversity-cohort", "placement-guaranteed", "deadline-critical", "free-training"],
-    "yearRelevance": ["Sophomore"],
+    "leverage": "One of the highest-conversion diversity tech pipelines \u2014 comprehensive training plus direct placement. You don't cold-apply after this.",
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "placement-guaranteed",
+      "deadline-critical",
+      "free-training"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -184,13 +284,26 @@
     "school": "any",
     "deadline": "2026-10-15",
     "timeframe": "Window: Oct (7-week program runs spring/summer)",
-    "requirements": ["Freshman or Sophomore", "No prior internship needed"],
+    "requirements": [
+      "Freshman or Sophomore",
+      "No prior internship needed"
+    ],
     "contact": "https://newtechnologists.com",
     "link": "https://newtechnologists.com",
     "timeline": "7-week hands-on training + mentorship from Microsoft senior staff. One cohort per year.",
-    "leverage": "Builds your technical portfolio under Microsoft mentors without needing interview skills yet — the prep before the pipeline.",
-    "tags": ["early-ID", "training", "freshman", "sophomore", "deadline-critical", "big-tech"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "leverage": "Builds your technical portfolio under Microsoft mentors without needing interview skills yet \u2014 the prep before the pipeline.",
+    "tags": [
+      "early-ID",
+      "training",
+      "freshman",
+      "sophomore",
+      "deadline-critical",
+      "big-tech"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -206,13 +319,24 @@
     "school": "any",
     "deadline": "2026-09-30",
     "timeframe": "Window: Sept (runs following spring)",
-    "requirements": ["Freshman only", "Interest in financial services"],
+    "requirements": [
+      "Freshman only",
+      "Interest in financial services"
+    ],
     "contact": "https://careers.jpmorgan.com",
     "link": "https://careers.jpmorgan.com/us/en/students/programs/early-advantage",
-    "timeline": "Multi-day program → participants get priority consideration for all sophomore programs the following year.",
+    "timeline": "Multi-day program \u2192 participants get priority consideration for all sophomore programs the following year.",
     "leverage": "JPMorgan's only freshman-specific entry point. Attend this and you skip the cold-apply stage for every JP program the following year.",
-    "tags": ["insight-day", "freshman", "early-ID", "deadline-critical", "finance"],
-    "yearRelevance": ["Freshman"],
+    "tags": [
+      "insight-day",
+      "freshman",
+      "early-ID",
+      "deadline-critical",
+      "finance"
+    ],
+    "yearRelevance": [
+      "Freshman"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -227,14 +351,26 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-10-01",
-    "timeframe": "Window: Sept–Oct",
-    "requirements": ["Freshman or Sophomore", "Diverse background"],
+    "timeframe": "Window: Sept\u2013Oct",
+    "requirements": [
+      "Freshman or Sophomore",
+      "Diverse background"
+    ],
     "contact": "https://campus.bankofamerica.com",
     "link": "https://campus.bankofamerica.com/careers/programs.html",
-    "timeline": "Multi-day diversity insight → direct pathway to sophomore/junior internship tracks.",
+    "timeline": "Multi-day diversity insight \u2192 direct pathway to sophomore/junior internship tracks.",
     "leverage": "BofA's primary early-ID program. Participants get priority placement into their Global Banking summer analyst pipeline.",
-    "tags": ["insight-day", "diversity-cohort", "early-ID", "deadline-critical", "finance"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "insight-day",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "finance"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -249,14 +385,27 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-09-15",
-    "timeframe": "Window: Aug–Sept (program runs winter)",
-    "requirements": ["Freshman or Sophomore", "Underrepresented in finance"],
+    "timeframe": "Window: Aug\u2013Sept (program runs winter)",
+    "requirements": [
+      "Freshman or Sophomore",
+      "Underrepresented in finance"
+    ],
     "contact": "https://www.blackstone.com/careers",
     "link": "https://www.blackstone.com/careers/students/",
-    "timeline": "Multi-day immersion at Blackstone HQ → strong pipeline to sophomore internship.",
+    "timeline": "Multi-day immersion at Blackstone HQ \u2192 strong pipeline to sophomore internship.",
     "leverage": "Blackstone's primary diversity early-ID. Attending puts you on the radar of PE recruiting a full 2 years before full-time roles.",
-    "tags": ["insight-day", "diversity-cohort", "early-ID", "deadline-critical", "finance", "private-equity"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "insight-day",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "finance",
+      "private-equity"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -272,13 +421,24 @@
     "school": "any",
     "deadline": "2026-09-20",
     "timeframe": "Window: Sept only (program runs winter/spring)",
-    "requirements": ["Sophomore", "Underrepresented in consulting"],
+    "requirements": [
+      "Sophomore",
+      "Underrepresented in consulting"
+    ],
     "contact": "https://www.mckinsey.com/careers",
     "link": "https://www.mckinsey.com/careers/students",
-    "timeline": "Multi-day program → direct pathway to junior summer consulting internship pipeline.",
+    "timeline": "Multi-day program \u2192 direct pathway to junior summer consulting internship pipeline.",
     "leverage": "McKinsey's only underclassman-specific program. Attending signals serious interest and gives you a named contact inside the firm.",
-    "tags": ["insight-day", "diversity-cohort", "early-ID", "deadline-critical", "consulting"],
-    "yearRelevance": ["Sophomore"],
+    "tags": [
+      "insight-day",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "consulting"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -294,13 +454,25 @@
     "school": "any",
     "deadline": "2026-09-25",
     "timeframe": "Window: Sept (program runs spring)",
-    "requirements": ["Sophomore", "Diverse background", "Interest in consulting or entrepreneurship"],
+    "requirements": [
+      "Sophomore",
+      "Diverse background",
+      "Interest in consulting or entrepreneurship"
+    ],
     "contact": "https://www.bain.com/careers",
     "link": "https://www.bain.com/careers/roles/students/",
     "timeline": "Multi-day program + project work with Bain consultants. Strong pipeline to summer consultant internship.",
-    "leverage": "Bain's primary sophomore pipeline. Consulting recruiting moves fast — by the time you hear about this program organically, the window is usually closed.",
-    "tags": ["insight-day", "diversity-cohort", "early-ID", "deadline-critical", "consulting"],
-    "yearRelevance": ["Sophomore"],
+    "leverage": "Bain's primary sophomore pipeline. Consulting recruiting moves fast \u2014 by the time you hear about this program organically, the window is usually closed.",
+    "tags": [
+      "insight-day",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "consulting"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -315,14 +487,27 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-10-01",
-    "timeframe": "Window: Sept–Oct (program runs following summer)",
-    "requirements": ["Junior", "Underrepresented in tech", "Business/analytics interest"],
+    "timeframe": "Window: Sept\u2013Oct (program runs following summer)",
+    "requirements": [
+      "Junior",
+      "Underrepresented in tech",
+      "Business/analytics interest"
+    ],
     "contact": "https://careers.google.com",
     "link": "https://buildyourfuture.withgoogle.com/programs/bold-immersion",
     "timeline": "Summer immersion at Google focused on business roles (Sales, Marketing, PM). Direct pathway to full-time offers.",
     "leverage": "Google's business-track diversity pipeline. Unlike SWE roles, business roles at Google are nearly impossible to get without going through a program like this.",
-    "tags": ["diversity-cohort", "early-ID", "deadline-critical", "big-tech", "business", "PM"],
-    "yearRelevance": ["Junior"],
+    "tags": [
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "big-tech",
+      "business",
+      "PM"
+    ],
+    "yearRelevance": [
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -337,14 +522,28 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-02-01",
-    "timeframe": "Window: Jan–Feb (most sites, some as early as Nov)",
-    "requirements": ["US citizen or permanent resident", "Sophomore or Junior", "STEM major"],
+    "timeframe": "Window: Jan\u2013Feb (most sites, some as early as Nov)",
+    "requirements": [
+      "US citizen or permanent resident",
+      "Sophomore or Junior",
+      "STEM major"
+    ],
     "contact": "https://www.nsf.gov/crssprgm/reu/",
     "link": "https://www.nsf.gov/crssprgm/reu/reu_search.jsp",
-    "timeline": "8–10 week paid summer research at a host university. 600+ sites nationwide.",
+    "timeline": "8\u201310 week paid summer research at a host university. 600+ sites nationwide.",
     "leverage": "The gold-standard research credential for PhD admissions. A named PI letter from an REU outweighs almost anything else on your application. Most students find out about these too late.",
-    "tags": ["research", "scholarship", "funded", "deadline-critical", "PhD-pipeline", "STEM"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "tags": [
+      "research",
+      "scholarship",
+      "funded",
+      "deadline-critical",
+      "PhD-pipeline",
+      "STEM"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -359,14 +558,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-01-25",
-    "timeframe": "Campus nomination deadline: late Jan (internal deadlines vary by school — often Nov/Dec)",
-    "requirements": ["Sophomore or Junior", "US citizen", "STEM major with research interest", "3.5+ GPA typical"],
+    "timeframe": "Campus nomination deadline: late Jan (internal deadlines vary by school \u2014 often Nov/Dec)",
+    "requirements": [
+      "Sophomore or Junior",
+      "US citizen",
+      "STEM major with research interest",
+      "3.5+ GPA typical"
+    ],
     "contact": "https://goldwaterscholarship.gov",
     "link": "https://goldwaterscholarship.gov/",
     "timeline": "Must be nominated by your school's faculty rep. $7,500/year scholarship + prestige for grad school apps.",
-    "leverage": "The most prestigious undergraduate STEM scholarship in the US. Your campus rep starts collecting nominations months before the national deadline — ask NOW or miss it.",
-    "tags": ["scholarship", "prestige", "deadline-critical", "STEM", "research", "PhD-pipeline"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "leverage": "The most prestigious undergraduate STEM scholarship in the US. Your campus rep starts collecting nominations months before the national deadline \u2014 ask NOW or miss it.",
+    "tags": [
+      "scholarship",
+      "prestige",
+      "deadline-critical",
+      "STEM",
+      "research",
+      "PhD-pipeline"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -382,13 +596,26 @@
     "school": "any",
     "deadline": "2026-09-20",
     "timeframe": "Window: Sept (6-month program starts fall)",
-    "requirements": ["Freshman or Sophomore", "CS or related major"],
+    "requirements": [
+      "Freshman or Sophomore",
+      "CS or related major"
+    ],
     "contact": "https://www.uber.com/us/en/careers/",
     "link": "https://www.uber.com/us/en/careers/teams/university/",
-    "timeline": "6-month part-time mentorship → fast-track to summer internship. Runs during the school year.",
+    "timeline": "6-month part-time mentorship \u2192 fast-track to summer internship. Runs during the school year.",
     "leverage": "Part-time mentorship from Uber engineers that feeds directly into their intern pipeline. You build skills AND get the referral simultaneously.",
-    "tags": ["fellowship", "mentorship", "early-ID", "deadline-critical", "big-tech", "part-time"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "fellowship",
+      "mentorship",
+      "early-ID",
+      "deadline-critical",
+      "big-tech",
+      "part-time"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -404,13 +631,28 @@
     "school": "any",
     "deadline": "2027-01-15",
     "timeframe": "Window: Jan (1-year program starts following summer)",
-    "requirements": ["Any year", "Women or non-binary", "Interest in AI/ML"],
+    "requirements": [
+      "Any year",
+      "Women or non-binary",
+      "Interest in AI/ML"
+    ],
     "contact": "https://www.breakthroughtech.org",
     "link": "https://www.breakthroughtech.org/programs/the-ai-program/",
     "timeline": "1-year virtual program: summer machine learning intensive + fall industry project with a real company.",
-    "leverage": "A full year of AI/ML training plus a real industry project on your resume — designed for women/non-binary students who can't get AI internships yet because they lack the credentials.",
-    "tags": ["fellowship", "diversity-cohort", "AI", "women", "deadline-critical", "free-training"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior"],
+    "leverage": "A full year of AI/ML training plus a real industry project on your resume \u2014 designed for women/non-binary students who can't get AI internships yet because they lack the credentials.",
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "AI",
+      "women",
+      "deadline-critical",
+      "free-training"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -425,14 +667,26 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-10-15",
-    "timeframe": "Window: Sept–Oct (program runs spring)",
-    "requirements": ["Freshman or Sophomore", "Diverse background preferred"],
+    "timeframe": "Window: Sept\u2013Oct (program runs spring)",
+    "requirements": [
+      "Freshman or Sophomore",
+      "Diverse background preferred"
+    ],
     "contact": "https://www.morganstanley.com/people-opportunities/students-graduates",
     "link": "https://www.morganstanley.com/people-opportunities/students-graduates/programs",
-    "timeline": "Multi-day insight program → pathway to sophomore internship. Networking + exposure to all divisions.",
+    "timeline": "Multi-day insight program \u2192 pathway to sophomore internship. Networking + exposure to all divisions.",
     "leverage": "Morgan Stanley's early-ID for freshmen. If you want to break into banking without a target-school advantage, these programs are how you get noticed.",
-    "tags": ["insight-day", "diversity-cohort", "early-ID", "deadline-critical", "finance"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "insight-day",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "finance"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -447,14 +701,28 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-02-01",
-    "timeframe": "Window: Jan–Feb",
-    "requirements": ["Sophomore or Junior", "Underrepresented in STEM", "3.0+ GPA"],
+    "timeframe": "Window: Jan\u2013Feb",
+    "requirements": [
+      "Sophomore or Junior",
+      "Underrepresented in STEM",
+      "3.0+ GPA"
+    ],
     "contact": "https://www.theleadershipalliance.org",
     "link": "https://www.theleadershipalliance.org/programs/sr-eip",
     "timeline": "Paid summer research at an Alliance institution + presentation at national symposium.",
     "leverage": "Funded summer research specifically designed to prepare students of color for PhD programs. The national symposium puts you in front of grad admissions committees directly.",
-    "tags": ["research", "diversity-cohort", "funded", "deadline-critical", "PhD-pipeline", "scholarship"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "tags": [
+      "research",
+      "diversity-cohort",
+      "funded",
+      "deadline-critical",
+      "PhD-pipeline",
+      "scholarship"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -469,14 +737,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-12-15",
-    "timeframe": "Window: Nov–Dec",
-    "requirements": ["Any year", "Student with a disability (visible or invisible)", "CS major"],
+    "timeframe": "Window: Nov\u2013Dec",
+    "requirements": [
+      "Any year",
+      "Student with a disability (visible or invisible)",
+      "CS major"
+    ],
     "contact": "https://buildyourfuture.withgoogle.com",
     "link": "https://buildyourfuture.withgoogle.com/scholarships/google-lime-scholarship",
     "timeline": "$10,000 scholarship + invitation to Google networking retreat. One cycle per year.",
     "leverage": "$10K plus direct access to Google's disability inclusion network. The networking retreat alone opens doors that cold applications never will.",
-    "tags": ["scholarship", "disability", "deadline-critical", "big-tech", "funded"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "tags": [
+      "scholarship",
+      "disability",
+      "deadline-critical",
+      "big-tech",
+      "funded"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -491,14 +774,31 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-12-15",
-    "timeframe": "Window: Nov–Dec",
-    "requirements": ["Any year", "Financial need", "CS or related major", "Underrepresented group"],
+    "timeframe": "Window: Nov\u2013Dec",
+    "requirements": [
+      "Any year",
+      "Financial need",
+      "CS or related major",
+      "Underrepresented group"
+    ],
     "contact": "https://buildyourfuture.withgoogle.com",
     "link": "https://buildyourfuture.withgoogle.com/scholarships/generation-google-scholarship",
     "timeline": "$10,000 scholarship + Google networking opportunities. Annual cycle.",
     "leverage": "$10K scholarship that also puts you on Google's radar for internship recruiting. The scholarship itself becomes a signal on applications.",
-    "tags": ["scholarship", "diversity-cohort", "deadline-critical", "big-tech", "funded", "financial-need"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "tags": [
+      "scholarship",
+      "diversity-cohort",
+      "deadline-critical",
+      "big-tech",
+      "funded",
+      "financial-need"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -513,14 +813,27 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-09-30",
-    "timeframe": "Window: Aug–Sept (closes 12 months before the internship)",
-    "requirements": ["Freshman or Sophomore", "No prior experience required"],
+    "timeframe": "Window: Aug\u2013Sept (closes 12 months before the internship)",
+    "requirements": [
+      "Freshman or Sophomore",
+      "No prior experience required"
+    ],
     "contact": "https://careers.microsoft.com",
     "link": "https://careers.microsoft.com/students/us/en/usexploremicrosoftprogram",
-    "timeline": "Apply fall → 12-week summer internship the following year. One annual window.",
+    "timeline": "Apply fall \u2192 12-week summer internship the following year. One annual window.",
     "leverage": "Microsoft's earliest entry point. No technical interview for freshmen. If you don't apply this window, the next one is 12 months away.",
-    "tags": ["early-ID", "freshman", "sophomore", "deadline-critical", "big-tech", "no-interview"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "early-ID",
+      "freshman",
+      "sophomore",
+      "deadline-critical",
+      "big-tech",
+      "no-interview"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -536,13 +849,28 @@
     "school": "any",
     "deadline": "2027-02-07",
     "timeframe": "Window: early Feb (for May cohort) / early Aug (for Dec cohort)",
-    "requirements": ["Any year", "Underrepresented in tech (gender, race, or other systemic barriers)"],
+    "requirements": [
+      "Any year",
+      "Underrepresented in tech (gender, race, or other systemic barriers)"
+    ],
     "contact": "https://www.outreachy.org",
     "link": "https://www.outreachy.org/",
     "timeline": "3-month paid remote open-source internship. $7,000 stipend. Two cohorts per year.",
-    "leverage": "Paid remote internship contributing to real open-source projects — no prior open-source experience needed. One of the few programs explicitly designed for people facing systemic barriers.",
-    "tags": ["fellowship", "diversity-cohort", "open-source", "funded", "remote", "deadline-critical"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "leverage": "Paid remote internship contributing to real open-source projects \u2014 no prior open-source experience needed. One of the few programs explicitly designed for people facing systemic barriers.",
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "open-source",
+      "funded",
+      "remote",
+      "deadline-critical"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -557,14 +885,27 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-11-01",
-    "timeframe": "Window: Oct–Nov (program runs spring)",
-    "requirements": ["Freshman or Sophomore", "Interest in quant finance, CS, or math"],
+    "timeframe": "Window: Oct\u2013Nov (program runs spring)",
+    "requirements": [
+      "Freshman or Sophomore",
+      "Interest in quant finance, CS, or math"
+    ],
     "contact": "https://www.citadel.com/careers/students/",
     "link": "https://www.citadel.com/careers/students/",
-    "timeline": "Multi-day insight program at Citadel/Citadel Securities → fast-track for intern interviews.",
-    "leverage": "Citadel's only underclassman pipeline. Quant firms don't do on-campus recruiting — these insight programs are how you get in the door.",
-    "tags": ["insight-day", "early-ID", "deadline-critical", "quant", "finance", "trading"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "timeline": "Multi-day insight program at Citadel/Citadel Securities \u2192 fast-track for intern interviews.",
+    "leverage": "Citadel's only underclassman pipeline. Quant firms don't do on-campus recruiting \u2014 these insight programs are how you get in the door.",
+    "tags": [
+      "insight-day",
+      "early-ID",
+      "deadline-critical",
+      "quant",
+      "finance",
+      "trading"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -579,14 +920,26 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-11-15",
-    "timeframe": "Window: Oct–Nov (program runs spring)",
-    "requirements": ["Freshman or Sophomore", "Interest in trading, math, or CS"],
+    "timeframe": "Window: Oct\u2013Nov (program runs spring)",
+    "requirements": [
+      "Freshman or Sophomore",
+      "Interest in trading, math, or CS"
+    ],
     "contact": "https://careers.sig.com",
     "link": "https://careers.sig.com/students/discovery-day",
-    "timeline": "1-day immersion program → pathway to summer internship. Limited spots.",
+    "timeline": "1-day immersion program \u2192 pathway to summer internship. Limited spots.",
     "leverage": "One of the few quant firms with a dedicated freshman/sophomore day. Attend and you skip straight to intern interviews.",
-    "tags": ["insight-day", "early-ID", "deadline-critical", "quant", "trading"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "insight-day",
+      "early-ID",
+      "deadline-critical",
+      "quant",
+      "trading"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -601,14 +954,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-11-01",
-    "timeframe": "Window: Oct–Nov (training starts Jan, internship following summer)",
-    "requirements": ["Any year", "Boston or NYC area", "Underrepresented in tech"],
+    "timeframe": "Window: Oct\u2013Nov (training starts Jan, internship following summer)",
+    "requirements": [
+      "Any year",
+      "Boston or NYC area",
+      "Underrepresented in tech"
+    ],
     "contact": "https://www.hackdiversity.com",
     "link": "https://www.hackdiversity.com/",
     "timeline": "Technical training + guaranteed matching to summer internship at Boston/NYC tech companies.",
     "leverage": "Year-round training + high internship match rate. One of the best regional pipelines for diverse students who aren't at target schools.",
-    "tags": ["fellowship", "diversity-cohort", "placement-guaranteed", "deadline-critical", "regional"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "placement-guaranteed",
+      "deadline-critical",
+      "regional"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "Northeast",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -623,14 +991,28 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-10-15",
-    "timeframe": "Window: Sept–Oct",
-    "requirements": ["Any year", "Black or Latinx", "CS or related major"],
+    "timeframe": "Window: Sept\u2013Oct",
+    "requirements": [
+      "Any year",
+      "Black or Latinx",
+      "CS or related major"
+    ],
     "contact": "https://www.code2040.org",
     "link": "https://www.code2040.org/fellows-program",
     "timeline": "Summer fellowship matching Black and Latinx students to top tech companies. Mentorship + community year-round.",
-    "leverage": "Direct placement at companies like Google, Slack, and Lyft — plus a lifelong professional network of Black and Latinx technologists.",
-    "tags": ["fellowship", "diversity-cohort", "placement-guaranteed", "deadline-critical", "big-tech"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "leverage": "Direct placement at companies like Google, Slack, and Lyft \u2014 plus a lifelong professional network of Black and Latinx technologists.",
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "placement-guaranteed",
+      "deadline-critical",
+      "big-tech"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -646,13 +1028,28 @@
     "school": "any",
     "deadline": "2026-10-30",
     "timeframe": "Window: Oct (matches to startups for summer)",
-    "requirements": ["Any year", "CS or Design major", "Interest in startups"],
+    "requirements": [
+      "Any year",
+      "CS or Design major",
+      "Interest in startups"
+    ],
     "contact": "https://www.8vc.com/fellowship",
     "link": "https://www.8vc.com/fellowship",
     "timeline": "Get matched to a high-growth startup in the 8VC portfolio for a summer internship + mentorship from VC partners.",
     "leverage": "VC-backed startup placement with mentorship from the investors themselves. A different path than big-tech recruiting.",
-    "tags": ["fellowship", "startups", "VC", "deadline-critical", "CS", "design"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "tags": [
+      "fellowship",
+      "startups",
+      "VC",
+      "deadline-critical",
+      "CS",
+      "design"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -668,13 +1065,28 @@
     "school": "any",
     "deadline": "2026-11-15",
     "timeframe": "Window: Nov (matches for following summer)",
-    "requirements": ["Any year", "Engineering, Design, or Product interest"],
+    "requirements": [
+      "Any year",
+      "Engineering, Design, or Product interest"
+    ],
     "contact": "https://fellows.kleinerperkins.com",
     "link": "https://fellows.kleinerperkins.com/",
     "timeline": "Summer internship at a KP portfolio company (Figma, Rippling, etc.) + mentorship + annual summit.",
     "leverage": "Get placed at a top startup through a VC network rather than cold-applying. The KP Fellows alumni network is a career-long asset.",
-    "tags": ["fellowship", "startups", "VC", "deadline-critical", "PM", "engineering", "design"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "tags": [
+      "fellowship",
+      "startups",
+      "VC",
+      "deadline-critical",
+      "PM",
+      "engineering",
+      "design"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -689,14 +1101,24 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-10-15",
-    "timeframe": "Window: Sept–Oct (one annual cohort for sophomores)",
-    "requirements": ["Sophomore", "Business or STEM major"],
+    "timeframe": "Window: Sept\u2013Oct (one annual cohort for sophomores)",
+    "requirements": [
+      "Sophomore",
+      "Business or STEM major"
+    ],
     "contact": "https://apply.deloitte.com",
     "link": "https://apply.deloitte.com/careers/DiscoverDeloitte",
-    "timeline": "Summer program designed as consulting intro for sophomores → converts to full internship offer junior year.",
+    "timeline": "Summer program designed as consulting intro for sophomores \u2192 converts to full internship offer junior year.",
     "leverage": "Deloitte's dedicated sophomore entry point. Converts at a much higher rate than cold-applying junior year. One window per year.",
-    "tags": ["early-ID", "consulting", "deadline-critical", "sophomore"],
-    "yearRelevance": ["Sophomore"],
+    "tags": [
+      "early-ID",
+      "consulting",
+      "deadline-critical",
+      "sophomore"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -712,13 +1134,27 @@
     "school": "any",
     "deadline": "2026-10-15",
     "timeframe": "Window: Oct (for following summer)",
-    "requirements": ["Any year", "US citizen", "Interest in civic/public-sector tech"],
+    "requirements": [
+      "Any year",
+      "US citizen",
+      "Interest in civic/public-sector tech"
+    ],
     "contact": "https://www.codingitforward.com",
     "link": "https://www.codingitforward.com/fellowship",
     "timeline": "10-week paid internship at a federal agency (Census Bureau, VA, etc.). One cohort per year.",
-    "leverage": "Unique resume differentiator — paid gov tech work that most students never discover exists. Also counts toward public service loan forgiveness hours.",
-    "tags": ["fellowship", "civic-tech", "funded", "deadline-critical", "government"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "leverage": "Unique resume differentiator \u2014 paid gov tech work that most students never discover exists. Also counts toward public service loan forgiveness hours.",
+    "tags": [
+      "fellowship",
+      "civic-tech",
+      "funded",
+      "deadline-critical",
+      "government"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -733,14 +1169,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-11-01",
-    "timeframe": "Window: Oct–Nov",
-    "requirements": ["Any year", "Entrepreneurial interest", "CS or engineering"],
+    "timeframe": "Window: Oct\u2013Nov",
+    "requirements": [
+      "Any year",
+      "Entrepreneurial interest",
+      "CS or engineering"
+    ],
     "contact": "https://neo.com",
     "link": "https://neo.com/scholars",
     "timeline": "Get matched to a high-growth startup + mentorship + resources for building your own company.",
-    "leverage": "If you're thinking about startups, this is the network — Neo connects you to founders, VCs, and other builders your age.",
-    "tags": ["fellowship", "startups", "entrepreneurship", "deadline-critical", "mentorship"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "leverage": "If you're thinking about startups, this is the network \u2014 Neo connects you to founders, VCs, and other builders your age.",
+    "tags": [
+      "fellowship",
+      "startups",
+      "entrepreneurship",
+      "deadline-critical",
+      "mentorship"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -755,14 +1206,30 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-09-30",
-    "timeframe": "Early registration window: Aug–Sept (convention in Nov)",
-    "requirements": ["Any year", "Hispanic/Latinx in STEM", "SHPE membership"],
+    "timeframe": "Early registration window: Aug\u2013Sept (convention in Nov)",
+    "requirements": [
+      "Any year",
+      "Hispanic/Latinx in STEM",
+      "SHPE membership"
+    ],
     "contact": "https://www.shpe.org",
     "link": "https://www.shpe.org/events/national-convention",
     "timeline": "Largest Hispanic STEM conference. On-site interviews with 200+ companies. Early registration gets priority interview slots.",
-    "leverage": "Companies fill internship slots at SHPE before general apps even open. If you're Hispanic in STEM, this is where recruiting happens — register early or lose interview priority.",
-    "tags": ["diversity-cohort", "conference", "deadline-critical", "recruiting", "STEM", "Hispanic"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "leverage": "Companies fill internship slots at SHPE before general apps even open. If you're Hispanic in STEM, this is where recruiting happens \u2014 register early or lose interview priority.",
+    "tags": [
+      "diversity-cohort",
+      "conference",
+      "deadline-critical",
+      "recruiting",
+      "STEM",
+      "Hispanic"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -777,14 +1244,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-06-30",
-    "timeframe": "Scholarship apps: May–June (conference in Oct)",
-    "requirements": ["Any year", "Women or non-binary in tech"],
+    "timeframe": "Scholarship apps: May\u2013June (conference in Oct)",
+    "requirements": [
+      "Any year",
+      "Women or non-binary in tech"
+    ],
     "contact": "https://ghc.anitab.org",
     "link": "https://ghc.anitab.org/attend/scholarships/",
     "timeline": "World's largest women-in-tech conference. On-site interviews + networking. Scholarship covers attendance + travel.",
-    "leverage": "Companies hire directly at GHC — some students leave with offers the same week. The scholarship deadline is months before the conference; miss it and attendance costs $1,000+.",
-    "tags": ["scholarship", "conference", "women", "deadline-critical", "recruiting", "funded"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "leverage": "Companies hire directly at GHC \u2014 some students leave with offers the same week. The scholarship deadline is months before the conference; miss it and attendance costs $1,000+.",
+    "tags": [
+      "scholarship",
+      "conference",
+      "women",
+      "deadline-critical",
+      "recruiting",
+      "funded"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -799,14 +1281,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-09-15",
-    "timeframe": "Scholarship window: Aug–Sept (conference in Nov)",
-    "requirements": ["Any year", "Black in tech"],
+    "timeframe": "Scholarship window: Aug\u2013Sept (conference in Nov)",
+    "requirements": [
+      "Any year",
+      "Black in tech"
+    ],
     "contact": "https://afrotech.com",
     "link": "https://afrotech.com/conference",
     "timeline": "Largest Black tech conference. Direct recruiting, on-site interviews, startup expo. Scholarship covers registration.",
-    "leverage": "Major tech companies do on-the-spot hiring at AfroTech. The scholarship deadline is 2 months before the event — by then, general registration is $500+.",
-    "tags": ["scholarship", "conference", "diversity-cohort", "deadline-critical", "recruiting", "Black-in-tech"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "leverage": "Major tech companies do on-the-spot hiring at AfroTech. The scholarship deadline is 2 months before the event \u2014 by then, general registration is $500+.",
+    "tags": [
+      "scholarship",
+      "conference",
+      "diversity-cohort",
+      "deadline-critical",
+      "recruiting",
+      "Black-in-tech"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -821,14 +1318,25 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-11-30",
-    "timeframe": "Window: Oct–Nov (program runs summer)",
-    "requirements": ["Sophomore", "Interest in SW, HW, Design, or Data Science"],
+    "timeframe": "Window: Oct\u2013Nov (program runs summer)",
+    "requirements": [
+      "Sophomore",
+      "Interest in SW, HW, Design, or Data Science"
+    ],
     "contact": "https://www.ibm.com/careers",
     "link": "https://www.ibm.com/careers/early-career",
     "timeline": "8-week virtual learning experience across multiple tracks. Strong pathway to IBM internship.",
-    "leverage": "IBM's dedicated sophomore early-ID. Completing Accelerate gives you priority access to their intern recruiting cycle — you skip the general pool.",
-    "tags": ["early-ID", "fellowship", "deadline-critical", "big-tech", "sophomore"],
-    "yearRelevance": ["Sophomore"],
+    "leverage": "IBM's dedicated sophomore early-ID. Completing Accelerate gives you priority access to their intern recruiting cycle \u2014 you skip the general pool.",
+    "tags": [
+      "early-ID",
+      "fellowship",
+      "deadline-critical",
+      "big-tech",
+      "sophomore"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -844,13 +1352,25 @@
     "school": "any",
     "deadline": "2026-10-30",
     "timeframe": "Window: Oct (rotational experience runs following summer)",
-    "requirements": ["Sophomore", "Diverse background preferred"],
+    "requirements": [
+      "Sophomore",
+      "Diverse background preferred"
+    ],
     "contact": "https://www.wellsfargo.com/about/careers/students/",
     "link": "https://www.wellsfargo.com/about/careers/students/",
-    "timeline": "Summer rotational fellowship across multiple WF divisions → pathway to full-time internship junior year.",
+    "timeline": "Summer rotational fellowship across multiple WF divisions \u2192 pathway to full-time internship junior year.",
     "leverage": "One of the few banking programs where you rotate through divisions before committing. Converts to full internship at high rate.",
-    "tags": ["fellowship", "diversity-cohort", "early-ID", "deadline-critical", "finance", "rotational"],
-    "yearRelevance": ["Sophomore"],
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "finance",
+      "rotational"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -866,13 +1386,24 @@
     "school": "any",
     "deadline": "2027-03-09",
     "timeframe": "Window: March (3-day program at KPMG Lakehouse in July)",
-    "requirements": ["Sophomore or Junior", "Interest in consulting/advisory"],
+    "requirements": [
+      "Sophomore or Junior",
+      "Interest in consulting/advisory"
+    ],
     "contact": "https://www.kpmg.us/careers",
     "link": "https://www.kpmg.us/careers/students.html",
-    "timeline": "Apply by March → attend 3-day immersive in July with workshops and networking. Pipeline to intern offers.",
+    "timeline": "Apply by March \u2192 attend 3-day immersive in July with workshops and networking. Pipeline to intern offers.",
     "leverage": "Hands-on advisory workshops + direct networking with KPMG leaders. Attend this and you skip the generic app pool for their internship.",
-    "tags": ["insight-day", "consulting", "deadline-critical", "early-ID"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "tags": [
+      "insight-day",
+      "consulting",
+      "deadline-critical",
+      "early-ID"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -888,13 +1419,24 @@
     "school": "any",
     "deadline": "2027-03-19",
     "timeframe": "Window: March (one cohort per year)",
-    "requirements": ["Senior or recent grad", "Interest in product management"],
+    "requirements": [
+      "Senior or recent grad",
+      "Interest in product management"
+    ],
     "contact": "https://www.instacart.com/company/careers",
     "link": "https://www.instacart.com/company/careers",
-    "timeline": "Apply March → join APM cohort for rotational product management experience.",
+    "timeline": "Apply March \u2192 join APM cohort for rotational product management experience.",
     "leverage": "One of the few dedicated APM programs outside FAANG. Rotational experience across Instacart's product org with senior PM mentors.",
-    "tags": ["fellowship", "PM", "deadline-critical", "APM-pipeline", "new-grad"],
-    "yearRelevance": ["Senior"],
+    "tags": [
+      "fellowship",
+      "PM",
+      "deadline-critical",
+      "APM-pipeline",
+      "new-grad"
+    ],
+    "yearRelevance": [
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -910,13 +1452,24 @@
     "school": "any",
     "deadline": "2026-12-16",
     "timeframe": "Window: closes Dec 16 (program runs spring)",
-    "requirements": ["Sophomore", "Interest in banking, markets, or transaction banking"],
+    "requirements": [
+      "Sophomore",
+      "Interest in banking, markets, or transaction banking"
+    ],
     "contact": "https://www.barclays.com/careers",
     "link": "https://home.barclays/careers/early-careers/",
     "timeline": "Multi-day insight across multiple divisions (Coverage, M&A, Markets, Transaction Banking). Pipeline to junior internship.",
-    "leverage": "Barclays runs separate Discover tracks for each division — apply to multiple. Dec 16 deadline means most students miss it over finals.",
-    "tags": ["insight-day", "early-ID", "deadline-critical", "finance", "IB"],
-    "yearRelevance": ["Sophomore"],
+    "leverage": "Barclays runs separate Discover tracks for each division \u2014 apply to multiple. Dec 16 deadline means most students miss it over finals.",
+    "tags": [
+      "insight-day",
+      "early-ID",
+      "deadline-critical",
+      "finance",
+      "IB"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -932,13 +1485,26 @@
     "school": "any",
     "deadline": "2026-10-30",
     "timeframe": "Window: Oct (one annual cohort)",
-    "requirements": ["Freshman or Sophomore", "First-gen or underrepresented preferred"],
+    "requirements": [
+      "Freshman or Sophomore",
+      "First-gen or underrepresented preferred"
+    ],
     "contact": "https://www.capitalonecareers.com",
     "link": "https://www.capitalonecareers.com/category/students-entry-level-jobs",
-    "timeline": "Summer program → strong pipeline to Capital One's full internship. Early exposure to data analytics + finance.",
-    "leverage": "Capital One's dedicated freshman/sophomore entry point. First-gen students get priority — one of the few finance programs that explicitly targets them.",
-    "tags": ["early-ID", "diversity-cohort", "first-gen", "deadline-critical", "finance", "data-analytics"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "timeline": "Summer program \u2192 strong pipeline to Capital One's full internship. Early exposure to data analytics + finance.",
+    "leverage": "Capital One's dedicated freshman/sophomore entry point. First-gen students get priority \u2014 one of the few finance programs that explicitly targets them.",
+    "tags": [
+      "early-ID",
+      "diversity-cohort",
+      "first-gen",
+      "deadline-critical",
+      "finance",
+      "data-analytics"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -954,13 +1520,25 @@
     "school": "any",
     "deadline": "2026-11-30",
     "timeframe": "Window: Nov (program runs spring)",
-    "requirements": ["Sophomore", "Underrepresented background"],
+    "requirements": [
+      "Sophomore",
+      "Underrepresented background"
+    ],
     "contact": "https://www.citigroup.com/careers",
     "link": "https://www.citigroup.com/careers/early-career",
-    "timeline": "Multi-day leadership program → direct pipeline to junior summer analyst position.",
+    "timeline": "Multi-day leadership program \u2192 direct pipeline to junior summer analyst position.",
     "leverage": "Citi's primary sophomore early-ID. Participants get automatic first-round interviews for the summer analyst role the following year.",
-    "tags": ["insight-day", "diversity-cohort", "early-ID", "deadline-critical", "finance", "IB"],
-    "yearRelevance": ["Sophomore"],
+    "tags": [
+      "insight-day",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "finance",
+      "IB"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -976,13 +1554,24 @@
     "school": "any",
     "deadline": "2026-11-15",
     "timeframe": "Window: Nov (program runs spring)",
-    "requirements": ["Sophomore", "Women or underrepresented in finance"],
+    "requirements": [
+      "Sophomore",
+      "Women or underrepresented in finance"
+    ],
     "contact": "https://careers.db.com",
     "link": "https://careers.db.com/students-graduates/",
-    "timeline": "Multi-day immersion in NYC/SF → pathway to summer analyst internship.",
+    "timeline": "Multi-day immersion in NYC/SF \u2192 pathway to summer analyst internship.",
     "leverage": "Deutsche Bank's primary diversity insight program. Small cohort means real face time with senior bankers.",
-    "tags": ["insight-day", "diversity-cohort", "early-ID", "deadline-critical", "finance"],
-    "yearRelevance": ["Sophomore"],
+    "tags": [
+      "insight-day",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "finance"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -998,13 +1587,25 @@
     "school": "any",
     "deadline": "2026-10-15",
     "timeframe": "Window: fall (summit runs spring/summer)",
-    "requirements": ["Freshman or Sophomore", "Interest in tech, data analytics, or finance"],
+    "requirements": [
+      "Freshman or Sophomore",
+      "Interest in tech, data analytics, or finance"
+    ],
     "contact": "https://www.libertymutualgroup.com/careers",
     "link": "https://www.libertymutualgroup.com/careers/early-career",
     "timeline": "3-day summit with workshops, networking, and direct path to internship consideration.",
     "leverage": "One of the few insurance/fintech companies with a dedicated underclassman program. Small cohort = strong conversion rate.",
-    "tags": ["insight-day", "early-ID", "deadline-critical", "fintech", "data-analytics"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "insight-day",
+      "early-ID",
+      "deadline-critical",
+      "fintech",
+      "data-analytics"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1020,13 +1621,26 @@
     "school": "any",
     "deadline": "2026-08-15",
     "timeframe": "Window: Aug (mentee applications open Aug 3)",
-    "requirements": ["Any year", "Pre-med student", "AMSA membership"],
+    "requirements": [
+      "Any year",
+      "Pre-med student",
+      "AMSA membership"
+    ],
     "contact": "https://www.amsa.org",
     "link": "https://www.amsa.org/prepare/pathway-to-medical-school/",
     "timeline": "Year-long mentorship pairing with medical students and physicians. One annual cohort.",
     "leverage": "Structured mentorship from actual medical students who recently went through the process. They know which deadlines and experiences actually matter.",
-    "tags": ["mentorship", "premed", "deadline-critical", "physician-pipeline"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior"],
+    "tags": [
+      "mentorship",
+      "premed",
+      "deadline-critical",
+      "physician-pipeline"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1042,13 +1656,28 @@
     "school": "any",
     "deadline": "2026-09-30",
     "timeframe": "Window: fall (membership + chapter involvement)",
-    "requirements": ["Any year", "Underrepresented in medicine", "Pre-med or pre-health"],
+    "requirements": [
+      "Any year",
+      "Underrepresented in medicine",
+      "Pre-med or pre-health"
+    ],
     "contact": "https://snma.org",
     "link": "https://snma.org/page/programspipeline",
     "timeline": "Pipeline programs include clinical exposure, mentorship, leadership development, and conference networking. Year-round involvement.",
     "leverage": "SNMA's pipeline is the primary national network for Black pre-med students. Chapter involvement feeds directly into clinical exposure and letter-writer relationships.",
-    "tags": ["diversity-cohort", "premed", "pipeline", "mentorship", "physician-pipeline"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "tags": [
+      "diversity-cohort",
+      "premed",
+      "pipeline",
+      "mentorship",
+      "physician-pipeline"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1064,13 +1693,28 @@
     "school": "any",
     "deadline": "2027-04-25",
     "timeframe": "Window: Multiple rounds, major deadline April 25",
-    "requirements": ["Enrolled at an HBCU", "Any year", "2.5+ GPA"],
+    "requirements": [
+      "Enrolled at an HBCU",
+      "Any year",
+      "2.5+ GPA"
+    ],
     "contact": "https://tmcf.org",
     "link": "https://tmcf.org/scholarships/open-scholarships/",
-    "timeline": "Multiple scholarship tracks (Enterprise, Lowe's, Links) with different amounts ($1,500–$5,000). New rounds open periodically.",
-    "leverage": "TMCF is the largest scholarship fund for HBCU students. Multiple corporate-sponsored tracks means multiple shots — but each has a hard deadline.",
-    "tags": ["scholarship", "HBCU", "funded", "deadline-critical", "diversity-cohort"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "timeline": "Multiple scholarship tracks (Enterprise, Lowe's, Links) with different amounts ($1,500\u2013$5,000). New rounds open periodically.",
+    "leverage": "TMCF is the largest scholarship fund for HBCU students. Multiple corporate-sponsored tracks means multiple shots \u2014 but each has a hard deadline.",
+    "tags": [
+      "scholarship",
+      "HBCU",
+      "funded",
+      "deadline-critical",
+      "diversity-cohort"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1085,14 +1729,30 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-12-01",
-    "timeframe": "Window: Rolling — new scholarships posted monthly, major batch closes Dec",
-    "requirements": ["Any year", "African American student", "2.5+ GPA", "Financial need"],
+    "timeframe": "Window: Rolling \u2014 new scholarships posted monthly, major batch closes Dec",
+    "requirements": [
+      "Any year",
+      "African American student",
+      "2.5+ GPA",
+      "Financial need"
+    ],
     "contact": "https://uncf.org",
     "link": "https://uncf.org/scholarships",
-    "timeline": "UNCF posts new scholarships monthly. Most are $2,500–$10,000. Each has its own deadline — check the portal regularly.",
-    "leverage": "The largest private scholarship fund for Black students. New awards appear constantly — students who check monthly catch opportunities others miss entirely.",
-    "tags": ["scholarship", "funded", "diversity-cohort", "rolling", "financial-need"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "timeline": "UNCF posts new scholarships monthly. Most are $2,500\u2013$10,000. Each has its own deadline \u2014 check the portal regularly.",
+    "leverage": "The largest private scholarship fund for Black students. New awards appear constantly \u2014 students who check monthly catch opportunities others miss entirely.",
+    "tags": [
+      "scholarship",
+      "funded",
+      "diversity-cohort",
+      "rolling",
+      "financial-need"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1107,14 +1767,30 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-04-30",
-    "timeframe": "Window: Feb–April (opens Feb 2)",
-    "requirements": ["Any year", "Hispanic/Latinx in STEM", "SHPE member", "2.75+ GPA"],
+    "timeframe": "Window: Feb\u2013April (opens Feb 2)",
+    "requirements": [
+      "Any year",
+      "Hispanic/Latinx in STEM",
+      "SHPE member",
+      "2.75+ GPA"
+    ],
     "contact": "https://shpe.org",
     "link": "https://shpe.org/engage/programs/scholarshpe/",
-    "timeline": "$1,000–$10,000 awards. Opens Feb 2 for the 2027-2028 academic year. One cycle per year.",
+    "timeline": "$1,000\u2013$10,000 awards. Opens Feb 2 for the 2027-2028 academic year. One cycle per year.",
     "leverage": "SHPE's national scholarship is one of the largest for Hispanic STEM students. Combined with the SHPE conference for recruiting, membership pays for itself many times over.",
-    "tags": ["scholarship", "funded", "Hispanic", "STEM", "deadline-critical"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "tags": [
+      "scholarship",
+      "funded",
+      "Hispanic",
+      "STEM",
+      "deadline-critical"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1130,13 +1806,27 @@
     "school": "any",
     "deadline": "2026-10-30",
     "timeframe": "Window: Opens fall (one annual cycle for summer)",
-    "requirements": ["Any year", "STEM major", "US person (ITAR)"],
+    "requirements": [
+      "Any year",
+      "STEM major",
+      "US person (ITAR)"
+    ],
     "contact": "https://www.blueorigin.com/careers",
     "link": "https://www.blueorigin.com/careers/early-career",
     "timeline": "Summer internships + New Graduate Rotation Program. Applications open fall for following summer.",
-    "leverage": "Aerospace internship at a top space company. The new grad rotation program is unique — you rotate across engineering disciplines before specializing.",
-    "tags": ["aerospace", "STEM", "early-pipeline", "deadline-critical", "engineering"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "leverage": "Aerospace internship at a top space company. The new grad rotation program is unique \u2014 you rotate across engineering disciplines before specializing.",
+    "tags": [
+      "aerospace",
+      "STEM",
+      "early-pipeline",
+      "deadline-critical",
+      "engineering"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1152,13 +1842,25 @@
     "school": "any",
     "deadline": "2026-12-06",
     "timeframe": "Window: Dec (program runs spring)",
-    "requirements": ["Sophomore", "Interest in advisory/M&A"],
+    "requirements": [
+      "Sophomore",
+      "Interest in advisory/M&A"
+    ],
     "contact": "https://www.pwpartners.com/careers",
     "link": "https://www.pwpartners.com/careers",
     "timeline": "Multi-day program preparing students for investment banking careers. Pipeline to summer analyst position.",
-    "leverage": "Elite boutique IB's only sophomore program. Perella Weinberg doesn't do on-campus recruiting — this is literally the only way in as an underclassman.",
-    "tags": ["insight-day", "early-ID", "deadline-critical", "finance", "IB", "boutique"],
-    "yearRelevance": ["Sophomore"],
+    "leverage": "Elite boutique IB's only sophomore program. Perella Weinberg doesn't do on-campus recruiting \u2014 this is literally the only way in as an underclassman.",
+    "tags": [
+      "insight-day",
+      "early-ID",
+      "deadline-critical",
+      "finance",
+      "IB",
+      "boutique"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1174,13 +1876,28 @@
     "school": "any",
     "deadline": "2027-01-13",
     "timeframe": "Window: Jan (program runs summer)",
-    "requirements": ["Any year", "Black/African American", "Interest in financial services"],
+    "requirements": [
+      "Any year",
+      "Black/African American",
+      "Interest in financial services"
+    ],
     "contact": "https://careers.jpmorgan.com",
     "link": "https://careers.jpmorgan.com/us/en/students/programs/advancing-black-pathways",
     "timeline": "Fellowship combines training, mentorship, and direct internship placement at JPMorgan. One cohort per year.",
-    "leverage": "JPMorgan's flagship diversity fellowship. Fellows get placed directly into summer analyst roles — no separate application needed.",
-    "tags": ["fellowship", "diversity-cohort", "placement-guaranteed", "deadline-critical", "finance", "Black-in-tech"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior"],
+    "leverage": "JPMorgan's flagship diversity fellowship. Fellows get placed directly into summer analyst roles \u2014 no separate application needed.",
+    "tags": [
+      "fellowship",
+      "diversity-cohort",
+      "placement-guaranteed",
+      "deadline-critical",
+      "finance",
+      "Black-in-tech"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1196,13 +1913,25 @@
     "school": "any",
     "deadline": "2027-01-31",
     "timeframe": "Window: Jan (program runs spring)",
-    "requirements": ["Sophomore", "Underrepresented in finance (URM/LGBT/Veteran)"],
+    "requirements": [
+      "Sophomore",
+      "Underrepresented in finance (URM/LGBT/Veteran)"
+    ],
     "contact": "https://www.lazard.com/careers",
     "link": "https://www.lazard.com/careers/students/",
-    "timeline": "1-day immersion in NYC or SF. Networking with senior bankers → fast-track to summer intern interviews.",
-    "leverage": "Lazard is an elite advisory boutique. This diversity day is the only underclassman entry point — attending puts you on their radar 18 months before recruiting.",
-    "tags": ["insight-day", "diversity-cohort", "early-ID", "deadline-critical", "finance", "boutique"],
-    "yearRelevance": ["Sophomore"],
+    "timeline": "1-day immersion in NYC or SF. Networking with senior bankers \u2192 fast-track to summer intern interviews.",
+    "leverage": "Lazard is an elite advisory boutique. This diversity day is the only underclassman entry point \u2014 attending puts you on their radar 18 months before recruiting.",
+    "tags": [
+      "insight-day",
+      "diversity-cohort",
+      "early-ID",
+      "deadline-critical",
+      "finance",
+      "boutique"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1218,13 +1947,26 @@
     "school": "any",
     "deadline": "2026-10-15",
     "timeframe": "Window: fall (program starts following year)",
-    "requirements": ["Non-traditional background", "Career switchers or self-taught welcome", "No CS degree required"],
+    "requirements": [
+      "Non-traditional background",
+      "Career switchers or self-taught welcome",
+      "No CS degree required"
+    ],
     "contact": "https://careers.linkedin.com",
     "link": "https://careers.linkedin.com/pathways-programs/entry-level",
     "timeline": "Paid apprenticeship at LinkedIn for people without traditional CS degrees. Converts to full-time SWE role.",
     "leverage": "One of the only big-tech programs that explicitly doesn't require a CS degree. If you're self-taught or a career switcher, this is your path in.",
-    "tags": ["apprenticeship", "non-traditional", "no-degree", "deadline-critical", "big-tech"],
-    "yearRelevance": ["Junior", "Senior"],
+    "tags": [
+      "apprenticeship",
+      "non-traditional",
+      "no-degree",
+      "deadline-critical",
+      "big-tech"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1240,13 +1982,25 @@
     "school": "any",
     "deadline": "2026-10-30",
     "timeframe": "Window: Oct (program runs spring/summer)",
-    "requirements": ["Freshman or Sophomore", "Interest in consulting, tax, or advisory"],
+    "requirements": [
+      "Freshman or Sophomore",
+      "Interest in consulting, tax, or advisory"
+    ],
     "contact": "https://www.ey.com/careers",
     "link": "https://www.ey.com/en_us/careers/students/programs",
-    "timeline": "Multi-day immersive for freshmen/sophomores → strong pipeline to EY's summer internship.",
-    "leverage": "EY's dedicated underclassman early-ID. One of the Big 4 accounting firms — attending this signals interest 2 years before recruiting.",
-    "tags": ["insight-day", "early-ID", "deadline-critical", "consulting", "accounting"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "timeline": "Multi-day immersive for freshmen/sophomores \u2192 strong pipeline to EY's summer internship.",
+    "leverage": "EY's dedicated underclassman early-ID. One of the Big 4 accounting firms \u2014 attending this signals interest 2 years before recruiting.",
+    "tags": [
+      "insight-day",
+      "early-ID",
+      "deadline-critical",
+      "consulting",
+      "accounting"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -1261,14 +2015,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-02-15",
-    "timeframe": "Applications open Nov–Feb; programs run May–Aug",
-    "requirements": ["US citizen or permanent resident", "Undergraduate enrolled in degree program", "Interest in STEM research"],
+    "timeframe": "Applications open Nov\u2013Feb; programs run May\u2013Aug",
+    "requirements": [
+      "US citizen or permanent resident",
+      "Undergraduate enrolled in degree program",
+      "Interest in STEM research"
+    ],
     "contact": "https://www.nsf.gov/funding/initiatives/reu",
     "link": "https://new.nsf.gov/funding/initiatives/reu/search",
-    "timeline": "Apply Nov–Feb → 8–10 week paid research at a host university → present findings at end-of-summer symposium.",
-    "leverage": "600+ sites nationwide, each paying $6,000–$7,000 stipends plus housing. The single largest pipeline to PhD programs — faculty letters from REU mentors carry outsized weight in grad school apps.",
-    "tags": ["research", "paid", "summer", "STEM", "grad-school-pipeline", "stipend", "diversity"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "timeline": "Apply Nov\u2013Feb \u2192 8\u201310 week paid research at a host university \u2192 present findings at end-of-summer symposium.",
+    "leverage": "600+ sites nationwide, each paying $6,000\u2013$7,000 stipends plus housing. The single largest pipeline to PhD programs \u2014 faculty letters from REU mentors carry outsized weight in grad school apps.",
+    "tags": [
+      "research",
+      "paid",
+      "summer",
+      "STEM",
+      "grad-school-pipeline",
+      "stipend",
+      "diversity"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1283,14 +2052,32 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-03-01",
-    "timeframe": "Rolling enrollment — check your campus alliance",
-    "requirements": ["US citizen or permanent resident", "Underrepresented minority in STEM", "STEM major", "Enrolled at an LSAMP alliance institution"],
+    "timeframe": "Rolling enrollment \u2014 check your campus alliance",
+    "requirements": [
+      "US citizen or permanent resident",
+      "Underrepresented minority in STEM",
+      "STEM major",
+      "Enrolled at an LSAMP alliance institution"
+    ],
     "contact": "https://www.nsf.gov/funding/pgm_summ.jsp?pims_id=13646",
     "link": "https://www.pathwaystoscience.org/programs.aspx?descriptorhub=LSAMP_NSF+LSAMP",
-    "timeline": "Enroll through your campus coordinator → access research stipends, summer bridge programs, mentoring, and conference travel throughout undergrad.",
-    "leverage": "LSAMP operates at 700+ institutions through 58 alliances. It provides sustained mentoring plus research stipends across multiple years — not a one-shot summer program. Students who participate earn STEM degrees at significantly higher rates.",
-    "tags": ["diversity", "research", "mentorship", "multi-year", "STEM", "scholarship", "grad-school-pipeline"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "timeline": "Enroll through your campus coordinator \u2192 access research stipends, summer bridge programs, mentoring, and conference travel throughout undergrad.",
+    "leverage": "LSAMP operates at 700+ institutions through 58 alliances. It provides sustained mentoring plus research stipends across multiple years \u2014 not a one-shot summer program. Students who participate earn STEM degrees at significantly higher rates.",
+    "tags": [
+      "diversity",
+      "research",
+      "mentorship",
+      "multi-year",
+      "STEM",
+      "scholarship",
+      "grad-school-pipeline"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1299,20 +2086,36 @@
   },
   {
     "id": "pipe-sacnas-conference",
-    "name": "SACNAS National Diversity in STEM Conference — Travel Scholarship",
+    "name": "SACNAS National Diversity in STEM Conference \u2014 Travel Scholarship",
     "track": "research-phd",
     "category": "Funding",
     "access": "direct",
     "school": "any",
     "deadline": "2026-06-15",
     "timeframe": "Applications open spring; conference in late October",
-    "requirements": ["Undergraduate or graduate student", "Interest in STEM", "Preference for underrepresented backgrounds"],
+    "requirements": [
+      "Undergraduate or graduate student",
+      "Interest in STEM",
+      "Preference for underrepresented backgrounds"
+    ],
     "contact": "https://www.sacnas.org/conference/travel-scholarships",
     "link": "https://www.sacnas.org/conference/travel-scholarships",
-    "timeline": "Apply spring → if awarded, funded travel + lodging + registration to 3-day national conference in Oct → present research, network with grad programs and employers.",
-    "leverage": "The largest multidisciplinary STEM diversity conference in the US. Grad schools recruit heavily here — students regularly receive on-the-spot interview invitations and fee waivers. The travel scholarship makes it accessible regardless of your school's budget.",
-    "tags": ["conference", "networking", "diversity", "travel-funded", "STEM", "grad-school-pipeline", "research-presentation"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "timeline": "Apply spring \u2192 if awarded, funded travel + lodging + registration to 3-day national conference in Oct \u2192 present research, network with grad programs and employers.",
+    "leverage": "The largest multidisciplinary STEM diversity conference in the US. Grad schools recruit heavily here \u2014 students regularly receive on-the-spot interview invitations and fee waivers. The travel scholarship makes it accessible regardless of your school's budget.",
+    "tags": [
+      "conference",
+      "networking",
+      "diversity",
+      "travel-funded",
+      "STEM",
+      "grad-school-pipeline",
+      "research-presentation"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1328,13 +2131,30 @@
     "school": "any",
     "deadline": "2027-03-01",
     "timeframe": "Enroll junior year; runs through graduation",
-    "requirements": ["Junior or Senior standing", "US citizen or permanent resident", "Underrepresented in biomedical sciences", "3.0+ GPA", "Intent to pursue PhD or MD/PhD"],
+    "requirements": [
+      "Junior or Senior standing",
+      "US citizen or permanent resident",
+      "Underrepresented in biomedical sciences",
+      "3.0+ GPA",
+      "Intent to pursue PhD or MD/PhD"
+    ],
     "contact": "https://www.nigms.nih.gov/training/MARC",
     "link": "https://www.pathwaystoscience.org/programs.aspx?descriptorhub=MARC_NIH+MARC",
-    "timeline": "Apply to your campus program spring of sophomore year → 2-year stipend ($13,000+/year) through junior and senior year + summer research + GRE prep + conference travel.",
-    "leverage": "MARC scholars are admitted to biomedical PhD programs at 2–3x the national average rate. The two-year stipend lets you focus entirely on research instead of working a side job — and the NIH name on your CV signals serious intent to grad school admissions.",
-    "tags": ["research", "stipend", "biomedical", "diversity", "grad-school-pipeline", "multi-year", "NIH"],
-    "yearRelevance": ["Junior", "Senior"],
+    "timeline": "Apply to your campus program spring of sophomore year \u2192 2-year stipend ($13,000+/year) through junior and senior year + summer research + GRE prep + conference travel.",
+    "leverage": "MARC scholars are admitted to biomedical PhD programs at 2\u20133x the national average rate. The two-year stipend lets you focus entirely on research instead of working a side job \u2014 and the NIH name on your CV signals serious intent to grad school admissions.",
+    "tags": [
+      "research",
+      "stipend",
+      "biomedical",
+      "diversity",
+      "grad-school-pipeline",
+      "multi-year",
+      "NIH"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1349,14 +2169,31 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-02-01",
-    "timeframe": "Rolling — check your campus RISE program",
-    "requirements": ["Undergraduate STEM major", "US citizen or permanent resident", "Underrepresented in biomedical research", "Intent to pursue PhD"],
+    "timeframe": "Rolling \u2014 check your campus RISE program",
+    "requirements": [
+      "Undergraduate STEM major",
+      "US citizen or permanent resident",
+      "Underrepresented in biomedical research",
+      "Intent to pursue PhD"
+    ],
     "contact": "https://www.nigms.nih.gov/training/RISE",
     "link": "https://www.pathwaystoscience.org/programs.aspx?descriptorhub=RISE_NIH+RISE",
-    "timeline": "Join sophomore or junior year → academic year research stipend + summer intensives + tutoring + conference presentations through graduation.",
+    "timeline": "Join sophomore or junior year \u2192 academic year research stipend + summer intensives + tutoring + conference presentations through graduation.",
     "leverage": "RISE provides a research stipend during the academic year (not just summer), which lets you build sustained lab relationships instead of starting fresh each summer. Programs at minority-serving institutions feed directly into top PhD programs.",
-    "tags": ["research", "stipend", "biomedical", "diversity", "multi-year", "NIH", "grad-school-pipeline"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "tags": [
+      "research",
+      "stipend",
+      "biomedical",
+      "diversity",
+      "multi-year",
+      "NIH",
+      "grad-school-pipeline"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1372,13 +2209,29 @@
     "school": "any",
     "deadline": "2027-01-31",
     "timeframe": "Internal campus deadline often Dec; national deadline late Jan",
-    "requirements": ["Sophomore or Junior", "US citizen", "STEM major", "Intent to pursue research PhD or MD/PhD", "Strong research record"],
+    "requirements": [
+      "Sophomore or Junior",
+      "US citizen",
+      "STEM major",
+      "Intent to pursue research PhD or MD/PhD",
+      "Strong research record"
+    ],
     "contact": "https://goldwaterscholarship.gov",
     "link": "https://goldwaterscholarship.gov/apply/",
-    "timeline": "Campus nomination fall → national application Jan → winners announced spring → $7,500/year for remaining undergrad years.",
-    "leverage": "The most prestigious undergraduate STEM scholarship in the US. The Goldwater name on your CV is a signal to every PhD program that you're a serious researcher — many winners report getting recruited by top labs rather than having to cold-apply.",
-    "tags": ["scholarship", "prestigious", "research", "STEM", "grad-school-pipeline", "nomination-required"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "timeline": "Campus nomination fall \u2192 national application Jan \u2192 winners announced spring \u2192 $7,500/year for remaining undergrad years.",
+    "leverage": "The most prestigious undergraduate STEM scholarship in the US. The Goldwater name on your CV is a signal to every PhD program that you're a serious researcher \u2014 many winners report getting recruited by top labs rather than having to cold-apply.",
+    "tags": [
+      "scholarship",
+      "prestigious",
+      "research",
+      "STEM",
+      "grad-school-pipeline",
+      "nomination-required"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1393,14 +2246,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-02-01",
-    "timeframe": "Apply Jan–Feb; program runs June–Aug in NYC",
-    "requirements": ["Undergraduate", "US citizen or permanent resident", "Interest in evolutionary biology or systematics"],
+    "timeframe": "Apply Jan\u2013Feb; program runs June\u2013Aug in NYC",
+    "requirements": [
+      "Undergraduate",
+      "US citizen or permanent resident",
+      "Interest in evolutionary biology or systematics"
+    ],
     "contact": "https://www.amnh.org/research/richard-gilder-graduate-school/academics-and-research/fellowship-and-grant-opportunities/reu",
     "link": "https://www.pathwaystoscience.org/programhub.aspx?sort=SUM-AMNH-EvolBio",
-    "timeline": "10-week summer program at the American Museum of Natural History in NYC → independent research project with museum scientists → present at symposium.",
-    "leverage": "One of the longest-running REUs (24+ years). Working alongside museum curators on real collections gives you a publication-quality project and a letter from a world-class institution — rare for undergrads.",
-    "tags": ["research", "paid", "summer", "biology", "NYC", "museum", "grad-school-pipeline"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "timeline": "10-week summer program at the American Museum of Natural History in NYC \u2192 independent research project with museum scientists \u2192 present at symposium.",
+    "leverage": "One of the longest-running REUs (24+ years). Working alongside museum curators on real collections gives you a publication-quality project and a letter from a world-class institution \u2014 rare for undergrads.",
+    "tags": [
+      "research",
+      "paid",
+      "summer",
+      "biology",
+      "NYC",
+      "museum",
+      "grad-school-pipeline"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1416,13 +2284,29 @@
     "school": "any",
     "deadline": "2027-01-15",
     "timeframe": "Apply fall/winter; program runs summer in Washington DC",
-    "requirements": ["Undergraduate or recent graduate", "Self-identify as person with a disability", "US-based"],
+    "requirements": [
+      "Undergraduate or recent graduate",
+      "Self-identify as person with a disability",
+      "US-based"
+    ],
     "contact": "https://www.aapd.com/summer-internship-program/",
     "link": "https://www.pathwaystoscience.org/programhub.aspx?sort=SUM-AAPD-Internship",
-    "timeline": "Apply fall → 10-week paid internship in DC placed at a congressional office, nonprofit, or federal agency → housing stipend provided.",
-    "leverage": "One of very few programs specifically for students with disabilities that places you in policy-relevant positions. Alumni go on to disability rights law, government, and advocacy — and the DC network you build in 10 weeks compounds for years.",
-    "tags": ["disability", "policy", "paid", "DC", "diversity", "summer", "leadership"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "timeline": "Apply fall \u2192 10-week paid internship in DC placed at a congressional office, nonprofit, or federal agency \u2192 housing stipend provided.",
+    "leverage": "One of very few programs specifically for students with disabilities that places you in policy-relevant positions. Alumni go on to disability rights law, government, and advocacy \u2014 and the DC network you build in 10 weeks compounds for years.",
+    "tags": [
+      "disability",
+      "policy",
+      "paid",
+      "DC",
+      "diversity",
+      "summer",
+      "leadership"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1437,14 +2321,31 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-01-12",
-    "timeframe": "Application window: Sept–Jan each year",
-    "requirements": ["Asian American or Pacific Islander", "US citizen, national, or permanent resident", "Enrolled full-time undergrad", "Minimum 2.7 GPA"],
+    "timeframe": "Application window: Sept\u2013Jan each year",
+    "requirements": [
+      "Asian American or Pacific Islander",
+      "US citizen, national, or permanent resident",
+      "Enrolled full-time undergrad",
+      "Minimum 2.7 GPA"
+    ],
     "contact": "https://apiascholars.org",
     "link": "https://apiascholars.org/scholarship/apia-scholarship/",
-    "timeline": "Apply fall → awards announced spring → receive scholarship funds for the academic year + access to leadership development programming.",
-    "leverage": "Beyond the funding, APIA Scholars connects you to a network of corporate partners (Google, Deloitte, Target) who recruit directly from the scholar cohort — it functions as both a scholarship and a soft pipeline to internships.",
-    "tags": ["scholarship", "diversity", "AAPI", "leadership", "networking", "corporate-pipeline"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "timeline": "Apply fall \u2192 awards announced spring \u2192 receive scholarship funds for the academic year + access to leadership development programming.",
+    "leverage": "Beyond the funding, APIA Scholars connects you to a network of corporate partners (Google, Deloitte, Target) who recruit directly from the scholar cohort \u2014 it functions as both a scholarship and a soft pipeline to internships.",
+    "tags": [
+      "scholarship",
+      "diversity",
+      "AAPI",
+      "leadership",
+      "networking",
+      "corporate-pipeline"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1460,13 +2361,27 @@
     "school": "any",
     "deadline": "2027-03-15",
     "timeframe": "Apply spring; program runs summer",
-    "requirements": ["Current undergraduate", "Interest in AI, climate, or technology policy"],
+    "requirements": [
+      "Current undergraduate",
+      "Interest in AI, climate, or technology policy"
+    ],
     "contact": "https://www.agci.org/equitech",
     "link": "https://www.pathwaystoscience.org/programhub.aspx?sort=SUM-AGCI-Equitech",
-    "timeline": "Apply spring → attend intensive institute learning AI tools applied to climate and equity → build portfolio project → connect with tech industry mentors.",
-    "leverage": "Positions you at the intersection of AI and social impact — a fast-growing field where demand for talent far outstrips supply. The portfolio project becomes a tangible demo for tech internship applications.",
-    "tags": ["AI", "technology", "climate", "fellowship", "summer", "portfolio", "emerging-tech"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "timeline": "Apply spring \u2192 attend intensive institute learning AI tools applied to climate and equity \u2192 build portfolio project \u2192 connect with tech industry mentors.",
+    "leverage": "Positions you at the intersection of AI and social impact \u2014 a fast-growing field where demand for talent far outstrips supply. The portfolio project becomes a tangible demo for tech internship applications.",
+    "tags": [
+      "AI",
+      "technology",
+      "climate",
+      "fellowship",
+      "summer",
+      "portfolio",
+      "emerging-tech"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1482,13 +2397,29 @@
     "school": "any",
     "deadline": "2027-04-30",
     "timeframe": "Application opens March; cohort runs June through following Aug",
-    "requirements": ["Bachelor's degree by August of cohort year", "Underrepresented in legal education (racial, ethnic, or socioeconomic)", "Plan to apply to law school for next fall", "Existing LSAT score at or below 25th percentile"],
+    "requirements": [
+      "Bachelor's degree by August of cohort year",
+      "Underrepresented in legal education (racial, ethnic, or socioeconomic)",
+      "Plan to apply to law school for next fall",
+      "Existing LSAT score at or below 25th percentile"
+    ],
     "contact": "https://www.accesslex.org/lexprelaw-program-design-and-eligibility",
     "link": "https://www.accesslex.org/lexprelaw-program-design-and-eligibility",
-    "timeline": "Apply March–April (first-come basis, 150 slots) → receive free Kaplan LSAT prep + admission counseling + financial assistance throughout the application cycle.",
-    "leverage": "Completely free LSAT prep and admission counseling for underrepresented students — a $2,000+ value with zero cost. The first-come selection means early application is critical. Alumni outcomes show meaningfully higher law school admission rates.",
-    "tags": ["law-school", "diversity", "LSAT-prep", "free", "admissions-counseling", "pre-law", "pipeline"],
-    "yearRelevance": ["Junior", "Senior"],
+    "timeline": "Apply March\u2013April (first-come basis, 150 slots) \u2192 receive free Kaplan LSAT prep + admission counseling + financial assistance throughout the application cycle.",
+    "leverage": "Completely free LSAT prep and admission counseling for underrepresented students \u2014 a $2,000+ value with zero cost. The first-come selection means early application is critical. Alumni outcomes show meaningfully higher law school admission rates.",
+    "tags": [
+      "law-school",
+      "diversity",
+      "LSAT-prep",
+      "free",
+      "admissions-counseling",
+      "pre-law",
+      "pipeline"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1503,14 +2434,28 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-05-15",
-    "timeframe": "Referral by law school; program runs July–May",
-    "requirements": ["Applied to ABA-approved law school", "Referred by participating law school", "Underrepresented in legal education"],
+    "timeframe": "Referral by law school; program runs July\u2013May",
+    "requirements": [
+      "Applied to ABA-approved law school",
+      "Referred by participating law school",
+      "Underrepresented in legal education"
+    ],
     "contact": "https://www.accesslex.org/tools-and-resources/lexpostbacc-program",
     "link": "https://www.accesslex.org/tools-and-resources/lexpostbacc-program",
-    "timeline": "Get referred by a law school during admissions → 10-month program building analytical and legal writing skills → matriculate the following fall with deferred admission.",
-    "leverage": "A free bridge year that builds the foundational skills law school expects — without any program costs to you or the school. Transforms a 'not quite ready' into an admitted student with a head start on legal reasoning.",
-    "tags": ["law-school", "diversity", "post-bacc", "free", "legal-writing", "bridge-program", "pipeline"],
-    "yearRelevance": ["Senior"],
+    "timeline": "Get referred by a law school during admissions \u2192 10-month program building analytical and legal writing skills \u2192 matriculate the following fall with deferred admission.",
+    "leverage": "A free bridge year that builds the foundational skills law school expects \u2014 without any program costs to you or the school. Transforms a 'not quite ready' into an admitted student with a head start on legal reasoning.",
+    "tags": [
+      "law-school",
+      "diversity",
+      "post-bacc",
+      "free",
+      "legal-writing",
+      "bridge-program",
+      "pipeline"
+    ],
+    "yearRelevance": [
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1526,13 +2471,29 @@
     "school": "any",
     "deadline": "2027-03-15",
     "timeframe": "Registration opens Feb; event runs 3 days in April (virtual)",
-    "requirements": ["Undergraduate or graduate student", "Interest in STEM careers"],
+    "requirements": [
+      "Undergraduate or graduate student",
+      "Interest in STEM careers"
+    ],
     "contact": "https://www.sacnas.org/careercon",
     "link": "https://www.sacnas.org/careercon",
-    "timeline": "Register spring → attend 3-day virtual event (~4 hrs/day) → workshops on grad school apps, industry careers, and professional development.",
-    "leverage": "Zero-cost, zero-travel barrier to networking with STEM employers and grad programs. Complements the in-person SACNAS conference — use CareerCon to prep your pitch, then deploy it at the fall conference.",
-    "tags": ["virtual", "free", "career-development", "STEM", "diversity", "networking", "grad-school-pipeline"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "timeline": "Register spring \u2192 attend 3-day virtual event (~4 hrs/day) \u2192 workshops on grad school apps, industry careers, and professional development.",
+    "leverage": "Zero-cost, zero-travel barrier to networking with STEM employers and grad programs. Complements the in-person SACNAS conference \u2014 use CareerCon to prep your pitch, then deploy it at the fall conference.",
+    "tags": [
+      "virtual",
+      "free",
+      "career-development",
+      "STEM",
+      "diversity",
+      "networking",
+      "grad-school-pipeline"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1548,13 +2509,27 @@
     "school": "Agnes Scott College",
     "deadline": "2027-02-15",
     "timeframe": "Apply Feb; multi-year program",
-    "requirements": ["Enrolled at Agnes Scott College", "STEM major", "Interest in graduate or professional school"],
+    "requirements": [
+      "Enrolled at Agnes Scott College",
+      "STEM major",
+      "Interest in graduate or professional school"
+    ],
     "contact": "https://www.agnesscott.edu/stem-scholars",
     "link": "https://www.pathwaystoscience.org/programhub.aspx?sort=SCI-AgnesScott-STEMScholars",
-    "timeline": "Apply as freshman or sophomore → multi-year support including research mentorship, GRE prep, conference travel, and grad school guidance through graduation.",
+    "timeline": "Apply as freshman or sophomore \u2192 multi-year support including research mentorship, GRE prep, conference travel, and grad school guidance through graduation.",
     "leverage": "A sustained, multi-year program designed to prepare students for STEM graduate education. The cohort model and dedicated faculty mentors create accountability structures that one-off summer programs can't match.",
-    "tags": ["research", "mentorship", "multi-year", "women", "STEM", "grad-school-pipeline"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "research",
+      "mentorship",
+      "multi-year",
+      "women",
+      "STEM",
+      "grad-school-pipeline"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "Southeast",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -1569,18 +2544,497 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-05-31",
-    "timeframe": "Applications typically May–June annually",
-    "requirements": ["American Indian or Alaska Native", "Enrolled or planning to enroll at accredited institution", "US-based"],
+    "timeframe": "Applications typically May\u2013June annually",
+    "requirements": [
+      "American Indian or Alaska Native",
+      "Enrolled or planning to enroll at accredited institution",
+      "US-based"
+    ],
     "contact": "https://collegefund.org/students/scholarships/",
     "link": "https://collegefund.org/students/scholarships/",
-    "timeline": "Apply May–June → awards for the following academic year → renewable annually with satisfactory progress.",
-    "leverage": "One of the largest scholarship providers for Native students, with programs at both tribal colleges and mainstream universities. The Full Circle and TCU scholarships cover significant costs — and the alumni network extends into every major industry.",
-    "tags": ["scholarship", "Native-American", "diversity", "renewable", "tribal-college"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "timeline": "Apply May\u2013June \u2192 awards for the following academic year \u2192 renewable annually with satisfactory progress.",
+    "leverage": "One of the largest scholarship providers for Native students, with programs at both tribal colleges and mainstream universities. The Full Circle and TCU scholarships cover significant costs \u2014 and the alumni network extends into every major industry.",
+    "tags": [
+      "scholarship",
+      "Native-American",
+      "diversity",
+      "renewable",
+      "tribal-college"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
     "recurring": true,
     "source": "PathwaysToScience.org"
+  },
+  {
+    "id": "pipe-nih-irta",
+    "name": "NIH Intramural Research Training Award (IRTA)",
+    "track": "physician-scientist",
+    "category": "Research",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2026-11-01",
+    "timeframe": "Summer or Year-round",
+    "requirements": [
+      "US citizen or permanent resident",
+      "Current undergraduate or recent graduate",
+      "Interest in biomedical research"
+    ],
+    "contact": "irta@nih.gov",
+    "link": "https://www.training.nih.gov/programs/postbac_irta",
+    "timeline": "Apply by Nov for summer start; rolling for year-round positions",
+    "leverage": "Direct path into NIH labs with potential for publication \u2014 the strongest differentiator for MD-PhD applications.",
+    "tags": [
+      "research-intensive",
+      "pre-med",
+      "publication-track"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "NIH Office of Intramural Training"
+  },
+  {
+    "id": "pipe-amgen-scholars",
+    "name": "Amgen Scholars Program",
+    "track": "physician-scientist",
+    "category": "Research",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-02-01",
+    "timeframe": "Summer (10 weeks)",
+    "requirements": [
+      "Sophomore or Junior",
+      "GPA 3.2+",
+      "Interest in biotechnology or biomedical research"
+    ],
+    "contact": "",
+    "link": "https://amgenscholars.com/",
+    "timeline": "Apply Jan-Feb, program runs June-August at 24 host institutions worldwide",
+    "leverage": "Fully funded summer research at top-tier labs (Harvard, MIT, Stanford, etc.) with Amgen brand recognition for grad school apps.",
+    "tags": [
+      "fully-funded",
+      "biotech",
+      "publication-track",
+      "prestigious"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Amgen Foundation"
+  },
+  {
+    "id": "pipe-hhmi-gilliam",
+    "name": "HHMI Gilliam Fellows Program",
+    "track": "physician-scientist",
+    "category": "Fellowship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2026-09-15",
+    "timeframe": "Multi-year funding through PhD",
+    "requirements": [
+      "Committed to pursuing PhD in biomedical sciences",
+      "From underrepresented background",
+      "Faculty advisor nomination required"
+    ],
+    "contact": "",
+    "link": "https://www.hhmi.org/science-education/programs/gilliam-fellows-program",
+    "timeline": "Nominations due September; awards announced December",
+    "leverage": "Full PhD funding plus advisor development training \u2014 signals elite-level commitment to the field.",
+    "tags": [
+      "diversity",
+      "fully-funded",
+      "phd-track",
+      "prestigious"
+    ],
+    "yearRelevance": [
+      "Senior",
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Howard Hughes Medical Institute"
+  },
+  {
+    "id": "pipe-stanford-bio-x",
+    "name": "Stanford Bio-X Undergraduate Research",
+    "track": "physician-scientist",
+    "category": "Research",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-02-15",
+    "timeframe": "Summer (10 weeks)",
+    "requirements": [
+      "Current undergraduate",
+      "Interest in interdisciplinary biosciences",
+      "Strong academic record"
+    ],
+    "contact": "",
+    "link": "https://biox.stanford.edu/research/undergraduate-research",
+    "timeline": "Apply February for June-August program",
+    "leverage": "Stanford's flagship interdisciplinary bio program \u2014 connects you to faculty across engineering, medicine, and biology.",
+    "tags": [
+      "interdisciplinary",
+      "prestigious",
+      "research-intensive"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Stanford Bio-X"
+  },
+  {
+    "id": "pipe-mstp-summer",
+    "name": "MD-PhD Summer Research Programs (MSTP Feeders)",
+    "track": "physician-scientist",
+    "category": "Research",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-01-15",
+    "timeframe": "Summer (8-10 weeks)",
+    "requirements": [
+      "Pre-med track",
+      "Research experience preferred",
+      "Sophomore or Junior"
+    ],
+    "contact": "",
+    "link": "https://www.nigms.nih.gov/training/instpredoc/pages/PredocOverview-MSTP.aspx",
+    "timeline": "Applications Dec-Jan; programs run June-August",
+    "leverage": "Direct pipeline into MD-PhD programs \u2014 many participants receive early interviews at host institutions.",
+    "tags": [
+      "md-phd",
+      "pipeline",
+      "research-intensive"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "NIGMS"
+  },
+  {
+    "id": "pipe-apm-google",
+    "name": "Google Associate Product Manager (APM) Program",
+    "track": "product-manager",
+    "category": "Internship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2026-09-30",
+    "timeframe": "Full-time rotational (2 years)",
+    "requirements": [
+      "BS/BA in any field",
+      "Technical background preferred",
+      "Strong analytical and communication skills"
+    ],
+    "contact": "",
+    "link": "https://careers.google.com/programs/apm/",
+    "timeline": "Applications open Aug-Sep for following year start",
+    "leverage": "The most prestigious entry-level PM program in tech \u2014 alumni network includes many VP-level product leaders.",
+    "tags": [
+      "prestigious",
+      "rotational",
+      "big-tech",
+      "full-time"
+    ],
+    "yearRelevance": [
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Google Careers"
+  },
+  {
+    "id": "pipe-meta-rpm",
+    "name": "Meta Rotational Product Manager (RPM) Program",
+    "track": "product-manager",
+    "category": "Internship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2026-09-15",
+    "timeframe": "Full-time rotational (18 months)",
+    "requirements": [
+      "BS/BA degree",
+      "Technical aptitude",
+      "0-1 years experience"
+    ],
+    "contact": "",
+    "link": "https://www.metacareers.com/jobs/rpm",
+    "timeline": "Applications open Aug-Sep; interviews Oct-Nov",
+    "leverage": "Two rotations across Meta's product portfolio \u2014 gives breadth across consumer, enterprise, and platform products.",
+    "tags": [
+      "rotational",
+      "big-tech",
+      "full-time",
+      "prestigious"
+    ],
+    "yearRelevance": [
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Meta Careers"
+  },
+  {
+    "id": "pipe-kleiner-fellows",
+    "name": "Kleiner Perkins Fellows Program",
+    "track": "product-manager",
+    "category": "Fellowship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-01-31",
+    "timeframe": "Summer internship at KP portfolio company",
+    "requirements": [
+      "Current student",
+      "Interest in product, design, or engineering",
+      "Strong portfolio or project work"
+    ],
+    "contact": "",
+    "link": "https://fellows.kleinerperkins.com/",
+    "timeline": "Apply Jan; placements announced March for summer",
+    "leverage": "Places you at a high-growth startup with VC mentorship \u2014 builds network and startup credibility fast.",
+    "tags": [
+      "startup",
+      "vc-network",
+      "prestigious",
+      "summer"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Kleiner Perkins"
+  },
+  {
+    "id": "pipe-product-school-micro",
+    "name": "Product School Micro-Certification",
+    "track": "product-manager",
+    "category": "Course",
+    "access": "direct",
+    "school": "any",
+    "deadline": "",
+    "timeframe": "Self-paced (40 hours)",
+    "requirements": [
+      "None \u2014 open enrollment"
+    ],
+    "contact": "",
+    "link": "https://productschool.com/micro-certifications",
+    "timeline": "Start anytime; complete at your own pace",
+    "leverage": "Low-cost credential that teaches PM frameworks (PRDs, user stories, metrics). Good for demonstrating intentionality in applications.",
+    "tags": [
+      "self-paced",
+      "certification",
+      "low-barrier"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": false,
+    "source": "Product School"
+  },
+  {
+    "id": "pipe-microsoft-pm-intern",
+    "name": "Microsoft Program Manager Internship",
+    "track": "product-manager",
+    "category": "Internship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2026-10-15",
+    "timeframe": "Summer (12 weeks)",
+    "requirements": [
+      "Pursuing BS/MS in CS, Engineering, or related field",
+      "Junior or Senior year"
+    ],
+    "contact": "",
+    "link": "https://careers.microsoft.com/",
+    "timeline": "Applications open Aug; interviews Sep-Nov",
+    "leverage": "Microsoft's PM role is technical and high-scope \u2014 interns often ship real features used by millions.",
+    "tags": [
+      "big-tech",
+      "technical-pm",
+      "summer"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Microsoft Careers"
+  },
+  {
+    "id": "pipe-uber-apm",
+    "name": "Uber Associate Product Manager Program",
+    "track": "product-manager",
+    "category": "Internship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2026-09-30",
+    "timeframe": "Full-time rotational (2 years)",
+    "requirements": [
+      "BS/BA in any field",
+      "Strong analytical skills",
+      "Passion for mobility/logistics"
+    ],
+    "contact": "",
+    "link": "https://www.uber.com/us/en/careers/",
+    "timeline": "Apply Aug-Sep for following year start",
+    "leverage": "Work on products impacting millions of daily rides \u2014 gives you concrete metrics stories for any future PM role.",
+    "tags": [
+      "rotational",
+      "marketplace",
+      "full-time"
+    ],
+    "yearRelevance": [
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Uber Careers"
+  },
+  {
+    "id": "pipe-pm-case-comp",
+    "name": "Product Buds Case Competition",
+    "track": "product-manager",
+    "category": "Club",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-03-01",
+    "timeframe": "Semester-long (team-based)",
+    "requirements": [
+      "Undergraduate student",
+      "Team of 3-4"
+    ],
+    "contact": "",
+    "link": "https://www.productbuds.co/",
+    "timeline": "Registration opens January; finals in April",
+    "leverage": "Build a real product case study with teammates \u2014 gives you a concrete portfolio piece to reference in PM interviews.",
+    "tags": [
+      "portfolio-building",
+      "team-based",
+      "low-barrier"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Product Buds"
+  },
+  {
+    "id": "pipe-post-bac-nih",
+    "name": "NIH Post-Baccalaureate Intramural Research (POSTBAC-IRTA)",
+    "track": "physician-scientist",
+    "category": "Research",
+    "access": "direct",
+    "school": "any",
+    "deadline": "",
+    "timeframe": "1-2 years post-graduation",
+    "requirements": [
+      "Recent graduate (within 2 years)",
+      "US citizen or permanent resident",
+      "Not yet enrolled in graduate/medical school"
+    ],
+    "contact": "",
+    "link": "https://www.training.nih.gov/programs/postbac_irta",
+    "timeline": "Rolling applications; most start after spring graduation",
+    "leverage": "Gap year research at NIH with 300+ labs to choose from \u2014 strongest possible way to build publications before MD-PhD apps.",
+    "tags": [
+      "gap-year",
+      "publication-track",
+      "pre-med"
+    ],
+    "yearRelevance": [
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": false,
+    "source": "NIH Training Center"
+  },
+  {
+    "id": "pipe-mayo-surf",
+    "name": "Mayo Clinic Summer Undergraduate Research Fellowship (SURF)",
+    "track": "physician-scientist",
+    "category": "Research",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-02-01",
+    "timeframe": "Summer (10 weeks)",
+    "requirements": [
+      "Freshman, Sophomore, or Junior",
+      "GPA 3.0+",
+      "US citizen or permanent resident"
+    ],
+    "contact": "",
+    "link": "https://college.mayo.edu/academics/biomedical-research-training/summer-undergraduate-research-fellowship-surf/",
+    "timeline": "Apply Oct-Feb; program runs May-July",
+    "leverage": "Clinical + bench research at Mayo with structured mentorship \u2014 strong for students deciding between MD and MD-PhD paths.",
+    "tags": [
+      "clinical-research",
+      "mentorship",
+      "pre-med"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-07-01",
+    "recurring": true,
+    "source": "Mayo Clinic Education"
   }
 ]

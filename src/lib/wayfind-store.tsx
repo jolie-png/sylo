@@ -96,6 +96,10 @@ type State = {
   liveOpportunities: Opportunity[];
   customSteps: CustomStep[];
   pinnedIds: string[];
+  /** User notes for Sylo_Steps, keyed by opportunityId. */
+  stepNotes: Record<string, string>;
+  /** User overrides for Sylo_Step reasoning, keyed by opportunityId. */
+  stepReasoningOverrides: Record<string, string>;
   loading: boolean;
   hydrated: boolean;
   setProfile: (p: Profile) => void;
@@ -116,6 +120,10 @@ type State = {
   togglePinned: (id: string) => void;
   /** Reorder roadmap steps by moving a step from one index to another. */
   reorderSteps: (fromIndex: number, toIndex: number) => void;
+  /** Set or remove a User_Note for a Sylo_Step. Null/empty removes the note. */
+  setStepNote: (opportunityId: string, note: string | null) => void;
+  /** Set or remove a reasoning override for a Sylo_Step. Null/empty removes it. */
+  setStepReasoning: (opportunityId: string, reasoning: string | null) => void;
 };
 
 const Ctx = createContext<State | null>(null);
@@ -164,6 +172,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   const [liveOpportunities, setLiveOpportunities] = useState<Opportunity[]>([]);
   const [customSteps, setCustomSteps] = useState<CustomStep[]>([]);
   const [pinnedIds, setPinnedIds] = useState<string[]>([]);
+  const [stepNotes, setStepNotes] = useState<Record<string, string>>({});
+  const [stepReasoningOverrides, setStepReasoningOverrides] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -172,6 +182,27 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
+
+        // Clean up stale roadmap steps that reference opportunities no longer in the dataset
+        if (parsed.roadmap && parsed.roadmap.steps) {
+          const validSteps = parsed.roadmap.steps.filter(
+            (s: { opportunityId: string }) =>
+              getOpportunity(s.opportunityId) ||
+              getOpportunityById(s.opportunityId) ||
+              (Array.isArray(parsed.liveOpportunities) &&
+                parsed.liveOpportunities.some((o: { id: string }) => o.id === s.opportunityId))
+          );
+          if (validSteps.length < parsed.roadmap.steps.length) {
+            parsed.roadmap.steps = validSteps;
+            // If the top opportunity is no longer valid, reset it
+            if (parsed.roadmap.topOpportunityId && !validSteps.some(
+              (s: { opportunityId: string }) => s.opportunityId === parsed.roadmap.topOpportunityId
+            )) {
+              parsed.roadmap.topOpportunityId = validSteps[0]?.opportunityId ?? "";
+            }
+          }
+        }
+
         setProfileState(parsed.profile ?? null);
         setRoadmapState(parsed.roadmap ?? null);
         setLiveOpportunities(
@@ -179,6 +210,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
         );
         setCustomSteps(Array.isArray(parsed.customSteps) ? parsed.customSteps : []);
         setPinnedIds(Array.isArray(parsed.pinnedIds) ? parsed.pinnedIds : []);
+        setStepNotes(parsed.stepNotes && typeof parsed.stepNotes === "object" ? parsed.stepNotes : {});
+        setStepReasoningOverrides(parsed.stepReasoningOverrides && typeof parsed.stepReasoningOverrides === "object" ? parsed.stepReasoningOverrides : {});
       }
     } catch {
       /* ignore */
@@ -187,16 +220,16 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!profile && !roadmap && customSteps.length === 0 && pinnedIds.length === 0) return;
+    if (!profile && !roadmap && customSteps.length === 0 && pinnedIds.length === 0 && Object.keys(stepNotes).length === 0 && Object.keys(stepReasoningOverrides).length === 0) return;
     try {
       localStorage.setItem(
         KEY,
-        JSON.stringify({ profile, roadmap, liveOpportunities, customSteps, pinnedIds }),
+        JSON.stringify({ profile, roadmap, liveOpportunities, customSteps, pinnedIds, stepNotes, stepReasoningOverrides }),
       );
     } catch {
       /* ignore */
     }
-  }, [profile, roadmap, liveOpportunities, customSteps, pinnedIds]);
+  }, [profile, roadmap, liveOpportunities, customSteps, pinnedIds, stepNotes, stepReasoningOverrides]);
 
 
   const setProfile = useCallback((p: Profile) => setProfileState(p), []);
@@ -259,6 +292,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       trackId: persona.track,
       goalText: TRACKS.find(t => t.id === persona.track)?.label ?? "",
       personaName: persona.name,
+      name: persona.name,
       experience: persona.id === "maya"
         ? "Volunteered at campus health clinic for one semester, completed intro bio lab sequence"
         : "Built a full-stack task manager with React and Node.js, contributed to an open-source Python library",
@@ -277,6 +311,12 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     });
     setRoadmapState(personaRoadmap(persona));
     setLiveOpportunities([]);
+    // Pre-pin a few opportunities so the demo feels lived-in
+    setPinnedIds(
+      persona.id === "maya"
+        ? ["op-ucla-bisep", "op-ucla-hhmi-pathways", "op-ucla-mcdb-research"]
+        : ["op-gt-createx-learn", "op-gt-coop", "op-gt-grip"],
+    );
   }, []);
 
   const addCustomStep = useCallback(
@@ -318,6 +358,29 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const setStepNote = useCallback((opportunityId: string, note: string | null) => {
+    setStepNotes((prev) => {
+      const trimmed = note?.trim();
+      if (!trimmed) {
+        // Remove the key when note is null or empty/whitespace-only
+        const { [opportunityId]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [opportunityId]: trimmed };
+    });
+  }, []);
+
+  const setStepReasoning = useCallback((opportunityId: string, reasoning: string | null) => {
+    setStepReasoningOverrides((prev) => {
+      const trimmed = reasoning?.trim();
+      if (!trimmed) {
+        const { [opportunityId]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [opportunityId]: trimmed };
+    });
+  }, []);
+
   const value = useMemo(
     () => ({
       profile,
@@ -325,6 +388,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       liveOpportunities,
       customSteps,
       pinnedIds,
+      stepNotes,
+      stepReasoningOverrides,
       loading,
       hydrated,
       setProfile,
@@ -340,6 +405,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       removeCustomStep,
       togglePinned,
       reorderSteps,
+      setStepNote,
+      setStepReasoning,
     }),
     [
       profile,
@@ -347,6 +414,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       liveOpportunities,
       customSteps,
       pinnedIds,
+      stepNotes,
+      stepReasoningOverrides,
       loading,
       hydrated,
       setProfile,
@@ -361,6 +430,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       removeCustomStep,
       togglePinned,
       reorderSteps,
+      setStepNote,
+      setStepReasoning,
     ],
   );
 

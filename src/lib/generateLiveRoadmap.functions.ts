@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createAnthropicClient, hashKey } from "./anthropic.server";
 import { TRACKS, type Opportunity, type OpportunitySource } from "./wayfind-data";
 import type { GapAnalysis } from "./wayfind-store";
+import { searchOpportunities, type OpportunityRecord } from "./opportunities-db";
 
 const Input = z.object({
   trackId: z.string(),
@@ -119,6 +120,70 @@ function writeCache(key: string, value: LiveRoadmap) {
     if (oldest) cache.delete(oldest[0]);
   }
   cache.set(key, { at: Date.now(), value });
+}
+
+// --- Curated DB integration -------------------------------------------------
+
+const CURATED_THRESHOLD = 3;
+
+/** Convert an OpportunityRecord from the curated DB into the Opportunity shape. */
+function curatedRecordToOpportunity(rec: OpportunityRecord): Opportunity {
+  return {
+    id: rec.id,
+    name: rec.name,
+    track: rec.track,
+    category: rec.category,
+    access: rec.access,
+    school: rec.school,
+    deadline: rec.deadline,
+    timeframe: rec.timeframe,
+    requirements: rec.requirements,
+    contact: rec.contact,
+    link: rec.link,
+    timeline: rec.timeline,
+    leverage: rec.leverage,
+    courseCode: rec.courseCode,
+    gapLabel: rec.gapLabel,
+    upstream: rec.upstream,
+    unlocks: rec.unlocks,
+    window: rec.window,
+    brandEquivalent: rec.brandEquivalent,
+    missingHere: rec.missingHere,
+    origin: "seed",
+    sources: rec.source ? [{ title: rec.source, url: rec.link }] : [],
+    singleSourced: false,
+  };
+}
+
+/** Query the curated opportunity database for matches relevant to this student. */
+function queryCuratedOpportunities(data: z.infer<typeof Input>): OpportunityRecord[] {
+  return searchOpportunities({
+    track: data.trackId as any,
+    school: data.school,
+    year: data.year,
+    query: data.goalText || undefined,
+    limit: 10,
+  });
+}
+
+/** Build a LiveRoadmap from curated DB results alone. */
+function buildCuratedRoadmap(
+  curatedRecords: OpportunityRecord[],
+  data: z.infer<typeof Input>,
+): LiveRoadmap {
+  const opportunities = curatedRecords.map(curatedRecordToOpportunity);
+  const steps = opportunities.map((op) => ({
+    opportunityId: op.id,
+    reasoning: op.leverage || `Curated opportunity for ${data.year} students at ${data.school}.`,
+  }));
+
+  return {
+    summary: `Based on ${data.school}'s verified pipeline for ${data.year} ${data.major} students — these are curated, deadline-checked opportunities.`,
+    topOpportunityId: opportunities[0].id,
+    steps,
+    alternates: [],
+    opportunities,
+  };
 }
 
 // --- Serper.dev Search API --------------------------------------------------
@@ -425,8 +490,6 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
     const serperKey = process.env.SERPER_API_KEY;
 
-    if (!serperKey) { console.error("[LIVE-ROADMAP] no SERPER_API_KEY"); return null; }
-
     const cacheKey = cacheKeyFor(data);
     const cached = readCache(cacheKey);
     if (cached) return cached;
@@ -437,18 +500,45 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     try {
-      // Step 1: Search with Serper
-      console.error("[LIVE-ROADMAP] searching...", { school: data.school, goal: data.goalText || data.trackId });
+      // Step 1: Query the curated opportunity database first
+      console.error("[LIVE-ROADMAP] querying curated DB...", { track: data.trackId, school: data.school, year: data.year });
+      const curatedResults = queryCuratedOpportunities(data);
+      console.error("[LIVE-ROADMAP] curated matches:", curatedResults.length);
+
+      // If we have enough curated results, use them directly (no API calls needed)
+      if (curatedResults.length >= CURATED_THRESHOLD) {
+        console.error("[LIVE-ROADMAP] sufficient curated results, skipping live search");
+        const result = buildCuratedRoadmap(curatedResults, data);
+        writeCache(cacheKey, result);
+        return result;
+      }
+
+      // Step 2: Not enough curated results — do live Serper search
+      if (!serperKey) {
+        // No Serper key but we have some curated results — return what we have
+        if (curatedResults.length > 0) {
+          const result = buildCuratedRoadmap(curatedResults, data);
+          writeCache(cacheKey, result);
+          return result;
+        }
+        console.error("[LIVE-ROADMAP] no SERPER_API_KEY and no curated results");
+        return null;
+      }
+
+      console.error("[LIVE-ROADMAP] searching live (curated had <3 matches)...", { school: data.school, goal: data.goalText || data.trackId });
       const rawResults = await gatherSearchResultsRaw(data, serperKey);
-      if (rawResults.length === 0) { console.error("[LIVE-ROADMAP] no search results"); return null; }
+      if (rawResults.length === 0 && curatedResults.length === 0) {
+        console.error("[LIVE-ROADMAP] no search results and no curated results");
+        return null;
+      }
 
       const searchResults = rawResults.map((r, i) => `[${i + 1}] "${r.title}"\n    URL: ${r.link}\n    Snippet: ${r.snippet}`).join("\n\n");
       console.error("[LIVE-ROADMAP] got results, sending to Haiku...");
 
-      // Step 2: Try Claude to structure the results (cheap + fast)
+      // Step 3: Try Claude to structure the live results
       let result: LiveRoadmap | null = null;
 
-      if (anthropicKey) {
+      if (anthropicKey && rawResults.length > 0) {
         try {
           const client = createAnthropicClient(anthropicKey);
           const response = await client.messages.create(
@@ -480,18 +570,39 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
         } catch (llmErr) {
           console.error("[LIVE-ROADMAP] LLM failed, falling back to raw results:", llmErr instanceof Error ? llmErr.message : llmErr);
         }
-      } else {
-        console.error("[LIVE-ROADMAP] no ANTHROPIC_API_KEY, using raw results fallback");
       }
 
-      // Step 3: If LLM failed or wasn't available, structure results directly
-      if (!result) {
+      // Step 4: If LLM failed or wasn't available, structure results directly
+      if (!result && rawResults.length > 0) {
         console.error("[LIVE-ROADMAP] using search-results fallback");
         result = fallbackFromSearchResults(rawResults, data);
       }
 
+      // Step 5: Merge curated results into the live roadmap
+      if (result && curatedResults.length > 0) {
+        const curatedOpportunities = curatedResults.map(curatedRecordToOpportunity);
+        const curatedSteps = curatedOpportunities.map((op) => ({
+          opportunityId: op.id,
+          reasoning: op.leverage || `Verified opportunity for ${data.year} students.`,
+        }));
+
+        // Prepend curated results (they're higher confidence)
+        const existingIds = new Set(result.opportunities.map((o) => o.id));
+        const newCurated = curatedOpportunities.filter((o) => !existingIds.has(o.id));
+        const newSteps = curatedSteps.filter((s) => !existingIds.has(s.opportunityId));
+
+        result.opportunities = [...newCurated, ...result.opportunities];
+        result.steps = [...newSteps, ...result.steps];
+        if (newCurated.length > 0) {
+          result.topOpportunityId = newCurated[0].id;
+        }
+      } else if (!result && curatedResults.length > 0) {
+        // Live search totally failed but we have some curated data
+        result = buildCuratedRoadmap(curatedResults, data);
+      }
+
       if (result) {
-        console.error("[LIVE-ROADMAP] success!", { opportunities: result.opportunities.length });
+        console.error("[LIVE-ROADMAP] success!", { opportunities: result.opportunities.length, curated: curatedResults.length });
         writeCache(cacheKey, result);
       }
       return result;

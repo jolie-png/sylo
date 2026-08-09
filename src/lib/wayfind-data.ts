@@ -2,14 +2,24 @@
 // Nothing outside this file may be presented as real.
 
 import { createElement, type ReactNode } from "react";
-import { Dna, Compass, TrendingUp, Microscope, Sparkles, Code } from "lucide-react";
+import { Heart, Briefcase, TrendingUp, Microscope, Sparkles, Code } from "lucide-react";
 
 export type TrackId =
   | "physician-scientist"
+  | "nursing"
+  | "public-health"
   | "product-manager"
+  | "management-consulting"
+  | "marketing"
   | "software-engineer"
+  | "data-science"
+  | "cybersecurity"
   | "investment-banking"
+  | "private-equity"
+  | "financial-planning"
   | "research-phd"
+  | "biotech-research"
+  | "environmental-science"
   /** No verified opportunity dataset — the honest "my goal is something else" path. */
   | "something-else";
 
@@ -122,37 +132,81 @@ export const MAJORS = [
 ];
 
 export const TRACKS: CareerTrack[] = [
+  // ---- Healthcare ----
   {
     id: "physician-scientist",
     label: "Physician-Scientist",
-    icon: createElement(Dna, { className: "h-5 w-5" }),
+    icon: createElement(Heart, { className: "h-5 w-5" }),
     identity: "You want to run the experiment and still see the patient.",
     blurb: "MD/PhD paths are decided by bench research plus a named faculty letter, years before you apply.",
-
     brandPrograms: [
       { name: "NIH Summer Internship Program", sponsor: "NIH", note: "Paid biomedical research" },
       { name: "SHPEP", sponsor: "AAMC/RWJF", note: "Six-week pre-health enrichment" },
     ],
   },
   {
+    id: "nursing",
+    label: "Nursing",
+    icon: createElement(Heart, { className: "h-5 w-5" }),
+    identity: "You want to be the one at the bedside making the difference.",
+    blurb: "BSN programs, accelerated second-degree tracks, and clinical placements recruit based on prerequisites and volunteer hours.",
+    brandPrograms: [
+      { name: "NSNA Scholarship", sponsor: "NSNA", note: "National Student Nurses' Association scholarship" },
+      { name: "HRSA Nurse Corps", sponsor: "HRSA", note: "Scholarship program for nursing students" },
+    ],
+  },
+  {
+    id: "public-health",
+    label: "Public Health",
+    icon: createElement(Heart, { className: "h-5 w-5" }),
+    identity: "You want to protect communities and shape health policy.",
+    blurb: "MPH pipelines value fieldwork experience, epidemiology coursework, and community engagement starting sophomore year.",
+    brandPrograms: [
+      { name: "CDC Undergraduate Scholars", sponsor: "CDC", note: "Public health internship pipeline" },
+      { name: "ASPPH Fellowship", sponsor: "ASPPH", note: "Graduate public health fellowship" },
+    ],
+  },
+  // ---- Business ----
+  {
     id: "product-manager",
     label: "Product Manager",
-    icon: createElement(Compass, { className: "h-5 w-5" }),
+    icon: createElement(Briefcase, { className: "h-5 w-5" }),
     identity: "You'd rather ship the thing than write about it.",
     blurb: "APM pipelines screen for shipped work, not coursework, and recruit 12 months ahead.",
-
     brandPrograms: [
       { name: "Google APM", sponsor: "Google", note: "Associate Product Manager new-grad track" },
       { name: "Meta RPM", sponsor: "Meta", note: "Rotational Product Manager program" },
     ],
   },
   {
+    id: "management-consulting",
+    label: "Management Consultant",
+    icon: createElement(Briefcase, { className: "h-5 w-5" }),
+    identity: "You want to solve a new problem every week for the world's biggest companies.",
+    blurb: "Consulting pipelines recruit heavily from diversity conferences and pre-MBA programs starting sophomore year.",
+    brandPrograms: [
+      { name: "McKinsey Sophomore Advance", sponsor: "McKinsey", note: "Sophomore diversity leadership program" },
+      { name: "BCG Bridge to Consulting", sponsor: "BCG", note: "Underrepresented student workshop" },
+    ],
+  },
+  {
+    id: "marketing",
+    label: "Marketing & Brand Strategy",
+    icon: createElement(Briefcase, { className: "h-5 w-5" }),
+    identity: "You want to shape how people see and feel about products.",
+    blurb: "Brand rotational programs recruit 9–12 months early and look for creative portfolios and analytics skills.",
+    brandPrograms: [
+      { name: "P&G Brand Manager Internship", sponsor: "P&G", note: "Summer brand management pipeline" },
+      { name: "L'Oréal Brandstorm", sponsor: "L'Oréal", note: "Global innovation competition" },
+    ],
+  },
+  // ---- Engineering ----
+  {
     id: "software-engineer",
     label: "Software Engineer",
     icon: createElement(Code, { className: "h-5 w-5" }),
     identity: "You want to build things that work at scale.",
     blurb: "Top internship pipelines recruit 9–12 months early and screen for projects and DSA, not GPA.",
-
     brandPrograms: [
       { name: "Google STEP", sponsor: "Google", note: "Freshman/sophomore SWE internship pipeline" },
       { name: "Meta University", sponsor: "Meta", note: "Engineering internship for underrepresented students" },
@@ -160,30 +214,96 @@ export const TRACKS: CareerTrack[] = [
     ],
   },
   {
+    id: "data-science",
+    label: "Data Scientist",
+    icon: createElement(Code, { className: "h-5 w-5" }),
+    identity: "You want to find the signal in the noise and drive decisions with data.",
+    blurb: "Data science roles value research experience, statistical projects, and Kaggle-style portfolios over pure coursework.",
+    brandPrograms: [
+      { name: "Two Sigma Freshman Discovery", sponsor: "Two Sigma", note: "Quantitative research internship" },
+      { name: "NASA DEVELOP", sponsor: "NASA", note: "Earth science data research program" },
+    ],
+  },
+  {
+    id: "cybersecurity",
+    label: "Cybersecurity Engineer",
+    icon: createElement(Code, { className: "h-5 w-5" }),
+    identity: "You want to defend the systems everyone else is building.",
+    blurb: "Security roles value CTF competition experience, certifications, and hands-on lab work starting freshman year.",
+    brandPrograms: [
+      { name: "CyberCorps Scholarship for Service", sponsor: "NSF/DHS", note: "Full scholarship + federal placement" },
+      { name: "SANS Cyber Academy", sponsor: "SANS", note: "Intensive cybersecurity training program" },
+    ],
+  },
+  // ---- Finance ----
+  {
     id: "investment-banking",
     label: "Investment Banker",
-
     icon: createElement(TrendingUp, { className: "h-5 w-5" }),
     identity: "You want a seat in the room where the deal actually gets decided.",
     blurb: "Sophomore insight programs open a full year before junior recruiting closes.",
-
     brandPrograms: [
       { name: "Goldman Sachs Undergraduate Camp", sponsor: "Goldman Sachs", note: "Freshman/sophomore insight program" },
       { name: "Jumpstart Advisory Program", sponsor: "Jumpstart", note: "Diversity finance recruiting pipeline" },
     ],
   },
   {
+    id: "private-equity",
+    label: "Private Equity / Venture Capital",
+    icon: createElement(TrendingUp, { className: "h-5 w-5" }),
+    identity: "You want to pick the companies that will define the next decade.",
+    blurb: "PE/VC recruiting favors IB or consulting experience, but undergrad fellowships are opening earlier pathways.",
+    brandPrograms: [
+      { name: "SEO Alternative Investments", sponsor: "SEO", note: "Diversity fellowship in PE/VC" },
+      { name: "Dorm Room Fund", sponsor: "First Round", note: "Student-run venture fund" },
+    ],
+  },
+  {
+    id: "financial-planning",
+    label: "Financial Analyst / Planning",
+    icon: createElement(TrendingUp, { className: "h-5 w-5" }),
+    identity: "You want to guide how organizations allocate capital and manage risk.",
+    blurb: "FP&A and corporate finance pipelines value modeling skills, internships, and CFA prep starting junior year.",
+    brandPrograms: [
+      { name: "J.P. Morgan Sophomore Edge", sponsor: "J.P. Morgan", note: "Early insights into corporate finance" },
+      { name: "Deloitte Finance Leadership", sponsor: "Deloitte", note: "Finance advisory internship pipeline" },
+    ],
+  },
+  // ---- Science ----
+  {
     id: "research-phd",
     label: "Research PhD",
     icon: createElement(Microscope, { className: "h-5 w-5" }),
     identity: "You want a question of your own, and years to chase it.",
     blurb: "Admissions are driven by one faculty letter tied to real, sustained lab work.",
-
     brandPrograms: [
       { name: "NSF REU", sponsor: "NSF", note: "Funded summer research placements" },
       { name: "Leadership Alliance SR-EIP", sponsor: "Leadership Alliance", note: "Summer research and grad prep" },
     ],
   },
+  {
+    id: "biotech-research",
+    label: "Biotech & Pharma Research",
+    icon: createElement(Microscope, { className: "h-5 w-5" }),
+    identity: "You want to turn lab discoveries into therapies that reach patients.",
+    blurb: "Industry R&D pipelines value co-op experience, publications, and cross-functional lab rotations.",
+    brandPrograms: [
+      { name: "Amgen Scholars", sponsor: "Amgen", note: "Summer research at top institutions" },
+      { name: "Genentech FutureLab", sponsor: "Genentech", note: "Biotech research internship" },
+    ],
+  },
+  {
+    id: "environmental-science",
+    label: "Environmental Scientist",
+    icon: createElement(Microscope, { className: "h-5 w-5" }),
+    identity: "You want to understand and protect the natural systems we all depend on.",
+    blurb: "Environmental careers value fieldwork, GIS skills, and policy literacy built through summer research programs.",
+    brandPrograms: [
+      { name: "EPA Greater Research Opportunities", sponsor: "EPA", note: "Undergrad environmental research fellowship" },
+      { name: "NOAA Hollings Scholarship", sponsor: "NOAA", note: "Scholarship + paid summer internship" },
+    ],
+  },
+  // ---- Catch-all ----
   {
     id: "something-else",
     label: "Something else",

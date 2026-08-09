@@ -21,7 +21,21 @@ import {
   type OpportunityRecord,
   type OpportunityFilters,
 } from "@/lib/opportunities-db";
-import { TRACKS } from "@/lib/wayfind-data";
+import { type TrackId } from "@/lib/wayfind-data";
+
+/** General categories shown as filter pills in the opportunity browser. */
+const OPPORTUNITY_CATEGORIES: { id: string; label: string; trackIds: TrackId[] }[] = [
+  { id: "healthcare", label: "Healthcare", trackIds: ["physician-scientist", "nursing", "public-health"] },
+  { id: "business", label: "Business", trackIds: ["product-manager", "management-consulting", "marketing"] },
+  { id: "engineering", label: "Engineering", trackIds: ["software-engineer", "data-science", "cybersecurity"] },
+  { id: "finance", label: "Finance", trackIds: ["investment-banking", "private-equity", "financial-planning"] },
+  { id: "science", label: "Science", trackIds: ["research-phd", "biotech-research", "environmental-science"] },
+];
+
+/** Map track IDs to general category labels for display. */
+const TRACK_TO_CATEGORY: Record<string, string> = Object.fromEntries(
+  OPPORTUNITY_CATEGORIES.flatMap((c) => c.trackIds.map((tid) => [tid, c.label])),
+);
 import {
   searchRedditOpportunities,
   type RedditOpportunityPost,
@@ -79,6 +93,7 @@ function getDeadlineStatus(deadline: string, recurring: boolean) {
 }
 
 function DeadlinePill({ deadline, recurring }: { deadline: string; recurring: boolean }) {
+  if (!deadline) return null;
   const { label, state } = getDeadlineStatus(deadline, recurring);
   const colors = {
     urgent: "bg-red-100 text-red-800",
@@ -156,14 +171,21 @@ export function OpportunityDatabaseBrowser() {
   const allTags = useMemo(() => getAllTags(), []);
 
   const filters: OpportunityFilters = useMemo(
-    () => ({
-      query: query || undefined,
-      track: selectedTracks.length ? (selectedTracks as any) : undefined,
-      category: selectedCategories.length ? selectedCategories : undefined,
-      deadlineWindow: deadlineWindow,
-      tags: selectedTags.length ? selectedTags : undefined,
-      limit: 100,
-    }),
+    () => {
+      // Expand category selections into their component track IDs
+      const expandedTracks = selectedTracks.flatMap((sel) => {
+        const cat = OPPORTUNITY_CATEGORIES.find((c) => c.id === sel);
+        return cat ? cat.trackIds : [sel];
+      });
+      return {
+        query: query || undefined,
+        track: expandedTracks.length ? (expandedTracks as any) : undefined,
+        category: selectedCategories.length ? selectedCategories : undefined,
+        deadlineWindow: deadlineWindow,
+        tags: selectedTags.length ? selectedTags : undefined,
+        limit: 100,
+      };
+    },
     [query, selectedTracks, selectedCategories, deadlineWindow, selectedTags],
   );
 
@@ -267,19 +289,19 @@ export function OpportunityDatabaseBrowser() {
                   Track
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {TRACKS.filter((t) => t.id !== "something-else").map((t) => (
+                  {OPPORTUNITY_CATEGORIES.map((cat) => (
                     <button
-                      key={t.id}
+                      key={cat.id}
                       type="button"
-                      onClick={() => toggleTrack(t.id)}
+                      onClick={() => toggleTrack(cat.id)}
                       className={cn(
                         "tap rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
-                        selectedTracks.includes(t.id)
+                        selectedTracks.includes(cat.id)
                           ? "border-primary bg-primary/10 text-primary"
                           : "border-transparent bg-muted text-muted-foreground hover:text-foreground",
                       )}
                     >
-                      {t.label}
+                      {cat.label}
                     </button>
                   ))}
                 </div>
@@ -516,7 +538,7 @@ function OpportunityCard({
           {record.category}
         </span>
         <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-          {TRACKS.find((t) => t.id === record.track)?.label ?? record.track}
+          {TRACK_TO_CATEGORY[record.track] ?? record.track}
         </span>
         {record.yearRelevance.length > 0 && (
           <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">

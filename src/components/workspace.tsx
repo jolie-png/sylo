@@ -207,6 +207,15 @@ export function FoundViaSearchBadge() {
   );
 }
 
+/** Confidence marker for curated/verified opportunities from Sylo's dataset. */
+export function CuratedBadge() {
+  return (
+    <span className="tag border border-solid border-green-600/40 bg-green-500/[0.08] text-green-700 dark:text-green-400">
+      ✓ Verified
+    </span>
+  );
+}
+
 /** Neutral marker for a step the student added themselves — never mixed with dataset-backed steps. */
 export function OwnGoalBadge() {
   return (

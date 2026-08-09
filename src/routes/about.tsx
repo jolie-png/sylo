@@ -118,8 +118,7 @@ function AboutPage() {
           dominoes matter.
         </p>
         <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
-          Sylo gives that advisor to every student, at every decision point, from the moment they open a
-          course catalog.
+          Sylo gives that advisor to every student, at every decision point, from the moment they pick a destination.
         </p>
       </section>
 

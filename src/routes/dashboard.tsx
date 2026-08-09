@@ -18,19 +18,21 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 import { CascadePanel } from "@/components/cascade-panel";
 import { WavyConnector, StatusAccentBar } from "@/components/roadmap-connector";
+import { InlineNoteEditor } from "@/components/inline-note-editor";
+import { NoteIndicator } from "@/components/note-indicator";
 
 
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Your Sylo Roadmap — Dashboard" },
+      { title: "Your Roadmap — Sylo" },
       {
         name: "description",
         content:
           "Your sequenced roadmap: the one highest-leverage next move, deadlines to watch, and what's ahead.",
       },
-      { property: "og:title", content: "Your Sylo Roadmap — Dashboard" },
+      { property: "og:title", content: "Your Roadmap — Sylo" },
       {
         property: "og:description",
         content: "One ranked next move, grounded in verified opportunities at your school.",
@@ -45,6 +47,7 @@ function Dashboard() {
     profile,
     roadmap,
     toggleComplete,
+    setStatus,
     hydrated,
     customSteps,
     addCustomStep,
@@ -54,11 +57,14 @@ function Dashboard() {
     browsableOpportunities,
     liveOpportunities,
     reorderSteps,
+    stepNotes,
+    setStepNote,
   } = useWayfind();
   const navigate = useNavigate();
   const [showAlternates, setShowAlternates] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [targetDate, setTargetDate] = useState("");
@@ -93,7 +99,7 @@ function Dashboard() {
     <Workspace wide>
       <PageHeader
         icon={<Compass className="h-5 w-5" />}
-        title="Your Sylo Roadmap"
+        title="Your Roadmap"
         subtitle={`${profile.major} Major → ${track?.label ?? "Your goal"}`}
         meta={[profile.major, profile.year, profile.school]}
       />
@@ -141,7 +147,7 @@ function Dashboard() {
         <p className="mt-4 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground">
           {liveOpportunities.length
             ? "Steps tagged “Found via search” were looked up for your goal and school just now, then checked against a second source where one existed. Open any of them to see what Sylo checked."
-            : "Sylo matched you to opportunities open to any student at your stage — not listings scraped specifically for your school."}
+            : "Every step below comes from Sylo's verified dataset — real programs matched to your major, year, and goal."}
         </p>
       )}
 
@@ -274,12 +280,38 @@ function Dashboard() {
                       {op.name}
                     </Link>
                     <span className="text-xs text-muted-foreground">{op.timeframe}</span>
-                    <StatusTag status={step.status} />
+                    <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
                     {op.origin === "live" ? <FoundViaSearchBadge /> : null}
                     {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}
-                    {/* {op.courseCode ? <Tag tone="blue">Course</Tag> : null} */}
+                    {stepNotes[step.opportunityId] ? (
+                      <NoteIndicator note={stepNotes[step.opportunityId]} />
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => setEditingStepId(step.id)}
+                      aria-label={`Edit note for ${op.name}`}
+                      className="tap tap-surface rounded-lg border p-1.5 text-muted-foreground"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
                   </div>
-                  <p className="mt-1.5 pl-0 text-sm leading-relaxed text-muted-foreground">{step.reasoning}</p>
+                  {editingStepId === step.id ? (
+                    <div className="mt-2">
+                      <InlineNoteEditor
+                        opportunityId={step.opportunityId}
+                        existingNote={stepNotes[step.opportunityId]}
+                        reasoning={step.reasoning}
+                        onClose={() => setEditingStepId(null)}
+                      />
+                    </div>
+                  ) : stepNotes[step.opportunityId] ? (
+                    <>
+                      <p className="mt-1.5 pl-0 text-sm leading-relaxed">{stepNotes[step.opportunityId]}</p>
+                      <p className="mt-1 pl-0 text-sm leading-relaxed text-muted-foreground/60">{step.reasoning}</p>
+                    </>
+                  ) : (
+                    <p className="mt-1.5 pl-0 text-sm leading-relaxed text-muted-foreground">{step.reasoning}</p>
+                  )}
                   {op.id !== topOp?.id && op.unlocks?.length ? (
                     <p className="mt-1 text-[13px] text-muted-foreground/80">
                       → Unlocks {op.unlocks[0]}
@@ -442,7 +474,7 @@ function Dashboard() {
                           {s.title}
                         </span>
                         <OwnGoalBadge />
-                        <StatusTag status={s.status} />
+                        <StatusTag status={s.status} onChange={(st) => updateCustomStep(s.id, { status: st })} />
                         {s.targetDate ? (
                           <span className="text-xs text-muted-foreground">Target {s.targetDate}</span>
                         ) : null}
@@ -483,7 +515,19 @@ function Dashboard() {
           What to expect over the next two to three years, beside what&apos;s actually open now.
         </p>
 
-        <div className="mt-5 grid gap-5 md:grid-cols-3">
+        {(() => {
+          const futureCards = futureYears.filter(
+            (y) => milestonesForTrack(profile.trackId).filter((m) => m.year === y).length > 0,
+          ).length;
+          const totalCards = 1 + futureCards;
+          const gridCols =
+            totalCards >= 3
+              ? "md:grid-cols-3"
+              : totalCards === 2
+                ? "md:grid-cols-2"
+                : "md:grid-cols-1";
+          return (
+        <div className={cn("mt-5 grid gap-5", gridCols)}>
           <div className="rounded-2xl border border-primary/15 bg-primary/5 p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">This term</p>
             <p className="mt-1 text-[13px] text-muted-foreground">Verified openings at your school.</p>
@@ -549,6 +593,8 @@ function Dashboard() {
             );
           })}
         </div>
+          );
+        })()}
       </section>
 
 

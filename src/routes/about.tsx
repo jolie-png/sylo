@@ -42,25 +42,32 @@ function AboutPage() {
 
       {/* The example */}
       <section className="mt-8 rounded-2xl border border-primary/15 bg-primary/5 p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">Real example</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">Real story</p>
         <p className="mt-3 text-sm leading-relaxed text-foreground">
-          A first-generation biology sophomore at UCLA wants to become a physician-scientist. The{" "}
-          <span className="font-medium">Undergraduate Research Fellows Program (URFP)</span> — which
-          funds a year of mentored research and requires a faculty sponsor — has its deadline on{" "}
-          <span className="font-medium">November 14</span>. But you can&apos;t apply without an existing
-          faculty relationship. And you can&apos;t build a faculty relationship without being in a lab.
-          And getting into a lab means applying to{" "}
-          <span className="font-medium">BISEP</span> (the Biomedical Science Enrichment Program) the
-          previous spring — a 6-week summer intensive that places freshmen into their first research lab.
+          A college student{" "}
+          <a
+            href="https://www.wallstreetoasis.com/forum/investment-banking/advice-for-college-senior-w-no-internship-experience"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            posted online
+          </a>
+          {" "}as a rising senior with zero finance internships. They&apos;d switched from pre-med to
+          economics at the end of sophomore year — but didn&apos;t learn about the actual recruiting
+          timeline until junior spring. By then, every sophomore insight program (Goldman Sachs, JP Morgan,
+          Citi) had already closed. Summer analyst recruiting was over. They were a senior with no
+          pipeline, no network, and no way back in.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Miss BISEP&apos;s spring deadline → no lab placement that summer → no faculty relationship
-          by fall → no URFP application in November → no funded research, no letter, no fellowship.
-          The whole chain slips a year.
+          The information existed. The programs existed. They just didn&apos;t know what to look for,
+          or when. If they&apos;d had Sylo freshman year — the moment they were even considering finance —
+          it would have shown them: apply to these insight programs by September of sophomore year, because
+          that&apos;s the actual entry point to junior-summer recruiting. One ranked next move. One deadline.
+          The domino that unlocks everything after it.
         </p>
         <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
-          Sylo shows that chain the moment you pick &ldquo;physician-scientist&rdquo; — not after
-          you&apos;ve already missed the first domino.
+          They didn&apos;t fail because they weren&apos;t good enough. They failed because nobody connected the dominoes in time.
         </p>
       </section>
 

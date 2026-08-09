@@ -60,7 +60,9 @@ function Landing() {
             <span className="text-sm font-medium tracking-tight">Sylo</span>
 
           </div>
-
+          <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">
+            Why Sylo?
+          </Link>
         </div>
       </header>
 

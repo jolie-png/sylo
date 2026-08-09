@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ChevronRight, ChevronDown, Compass, Plus, Pencil, Trash2, AlertCircle } from "lucide-react";
+import { ChevronRight, ChevronDown, Compass, Plus, Pencil, Trash2, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
 import {
   Workspace,
   PageHeader,
@@ -10,9 +10,10 @@ import {
   OwnGoalBadge,
   FoundViaSearchBadge,
 } from "@/components/workspace";
-import { useWayfind } from "@/lib/wayfind-store";
+import { useWayfind } from "@/lib/sylo-store";
 import { getTrack, milestonesForTrack, YEARS } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
+import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { CascadePanel } from "@/components/cascade-panel";
@@ -97,20 +98,7 @@ function Dashboard() {
       <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{roadmap.summary}</p>
 
       {noDataset ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-foreground/25 bg-muted/50 p-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Your goal, in your words
-          </p>
-          <p className="mt-2 text-[15px] font-semibold leading-snug tracking-tight">
-            {profile.goalText || track?.label || "Something else"}
-          </p>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Sylo doesn&apos;t have verified opportunity data for this path yet, so it won&apos;t rank
-            a next move or invent programs, deadlines, or contacts for it. Everything else still
-            works: add your own steps below and Sylo will track and sequence them alongside your
-            deadlines.
-          </p>
-        </div>
+        <NoDatasetState profile={profile} track={track} />
       ) : (
         <p className="mt-4 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground">
           {liveOpportunities.length
@@ -736,3 +724,100 @@ function ProgressTileButton({
 
 
 
+
+function NoDatasetState({ profile, track }: { profile: NonNullable<ReturnType<typeof useWayfind>["profile"]>; track: ReturnType<typeof getTrack> }) {
+  const generate = useRoadmapGeneration();
+  const { setRoadmap } = useWayfind();
+  const [searching, setSearching] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const busyLabel = useSearchProgressLabel(searching);
+  const hasGoal = Boolean(profile.goalText?.trim());
+
+  async function retrySearch() {
+    setSearching(true);
+    setFailed(false);
+    try {
+      const { roadmap, live } = await generate({
+        trackId: profile.trackId,
+        goalText: profile.goalText,
+        major: profile.major,
+        year: profile.year,
+        school: profile.school,
+      });
+      if (roadmap.steps.length > 0) {
+        setRoadmap(roadmap, live);
+      } else {
+        setFailed(true);
+        setAttempts((a) => a + 1);
+      }
+    } catch {
+      setFailed(true);
+      setAttempts((a) => a + 1);
+    } finally {
+      setSearching(false);
+    }
+  }
+
+  // Auto-trigger the search on mount when a goal is present, so the user
+  // doesn't land on a blank page and have to click manually.
+  const autoTriggered = useRef(false);
+  useEffect(() => {
+    if (hasGoal && !autoTriggered.current) {
+      autoTriggered.current = true;
+      retrySearch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (searching) {
+    return (
+      <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-6">
+        <div className="flex items-center gap-3">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <div>
+            <p className="text-sm font-semibold tracking-tight">{busyLabel}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Searching for &ldquo;{profile.goalText || "opportunities"}&rdquo; at {profile.school}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6 rounded-2xl border border-dashed border-foreground/25 bg-muted/50 p-6">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Your goal, in your words
+      </p>
+      <p className="mt-2 text-[15px] font-semibold leading-snug tracking-tight">
+        {profile.goalText || track?.label || "Something else"}
+      </p>
+      {failed ? (
+        <>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Sylo searched for &ldquo;{profile.goalText}&rdquo; opportunities at {profile.school} but
+            didn&apos;t find verified results{attempts > 1 ? ` (tried ${attempts} times)` : ""}.
+            This can happen when the search APIs are slow, rate-limited, or when results don&apos;t
+            pass verification.
+          </p>
+          <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+            You can try again, or add your own steps below and Sylo will track them.
+          </p>
+        </>
+      ) : (
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          Sylo can search for real opportunities at {profile.school} for this goal. Hit the button below to find programs, internships, and next steps with verified links.
+        </p>
+      )}
+      <button
+        onClick={retrySearch}
+        className="tap mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+      >
+        <RefreshCw className="h-4 w-4" />
+        {failed ? "Try again" : "Search for opportunities"}
+      </button>
+    </div>
+  );
+}

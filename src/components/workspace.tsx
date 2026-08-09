@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { LayoutList, KanbanSquare, FileText, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { SyloMark } from "@/components/SyloMark";
 import type { StepStatus } from "@/lib/wayfind-data";
 
 
@@ -20,6 +21,7 @@ export function Workspace({ children, wide = false }: { children: ReactNode; wid
     <div className="flex min-h-screen">
       <aside className="glass-panel sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r px-4 py-5 md:flex">
         <Link to="/" className="tap mb-6 flex items-center gap-2.5 rounded-full px-3 py-1.5">
+          <SyloMark className="h-5 w-5" />
           <span className="text-lg font-semibold tracking-tight">Sylo</span>
         </Link>
         <nav className="flex flex-col gap-1">
@@ -65,6 +67,7 @@ function MobileHeader({ pathname }: { pathname: string }) {
     <header className="glass-panel sticky top-0 z-50 flex flex-col border-b px-4 py-3 md:hidden">
       <div className="flex items-center justify-between">
         <Link to="/" className="tap flex items-center gap-2.5 rounded-full py-1">
+          <SyloMark className="h-5 w-5" />
           <span className="text-lg font-semibold tracking-tight">Sylo</span>
         </Link>
         <Link

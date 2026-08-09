@@ -40,6 +40,7 @@ import { WavyConnector, StatusAccentBar } from "@/components/roadmap-connector";
 import { InlineNoteEditor } from "@/components/inline-note-editor";
 import { NoteIndicator } from "@/components/note-indicator";
 import { DeadlinePill } from "@/components/deadline-badges";
+import { SUCCESS_STORIES } from "@/lib/success-stories";
 
 
 
@@ -651,6 +652,32 @@ function Dashboard() {
           className="tap mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
           See all opportunities <ChevronRight className="h-3.5 w-3.5" />
+        </Link>
+      </section>
+
+      <section className="mt-8 border-t pt-5">
+        <h2 className="text-sm font-semibold tracking-tight">People who made it</h2>
+        <p className="mt-1 text-xs text-muted-foreground">See how others got to where you&apos;re going.</p>
+        <div className="mt-3 space-y-2">
+          {SUCCESS_STORIES.slice(0, 2).map((story) => (
+            <Link
+              key={story.id}
+              to="/paths"
+              className="tap flex items-center justify-between rounded-xl border bg-card p-3 text-sm hover:border-primary/30"
+            >
+              <div className="min-w-0">
+                <p className="font-medium tracking-tight">{story.name} · {story.school}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{story.outcome} · {story.steps.length} steps</p>
+              </div>
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+            </Link>
+          ))}
+        </div>
+        <Link
+          to="/paths"
+          className="tap mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+        >
+          See all success maps <ChevronRight className="h-3.5 w-3.5" />
         </Link>
       </section>
     </Workspace>

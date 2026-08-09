@@ -221,7 +221,10 @@ function Landing() {
               The invisible advisor every well-connected student already has.<br /><span className="text-primary">Now it&apos;s yours.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground text-balance">
-              No sign-up required. Real roadmaps in seconds.
+              No sign-up required. Real roadmaps in seconds.{" "}
+              <Link to="/about" className="font-medium text-primary underline-offset-4 hover:underline">
+                Learn more
+              </Link>
             </p>
             <div className="mt-8 pb-40">
               <Link

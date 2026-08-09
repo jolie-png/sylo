@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 
 const PHRASES = [
-  "Physician-Scientist",
-  "Product Manager",
-  "Software Engineer",
-  "Investment Banker",
+  "physician-scientist.",
+  "product manager.",
+  "software engineer.",
+  "investment banker.",
 ];
 
 const TYPE_MS = 55;
@@ -36,7 +36,6 @@ export function TypingHero() {
         frameRef.current = setTimeout(() => setPhase("gap"), 0);
       }
     } else {
-      // gap → advance to next phrase, loop infinitely
       frameRef.current = setTimeout(() => {
         setIndex((i) => (i + 1) % PHRASES.length);
         setPhase("typing");
@@ -47,20 +46,16 @@ export function TypingHero() {
   }, [text, phase, index]);
 
   return (
-    <h1 className="mx-auto flex h-[3.3em] max-w-3xl items-start justify-center text-[40px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[56px]">
-      <span className="block text-center">
-        The map to becoming a{" "}
-        <span className="text-primary">
-          {text}
-          <span
-            aria-hidden="true"
-            className="ml-0.5 inline-block h-[0.8em] w-[2px] translate-y-[0.06em] rounded-full bg-primary/50 align-baseline animate-[pulse_1s_steps(2,start)_infinite]"
-          />
-        </span>
-        <span className="sr-only">
-          {PHRASES.join(", ")}
-        </span>
+    <h1 className="mx-auto max-w-3xl text-center text-[40px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[56px]">
+      The map to becoming a{" "}
+      <span className="text-primary">
+        {text}
+        <span
+          aria-hidden="true"
+          className="ml-0.5 inline-block h-[0.8em] w-[2px] translate-y-[0.06em] rounded-full bg-primary/50 align-baseline animate-[pulse_1s_steps(2,start)_infinite]"
+        />
       </span>
+      <span className="sr-only">{PHRASES.join(", ")}</span>
     </h1>
   );
 }

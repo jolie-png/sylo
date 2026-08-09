@@ -1,12 +1,54 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowRight, Loader2, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowRight, Loader2, ChevronDown, ChevronRight, Heart, Briefcase, Code, TrendingUp, Microscope } from "lucide-react";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
 import { useWayfind } from "@/lib/wayfind-store";
-import { MAJORS, TRACKS, YEARS, opportunitiesForTrack } from "@/lib/wayfind-data";
+import { MAJORS, TRACKS, YEARS, opportunitiesForTrack, type TrackId } from "@/lib/wayfind-data";
 import { SchoolCombobox } from "@/components/school-combobox";
 import { ResumeUpload } from "@/components/resume-upload";
 import { cn } from "@/lib/utils";
+
+/**
+ * General categories → specific roles within each.
+ * Users pick a category first, then drill into the specific role.
+ */
+const TRACK_CATEGORIES = [
+  {
+    id: "healthcare",
+    label: "Healthcare",
+    description: "Clinical care, biomedical research, and health systems.",
+    icon: Heart,
+    trackIds: ["physician-scientist", "nursing", "public-health"] as TrackId[],
+  },
+  {
+    id: "business",
+    label: "Business",
+    description: "Product, operations, strategy, and leadership roles.",
+    icon: Briefcase,
+    trackIds: ["product-manager", "management-consulting", "marketing"] as TrackId[],
+  },
+  {
+    id: "engineering",
+    label: "Engineering",
+    description: "Building systems, products, and infrastructure at scale.",
+    icon: Code,
+    trackIds: ["software-engineer", "data-science", "cybersecurity"] as TrackId[],
+  },
+  {
+    id: "finance",
+    label: "Finance",
+    description: "Markets, deals, investments, and capital allocation.",
+    icon: TrendingUp,
+    trackIds: ["investment-banking", "private-equity", "financial-planning"] as TrackId[],
+  },
+  {
+    id: "science",
+    label: "Science",
+    description: "Research-driven discovery across disciplines.",
+    icon: Microscope,
+    trackIds: ["research-phd", "biotech-research", "environmental-science"] as TrackId[],
+  },
+] as const;
 
 export const Route = createFileRoute("/roadmap-builder")({
   head: () => ({
@@ -33,6 +75,9 @@ function Builder() {
   const { setProfile, setRoadmap, loadPersona } = useWayfind();
 
   const [trackId, setTrackId] = useState("");
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [customRole, setCustomRole] = useState("");
+  const [customCategory, setCustomCategory] = useState<string | null>(null);
   const [peek, setPeek] = useState("");
 
   const [goalText, setGoalText] = useState("");
@@ -60,12 +105,20 @@ function Builder() {
     setBusy(true);
     setError("");
     setDemoPulse(false);
+
+    // If the user selected "Other in [Category]", prepend their custom role + field to goalText
+    const effectiveGoalText = customCategory && customRole.trim()
+      ? `I want to become a ${customRole.trim()} (field: ${TRACK_CATEGORIES.find((c) => c.id === customCategory)?.label ?? customCategory}). ${goalText}`.trim()
+      : customCategory
+        ? `My goal is in the ${TRACK_CATEGORIES.find((c) => c.id === customCategory)?.label ?? customCategory} field. ${goalText}`.trim()
+        : goalText;
+
     const profile = {
       major,
       year,
       school,
       trackId,
-      goalText,
+      goalText: effectiveGoalText,
       experience: experience.trim() || undefined,
       gpa: gpa.trim() || undefined,
       skills: skills.trim() || undefined,
@@ -75,7 +128,7 @@ function Builder() {
     };
     setProfile(profile);
     try {
-      const { roadmap, live } = await generate({ trackId, goalText, major, year, school, experience, gpa, skills, priorWork, clubs, alreadyDone });
+      const { roadmap, live } = await generate({ trackId, goalText: effectiveGoalText, major, year, school, experience, gpa, skills, priorWork, clubs, alreadyDone });
       setRoadmap(roadmap, live);
       navigate({ to: "/dashboard" });
     } catch {
@@ -100,7 +153,7 @@ function Builder() {
           to="/"
           className="tap inline-flex items-center gap-1 rounded-full px-1 text-sm text-muted-foreground hover:text-foreground"
         >
-          <span>←</span> Sylo
+          <span>←</span> Home
         </Link>
         <h1 className="mt-7 text-[40px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[56px]">Where do you want to go?</h1>
         <p className="mt-2.5 text-base text-muted-foreground">
@@ -108,16 +161,198 @@ function Builder() {
         </p>
 
         <div className="mt-8 space-y-3">
-          {TRACKS.map((t, idx) => {
-            const selected = trackId === t.id;
-            const peeking = peek === t.id;
-            const sample = opportunitiesForTrack(t.id)
-              .slice()
-              .sort((a, b) => a.deadline.localeCompare(b.deadline))
-              .slice(0, 3);
+          {TRACK_CATEGORIES.map((cat) => {
+            const isExpanded = expandedCategory === cat.id;
+            const tracks = TRACKS.filter((t) => (cat.trackIds as readonly string[]).includes(t.id));
+            const hasSelectedTrack = tracks.some((t) => t.id === trackId) || (trackId === "something-else" && customCategory === cat.id);
+
             return (
               <div
-                key={t.id}
+                key={cat.id}
+                className={cn(
+                  "rounded-xl border bg-card transition-colors",
+                  hasSelectedTrack
+                    ? "border-primary/40 shadow-[var(--shadow-raise)]"
+                    : isExpanded
+                      ? "border-primary/25"
+                      : "border-border hover:border-primary/25",
+                )}
+              >
+                {/* Category header */}
+                <button
+                  type="button"
+                  onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
+                  aria-expanded={isExpanded}
+                  className="tap group flex w-full items-center gap-4 rounded-xl p-4 text-left"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-xl shadow-sm">
+                    <cat.icon className="h-5 w-5" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[15px] font-semibold tracking-tight">{cat.label}</span>
+                    <span className="mt-0.5 block text-[13px] leading-relaxed text-muted-foreground">
+                      {cat.description}
+                    </span>
+                  </span>
+                  {hasSelectedTrack && (
+                    <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                      {trackId === "something-else" && customCategory === cat.id
+                        ? customRole.trim() || `Other in ${cat.label}`
+                        : tracks.find((t) => t.id === trackId)?.label}
+                    </span>
+                  )}
+                  <ChevronRight
+                    className={cn(
+                      "h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200",
+                      isExpanded && "rotate-90",
+                    )}
+                  />
+                </button>
+
+                {/* Expanded: specific roles within this category */}
+                {isExpanded && (
+                  <div className="border-t px-4 pb-4 pt-3 space-y-2">
+                    {tracks.map((t) => {
+                      const selected = trackId === t.id;
+                      const sample = opportunitiesForTrack(t.id)
+                        .slice()
+                        .sort((a, b) => a.deadline.localeCompare(b.deadline))
+                        .slice(0, 3);
+                      const peeking = peek === t.id;
+                      return (
+                        <div
+                          key={t.id}
+                          className={cn(
+                            "rounded-lg border transition-colors",
+                            selected
+                              ? "border-primary/40 bg-primary/5"
+                              : "border-border/50 hover:border-primary/25",
+                          )}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => { setTrackId(t.id); setCustomCategory(null); setCustomRole(""); }}
+                            aria-pressed={selected}
+                            className="tap group flex w-full items-start gap-3 rounded-lg p-3 text-left"
+                          >
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-[14px] font-semibold tracking-tight">{t.label}</span>
+                              <span className="mt-0.5 block text-[13px] leading-snug text-muted-foreground">
+                                {t.identity}
+                              </span>
+                              <span className="mt-0.5 block text-[12px] leading-relaxed text-muted-foreground/80">
+                                {t.blurb}
+                              </span>
+                            </span>
+                            <span
+                              className={cn(
+                                "mt-1.5 h-4.5 w-4.5 shrink-0 rounded-full border-2 transition-colors",
+                                selected ? "border-primary bg-primary" : "border-border",
+                              )}
+                            >
+                              {selected ? (
+                                <svg viewBox="0 0 12 12" className="m-auto h-full w-full p-0.5 text-primary-foreground">
+                                  <path d="M2.5 6.3 4.7 8.5 9.5 3.7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              ) : null}
+                            </span>
+                          </button>
+
+                          {/* Sample roadmap peek */}
+                          {sample.length > 0 && (
+                            <div className="px-3 pb-3">
+                              <button
+                                type="button"
+                                onClick={() => setPeek(peeking ? "" : t.id)}
+                                aria-expanded={peeking}
+                                className="tap rounded-md text-[12px] font-medium text-primary hover:underline"
+                              >
+                                {peeking ? "Hide sample" : "Peek at a sample roadmap"}
+                              </button>
+                              {peeking && (
+                                <ul className="mt-2 space-y-1.5">
+                                  {sample.map((op, i) => (
+                                    <li key={op.id} className="flex items-center gap-2 text-[12px] text-muted-foreground">
+                                      <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-secondary text-[10px] tabular-nums">
+                                        {i + 1}
+                                      </span>
+                                      <span className="truncate">{op.name}</span>
+                                      <span className="shrink-0 text-muted-foreground/70">{op.timeframe}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* "Other in [Category]" option */}
+                    {(() => {
+                      const isOtherSelected = trackId === "something-else" && customCategory === cat.id;
+                      return (
+                        <div
+                          className={cn(
+                            "rounded-lg border transition-colors",
+                            isOtherSelected
+                              ? "border-primary/40 bg-primary/5"
+                              : "border-border/50 hover:border-primary/25",
+                          )}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => { setTrackId("something-else"); setCustomCategory(cat.id); }}
+                            aria-pressed={isOtherSelected}
+                            className="tap group flex w-full items-start gap-3 rounded-lg p-3 text-left"
+                          >
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-[14px] font-semibold tracking-tight">
+                                Other in {cat.label}
+                              </span>
+                              <span className="mt-0.5 block text-[13px] leading-snug text-muted-foreground">
+                                Your goal is in this field but doesn't match the roles above.
+                              </span>
+                            </span>
+                            <span
+                              className={cn(
+                                "mt-1.5 h-4.5 w-4.5 shrink-0 rounded-full border-2 transition-colors",
+                                isOtherSelected ? "border-primary bg-primary" : "border-border",
+                              )}
+                            >
+                              {isOtherSelected ? (
+                                <svg viewBox="0 0 12 12" className="m-auto h-full w-full p-0.5 text-primary-foreground">
+                                  <path d="M2.5 6.3 4.7 8.5 9.5 3.7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              ) : null}
+                            </span>
+                          </button>
+                          {isOtherSelected && (
+                            <div className="px-3 pb-3">
+                              <input
+                                value={customRole}
+                                onChange={(e) => setCustomRole(e.target.value)}
+                                placeholder={`e.g. Occupational Therapist, UX Researcher...`}
+                                className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+                                autoFocus
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* "Something else" — standalone option */}
+          {(() => {
+            const t = TRACKS.find((t) => t.id === "something-else")!;
+            const selected = trackId === t.id;
+            return (
+              <div
                 className={cn(
                   "rounded-xl border bg-card transition-colors",
                   selected
@@ -127,9 +362,9 @@ function Builder() {
               >
                 <button
                   type="button"
-                  onClick={() => setTrackId(t.id)}
+                  onClick={() => { setTrackId(t.id); setExpandedCategory(null); }}
                   aria-pressed={selected}
-                  className="tap group flex w-full items-start gap-4 rounded-2xl p-4 text-left"
+                  className="tap group flex w-full items-start gap-4 rounded-xl p-4 text-left"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-xl shadow-sm">
                     {t.icon}
@@ -156,47 +391,15 @@ function Builder() {
                     ) : null}
                   </span>
                 </button>
-
-                {idx === 0 && sample.length ? (
-                <div className="px-4 pb-4">
-                  <button
-                    type="button"
-                    onClick={() => setPeek(peeking ? "" : t.id)}
-                    aria-expanded={peeking}
-                    className="tap rounded-md text-[13px] font-medium text-primary hover:underline"
-                  >
-                    {peeking ? "Hide sample roadmap" : "Peek at a sample roadmap"}
-                  </button>
-                  <ul
-                    aria-hidden={!peeking}
-                    className={cn(
-                      "mt-2.5 space-y-1.5 transition-all duration-300",
-                      peeking ? "blur-0 opacity-100" : "select-none blur-[5px] opacity-60",
-                    )}
-                  >
-                    {sample.map((op, i) => (
-                      <li key={op.id} className="flex items-center gap-2 text-[13px] text-muted-foreground">
-                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] bg-secondary text-[10px] tabular-nums">
-                          {i + 1}
-                        </span>
-                        <span className="truncate">{op.name}</span>
-                        <span className="shrink-0 text-muted-foreground/70">{op.timeframe}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                ) : null}
               </div>
             );
-          })}
+          })()}
         </div>
 
 
         <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
-          Not an exact fit? Picking the closest track is an approximation — Sylo will show verified
-          opportunities for that track, not a custom match for your exact goal. If none of them fit,
-          choose <span className="font-medium text-foreground">Something else</span> and Sylo will
-          say so honestly instead of guessing.
+          None of these fit? Choose <span className="font-medium text-foreground">Something else</span> and
+          describe your goal — Sylo will search for real opportunities instead of guessing.
         </p>
 
         <label className="mt-8 block">
@@ -323,14 +526,14 @@ function Builder() {
               onClick={() => demo("maya")}
               className="tap tap-surface rounded-lg border bg-card px-4 py-1.5 text-sm"
             >
-              Maya · Biology @ UCLA
+              Alex · Biology @ UCLA
             </button>
             <button
               type="button"
               onClick={() => demo("alex")}
               className="tap tap-surface rounded-lg border bg-card px-4 py-1.5 text-sm"
             >
-              Alex · CS @ Georgia Tech
+              Maya · CS @ Georgia Tech
             </button>
           </div>
         </div>

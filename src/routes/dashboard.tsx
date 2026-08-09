@@ -656,7 +656,7 @@ function Dashboard() {
       </section>
 
       <section className="mt-8 border-t pt-5">
-        <h2 className="text-sm font-semibold tracking-tight">People who made it</h2>
+        <h2 className="text-sm font-semibold tracking-tight">See the roadmaps that lead others to success</h2>
         <div className="mt-3 space-y-2">
           {SUCCESS_STORIES.slice(0, 2).map((story) => (
             <Link

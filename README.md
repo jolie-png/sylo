@@ -1,69 +1,58 @@
-
 # Sylo
- 
-**The missing intelligence layer between a student's degree plan and their future opportunities.**
- 
-Scroll LinkedIn long enough and you'll see it happen in real time: someone posts that they're starting their Goldman Sachs internship, and in the comments, "how'd you get this?" The answer is usually some pipeline program you've never heard of — the Goldman Sachs Insight Series, say, or BCG's Bridge to Consulting. These programs are real and they work. But you only find them if you happen to see the right post, know the right person, or ask the right question in the right group chat.
- 
-Students don't fail to find these opportunities because the opportunities don't exist. They fail because nobody connects "what classes should I take," "what experiences should I pursue," "what deadlines matter," and "what does this actually unlock" into one picture. Career platforms tell students what's out there. Academic systems tell students what's required. Nobody connects the two to a specific student's actual situation — and that's the real gap. Not a missing database. A missing connection.
- 
-A student tells Sylo where they want to end up. Sylo maps the single next highest-leverage move — tied to their real major, year, and school, not a generic list to sort through alone.
- 
-## The domino effect
- 
-Higher education actually runs on a domino effect, and almost nobody shows students the dominoes. Consider Maya, a first-generation biology major who wants to become a physician-scientist. Postponing a single fall research methods course doesn't just delay a class requirement — it breaks the eligibility chain for the faculty mentor relationship she needs by October, which breaks the recommendation letter she needs in November, which breaks the fellowship application due in January. Miss the course, and her timeline doesn't slip by a semester. It slips by a year. Sylo shows her that chain before she registers, not after she's missed it: take Research Methods this fall, because it's the exact domino that unlocks everything after it.
- 
-## Opportunity translation
- 
-When Sylo notices Maya's school has no formal pipeline for competitive biomedical research opportunities, it doesn't leave her stuck — it surfaces the real equivalent already sitting inside her own university, built on the same ingredients a competitive program actually looks for: faculty mentorship, a structured research project, and recommendation letter support. That's opportunity translation, and it only works because Sylo is reasoning over a student's actual academic record and actual school, not generic advice.
- 
-## Why not a resume optimizer, an internship board, or ChatGPT
- 
-Those tools assume a student already knows the destination and just needs help polishing the application or filtering a list. The actual gap sits earlier: knowing which door to walk toward, and that this semester's course registration is already the first domino in that chain.
- 
-And it's why opening a general AI chat isn't the same thing either. A general model answers questions a student already knows to ask, and it has no idea what a specific school actually offers or what depends on what. Sylo doesn't wait to be asked — it reasons only over a verified, structured dataset of real pathway opportunities and each student's real degree progress.
- 
-We're starting narrow and deliberately: four career pathways — Physician-Scientist, Product Manager, Investment Banking, and Research PhD — with a curated opportunity graph for each, where the hidden-pipeline problem is sharpest and easiest to prove, before expanding further.
- 
-## What makes this different from a generic AI chat
- 
-- **Grounded in a verified, curated dataset — never fabricated.** Sylo reasons only over a structured set of real pathway opportunities plus the student's own inputs. It never invents a program, course, or deadline that isn't in the dataset.
-- **Proactive, not reactive.** No open chat box. The student answers structured prompts; Sylo tells them what they didn't know to ask.
-- **One ranked next step, not a list.** The dashboard's hero is always a single move, never a list to sort through alone.
-- **No fabricated statistics.** No invented readiness score, no percentage comparing a student to an unknowable peer average. Progress is shown as honest counts and checklists.
-- **Every roadmap step carries Action + Timing + Reasoning** — a title alone is never enough.
-- **Steps are chained, not isolated.** The hero step shows what it requires (Upstream), what it leads to two steps deep (Unlocks), and any hard time constraint (Window) — so a missed deadline has a visible downstream cost, not just an immediate one.
-## The core screens
- 
-- **Roadmap Builder** — guided intake: pick a destination, major, year, and school (or type your own).
-- **Dashboard** — the hero screen: your destination, your biggest gap, your chained next move, and why your school-specific path is different from the name-brand pipeline you don't have access to.
-- **Progress Tracker** — a Notion-database-style board and list view of every step, synced live with the dashboard.
-- **Course Advisor** — reads a simulated degree audit and course catalog, proposes courses tied to the same roadmap reasoning, one step earlier.
-- **Opportunity Details** — the full record behind any step: requirements, deadline, contact, and why Sylo recommended it.
+
+**Your roadmap to becoming a [anything].**
+
+Everyone knows internships matter. Everyone knows networking matters. But what does that actually look like in practice? You mass-message hundreds of people on LinkedIn, show up to career fairs, and hope someone responds. And even when someone does — how do you build the experience that makes you worth referring, when you don't know which experiences actually matter for where you're trying to go?
+
+You see someone post that they're starting at Goldman Sachs, and in the comments: "how'd you get this?" The answer is almost never "I applied online." It's a pipeline program most students have never heard of — an insight series, a bridge program, a sophomore summit — that quietly fed them into recruiting a year before applications even opened. The information is technically online — tucked away on a corporate careers page, buried in a PDF, or posted once on LinkedIn where you'd have to be lucky enough to scroll past it at the right time. It's rarely broadcast. Career fairs exist, but you're one of hundreds. Cold outreach exists, but you're one of thousands. The students who actually find these programs? Someone told them directly.
+
+**The path exists. The programs exist. Most students just never see the map.**
+
+## The real gap
+
+Career platforms tell students what's out there. Academic systems tell students what's required. Career centers say "go network" and "build your brand." Nobody connects the three into a concrete sequence of steps for one specific student at one specific school — and that's the real gap. Not a missing database. Not a missing motivation. A missing connection.
+
+Higher education runs on a chain reaction. Miss one early step, and you don't just fall behind — you break the eligibility chain for the fellowship, the lab placement, the internship that depended on it. Your timeline doesn't slip by a semester. It slips by a year.
+
+## Sylo is the map
+
+A student tells Sylo where they want to end up. Sylo gives them one ranked next move — tied to their real major, year, and school. Not a list to scroll. Not "network more." One step, one deadline, one reason why it matters right now.
+
+It's the kind of clarity that used to require knowing the right person — delivered to every student, at every school, the moment they pick a destination.
+
+## What makes it different
+
+- **Not a resume optimizer** — that assumes you already know what to put on it.
+- **Not an internship board** — that assumes you already know what to search for.
+- **Not ChatGPT** — that answers questions you already know to ask, with no idea what your school actually offers or what depends on what.
+
+Sylo reasons over a student's real progress, real school, and real opportunities — the same kind of structured academic data that planning systems already manage — and turns it into: here's what to do next, here's why, and here's the deadline.
+
 ## The invisible advisor
- 
-Every connected student already has an invisible advisor — a parent, an older friend, a mentor, or just the right feed of LinkedIn posts — quietly telling them what to do next, and quietly telling them which dominoes matter. Sylo gives that advisor to every student, at every decision point, from the moment they open a course catalog. Not a better resume. Not another list to scroll. The missing layer between what a student is studying today and where they're actually headed.
- 
-Built for the Pathfinders Challenge (Stellic × Anthropic × Lovable).
- 
+
+Every connected student already has someone — a parent in the industry, an older sibling who went through recruiting, a mentor who says "apply to this specific thing by this specific date." That's not networking. That's having the map.
+
+Sylo gives that map to every student, from the moment they pick a destination.
+
+## Features
+
+- **Roadmap Builder** — pick a destination, major, year, and school. Sylo builds your personalized roadmap.
+- **Gap Analysis** — surfaces what you have, what's missing, and the single most important thing to focus on.
+- **Live Search** — finds real programs, fellowships, and pipelines at your specific school.
+- **Resume Upload** — upload a PDF and Sylo auto-fills your profile context for better recommendations.
+- **Success Maps** — real roadmaps from students who made it (sourced from public stories).
+- **Progress Tracking** — check off steps, add your own goals, reorder priorities.
+
+## Tech Stack
+
+- TanStack Start (React + Vite + Nitro SSR)
+- Anthropic Claude (Haiku 4.5) for resume parsing and opportunity structuring
+- Serper.dev for live school-specific search
+- Tailwind CSS + Radix UI
+- TypeScript throughout
+
 ---
- 
-This project was built with [Lovable](https://lovable.dev).
- 
-## Build with Lovable
- 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/ebbe9bf8-a390-401c-b32c-305b05c3f830).
- 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-## Development
- 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
- 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+
+Built for the [Stellic Pathfinders Challenge](https://stellic.com).
+
+Built with [Lovable](https://lovable.dev).

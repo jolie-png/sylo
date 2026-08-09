@@ -27,6 +27,12 @@ export type RoadmapInput = {
   major: string;
   year: string;
   school: string;
+  experience?: string;
+  gpa?: string;
+  skills?: string;
+  priorWork?: string;
+  clubs?: string;
+  alreadyDone?: string;
 };
 
 export type GenerationResult = {
@@ -59,7 +65,8 @@ export function useRoadmapGeneration() {
         if (result && result.steps.length > 0) {
           return { roadmap: fromGenerated(result), live: result.opportunities };
         }
-      } catch {
+      } catch (err) {
+        console.error("[useRoadmapGeneration] live search failed:", err);
         /* Live search is best-effort. Fall through to the seed dataset. */
       }
       return { roadmap: fromGenerated(await seed({ data: input })), live: [] };

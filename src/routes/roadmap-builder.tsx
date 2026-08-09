@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, ChevronDown, ChevronRight } from "lucide-react";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
 import { useWayfind } from "@/lib/wayfind-store";
 import { MAJORS, TRACKS, YEARS, opportunitiesForTrack } from "@/lib/wayfind-data";
@@ -42,6 +42,15 @@ function Builder() {
   const [error, setError] = useState("");
   const [demoPulse, setDemoPulse] = useState(false);
 
+  // "Tell Sylo more" context fields
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [experience, setExperience] = useState("");
+  const [gpa, setGpa] = useState("");
+  const [skills, setSkills] = useState("");
+  const [priorWork, setPriorWork] = useState("");
+  const [clubs, setClubs] = useState("");
+  const [alreadyDone, setAlreadyDone] = useState("");
+
   const ready = trackId && major && year && school;
   const busyLabel = useSearchProgressLabel(busy);
 
@@ -56,10 +65,16 @@ function Builder() {
       school,
       trackId,
       goalText,
+      experience: experience.trim() || undefined,
+      gpa: gpa.trim() || undefined,
+      skills: skills.trim() || undefined,
+      priorWork: priorWork.trim() || undefined,
+      clubs: clubs.trim() || undefined,
+      alreadyDone: alreadyDone.trim() || undefined,
     };
     setProfile(profile);
     try {
-      const { roadmap, live } = await generate({ trackId, goalText, major, year, school });
+      const { roadmap, live } = await generate({ trackId, goalText, major, year, school, experience, gpa, skills, priorWork, clubs, alreadyDone });
       setRoadmap(roadmap, live);
       navigate({ to: "/dashboard" });
     } catch {
@@ -203,6 +218,68 @@ function Builder() {
           <p className="mt-2 text-[13px] text-muted-foreground">US universities, for now.</p>
         </div>
 
+        {/* Tell Sylo more — optional context for better personalization */}
+        <div className="mt-8 rounded-2xl border border-dashed border-foreground/20 bg-muted/30 p-5">
+          <button
+            type="button"
+            onClick={() => setMoreOpen((v) => !v)}
+            className="tap flex w-full items-center gap-2 text-left"
+          >
+            {moreOpen ? <ChevronDown className="h-4 w-4 text-primary" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+            <span className="text-sm font-semibold tracking-tight">Tell Sylo more about you</span>
+            <span className="ml-auto text-[11px] font-medium text-muted-foreground">Optional</span>
+          </button>
+          {!moreOpen ? (
+            <p className="mt-2 pl-6 text-[13px] leading-relaxed text-muted-foreground">
+              The more Sylo knows, the better it can match you to what&apos;s actually relevant — and skip what isn&apos;t.
+            </p>
+          ) : null}
+
+          {moreOpen ? (
+            <div className="mt-4 space-y-4 pl-0">
+              <ContextField
+                label="Experience & background"
+                placeholder="e.g. Built a React app for a class project, tutored intro CS for two semesters…"
+                value={experience}
+                onChange={setExperience}
+                multiline
+              />
+              <ContextField
+                label="GPA (approximate is fine)"
+                placeholder="e.g. 3.6"
+                value={gpa}
+                onChange={setGpa}
+              />
+              <ContextField
+                label="Skills & tools you know"
+                placeholder="e.g. Python, JavaScript, React, SQL, Figma…"
+                value={skills}
+                onChange={setSkills}
+              />
+              <ContextField
+                label="Prior internships or jobs"
+                placeholder="e.g. Summer intern at a startup, campus IT help desk…"
+                value={priorWork}
+                onChange={setPriorWork}
+                multiline
+              />
+              <ContextField
+                label="Clubs & organizations"
+                placeholder="e.g. ACM chapter, hackathon team, research lab…"
+                value={clubs}
+                onChange={setClubs}
+              />
+              <ContextField
+                label="What you've already tried toward this goal"
+                placeholder="e.g. Applied to Google STEP but didn't get it, took an online ML course…"
+                value={alreadyDone}
+                onChange={setAlreadyDone}
+                multiline
+              />
+            </div>
+          ) : null}
+        </div>
+
 
         {error ? <p className="mt-6 text-sm text-destructive">{error}</p> : null}
 
@@ -310,5 +387,43 @@ function Field({
         />
       ) : null}
     </div>
+  );
+}
+
+function ContextField({
+  label,
+  placeholder,
+  value,
+  onChange,
+  multiline,
+}: {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  multiline?: boolean;
+}) {
+  const shared =
+    "w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/10";
+  return (
+    <label className="block">
+      <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
+      {multiline ? (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows={2}
+          className={cn(shared, "mt-1.5 resize-none")}
+        />
+      ) : (
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={cn(shared, "mt-1.5")}
+        />
+      )}
+    </label>
   );
 }

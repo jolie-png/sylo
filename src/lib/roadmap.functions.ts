@@ -10,6 +10,12 @@ const Input = z.object({
   major: z.string(),
   year: z.string(),
   school: z.string(),
+  experience: z.string().optional(),
+  gpa: z.string().optional(),
+  skills: z.string().optional(),
+  priorWork: z.string().optional(),
+  clubs: z.string().optional(),
+  alreadyDone: z.string().optional(),
 });
 
 const RoadmapSchema = z.object({
@@ -29,6 +35,7 @@ export type GeneratedRoadmap = z.infer<typeof RoadmapSchema>;
 export const generateRoadmap = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
+    try { const { config } = await import("dotenv"); config(); } catch { /* no-op */ }
     const key = process.env.LOVABLE_API_KEY;
 
     const track = TRACKS.find((t) => t.id === data.trackId) ?? TRACKS[0];
@@ -62,13 +69,25 @@ export const generateRoadmap = createServerFn({ method: "POST" })
       "Return every opportunity in the dataset, ordered by leverage and by how soon its window closes.",
       "topOpportunityId is the single highest-leverage next move and must be the first step.",
       "reasoning: 1-2 sentences, plain second person, referencing the student's year, major, or school. No hedging, no generic advice.",
+      "If the student has provided background context (skills, experience, clubs, prior work), use it to personalize the reasoning — explain why a step matters given where they already are.",
       "summary: 1-2 forward-framed sentences about where the student stands. Never give a score, percentage, or peer comparison.",
       "alternates: exactly 2 short alternate branches worth knowing about, grounded in the dataset.",
     ].join(" ");
 
-    const prompt = [
+    const contextLines: string[] = [
       `STUDENT: ${data.year} ${data.major} major at ${data.school}.`,
       `DESTINATION: ${track.label}${data.goalText ? ` — in their words: "${data.goalText}"` : ""}`,
+    ];
+    if (data.gpa) contextLines.push(`GPA: ${data.gpa}`);
+    if (data.skills) contextLines.push(`Skills: ${data.skills}`);
+    if (data.experience) contextLines.push(`Experience: ${data.experience}`);
+    if (data.priorWork) contextLines.push(`Prior internships/jobs: ${data.priorWork}`);
+    if (data.clubs) contextLines.push(`Clubs/orgs: ${data.clubs}`);
+    if (data.alreadyDone) contextLines.push(`Already tried toward this goal: ${data.alreadyDone}`);
+
+    const prompt = [
+      ...contextLines,
+      "",
       "DATASET (the only permitted source of fact):",
       JSON.stringify(dataset),
     ].join("\n\n");

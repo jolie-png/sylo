@@ -26,6 +26,18 @@ export type Profile = {
   trackId: string;
   goalText: string;
   personaName?: string;
+  /** Free-text: resume bullet points, past experience, anything relevant. */
+  experience?: string;
+  /** Self-reported GPA (optional, never judged — used to filter eligibility). */
+  gpa?: string;
+  /** Skills, tools, languages the student already knows. */
+  skills?: string;
+  /** Prior internships, jobs, or research positions. */
+  priorWork?: string;
+  /** Clubs, orgs, or extracurriculars. */
+  clubs?: string;
+  /** What the student has already tried or done toward this goal. */
+  alreadyDone?: string;
 };
 
 export type Step = {

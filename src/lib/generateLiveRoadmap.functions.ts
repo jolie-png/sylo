@@ -10,6 +10,12 @@ const Input = z.object({
   year: z.string(),
   school: z.string(),
   sessionId: z.string().optional(),
+  experience: z.string().optional(),
+  gpa: z.string().optional(),
+  skills: z.string().optional(),
+  priorWork: z.string().optional(),
+  clubs: z.string().optional(),
+  alreadyDone: z.string().optional(),
 });
 
 const CATEGORIES = [
@@ -187,20 +193,33 @@ function buildSystemPrompt() {
 function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
   const track = TRACKS.find((t) => t.id === data.trackId);
   const destination = data.goalText.trim() || (track && track.id !== "something-else" ? track.label : "") || "not yet named";
-  return [
+
+  const contextLines: string[] = [
     "STUDENT PROFILE:",
     `- Year: ${data.year}`,
     `- Major: ${data.major}`,
     `- School: ${data.school}`,
     `- Goal: ${destination}`,
     `- Today: ${new Date().toISOString().slice(0, 10)}`,
+  ];
+  if (data.gpa) contextLines.push(`- GPA: ${data.gpa}`);
+  if (data.skills) contextLines.push(`- Skills: ${data.skills}`);
+  if (data.experience) contextLines.push(`- Experience: ${data.experience}`);
+  if (data.priorWork) contextLines.push(`- Prior internships/jobs: ${data.priorWork}`);
+  if (data.clubs) contextLines.push(`- Clubs/orgs: ${data.clubs}`);
+  if (data.alreadyDone) contextLines.push(`- Already tried toward this goal: ${data.alreadyDone}`);
+
+  return [
+    ...contextLines,
     "",
     "SEARCH RESULTS (your only source of fact):",
     "============================================",
     searchResults,
     "============================================",
     "",
-    "Extract real opportunities from these results. Only include things the search results actually describe. Return strict JSON.",
+    "Extract real opportunities from these results. Only include things the search results actually describe.",
+    "Use the student's background to rank results by relevance — prioritize opportunities that fit their current skill level and fill gaps in their experience.",
+    "Return strict JSON.",
   ].join("\n");
 }
 
@@ -359,6 +378,15 @@ async function gatherSearchResultsRaw(data: z.infer<typeof Input>, serperKey: st
     `${goal} internship fellowship for ${data.major} undergrad ${data.school}`,
     `${data.school} ${data.major} research club career program apply deadline`,
   ];
+
+  // Add a targeted query if skills or prior work provide signal
+  if (data.skills) {
+    const topSkill = data.skills.split(/[,;]/).map((s) => s.trim()).filter(Boolean)[0];
+    if (topSkill) queries.push(`${data.school} ${topSkill} ${goal} program internship 2025 2026`);
+  }
+  if (data.priorWork) {
+    queries.push(`${goal} next step after internship ${data.major} ${data.school}`);
+  }
 
   const results = await Promise.all(queries.map((q) => searchSerper(q, serperKey, 8)));
 

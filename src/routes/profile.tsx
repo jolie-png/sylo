@@ -51,6 +51,12 @@ function ProfilePage() {
         major: next.major,
         year: next.year,
         school: next.school,
+        experience: next.experience,
+        gpa: next.gpa,
+        skills: next.skills,
+        priorWork: next.priorWork,
+        clubs: next.clubs,
+        alreadyDone: next.alreadyDone,
       });
       setRoadmap(nextRoadmap, live);
     } catch {
@@ -191,6 +197,101 @@ function ProfilePage() {
           />
         </div>
       </div>
+
+      {/* Tell Sylo more — context for better personalization */}
+      <div className="mt-6 rounded-2xl border bg-card p-5">
+        <h2 className="text-sm font-semibold tracking-tight">Tell Sylo more about you</h2>
+        <p className="mt-1 text-[13px] text-muted-foreground">
+          The more context Sylo has, the better it can find what&apos;s actually relevant to where you are right now.
+        </p>
+
+        <div className="mt-4 space-y-4">
+          <ProfileContextField
+            label="Experience & background"
+            placeholder="e.g. Built a React app for a class project, tutored intro CS for two semesters…"
+            value={profile.experience ?? ""}
+            onBlur={(v) => update({ experience: v || undefined }, true)}
+          />
+          <ProfileContextField
+            label="GPA (approximate is fine)"
+            placeholder="e.g. 3.6"
+            value={profile.gpa ?? ""}
+            onBlur={(v) => update({ gpa: v || undefined })}
+          />
+          <ProfileContextField
+            label="Skills & tools you know"
+            placeholder="e.g. Python, JavaScript, React, SQL, Figma…"
+            value={profile.skills ?? ""}
+            onBlur={(v) => update({ skills: v || undefined }, true)}
+          />
+          <ProfileContextField
+            label="Prior internships or jobs"
+            placeholder="e.g. Summer intern at a startup, campus IT help desk…"
+            value={profile.priorWork ?? ""}
+            onBlur={(v) => update({ priorWork: v || undefined }, true)}
+            multiline
+          />
+          <ProfileContextField
+            label="Clubs & organizations"
+            placeholder="e.g. ACM chapter, hackathon team, research lab…"
+            value={profile.clubs ?? ""}
+            onBlur={(v) => update({ clubs: v || undefined }, true)}
+          />
+          <ProfileContextField
+            label="What you've already tried toward this goal"
+            placeholder="e.g. Applied to Google STEP but didn't get it, took an online ML course…"
+            value={profile.alreadyDone ?? ""}
+            onBlur={(v) => update({ alreadyDone: v || undefined }, true)}
+            multiline
+          />
+        </div>
+      </div>
     </Workspace>
+  );
+}
+
+
+function ProfileContextField({
+  label,
+  placeholder,
+  value,
+  onBlur,
+  multiline,
+}: {
+  label: string;
+  placeholder: string;
+  value: string;
+  onBlur: (v: string) => void;
+  multiline?: boolean;
+}) {
+  const [local, setLocal] = useState(value);
+
+  // Sync from parent when profile changes externally
+  useEffect(() => { setLocal(value); }, [value]);
+
+  const shared =
+    "w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary/40 focus:ring-2 focus:ring-primary/10";
+  return (
+    <label className="block">
+      <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
+      {multiline ? (
+        <textarea
+          value={local}
+          onChange={(e) => setLocal(e.target.value)}
+          onBlur={() => onBlur(local.trim())}
+          placeholder={placeholder}
+          rows={2}
+          className={cn(shared, "mt-1.5 resize-none")}
+        />
+      ) : (
+        <input
+          value={local}
+          onChange={(e) => setLocal(e.target.value)}
+          onBlur={() => onBlur(local.trim())}
+          placeholder={placeholder}
+          className={cn(shared, "mt-1.5")}
+        />
+      )}
+    </label>
   );
 }

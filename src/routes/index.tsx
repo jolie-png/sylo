@@ -83,7 +83,7 @@ function Landing() {
                   to="/roadmap-builder"
                   className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground hover:bg-primary/95"
                 >
-                  <span>Build My Roadmap</span>
+                  <span>Build my roadmap</span>
                   <span className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
                     <ArrowRight className="h-5 w-5" />
                   </span>
@@ -226,7 +226,7 @@ function Landing() {
                 to="/roadmap-builder"
                 className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground hover:bg-primary/95"
               >
-                <span>Build My Roadmap</span>
+                <span>Build my roadmap</span>
                 <span className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
                   <ArrowRight className="h-5 w-5" />
                 </span>

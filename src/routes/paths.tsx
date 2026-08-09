@@ -23,8 +23,8 @@ function PathsPage() {
     <Workspace wide>
       <PageHeader
         icon={<Sparkles className="h-5 w-5" />}
-        title="Paths that worked"
-        subtitle="Real roadmaps from students who got where they wanted to go."
+        title="Success maps"
+        subtitle="Real roadmaps from students who made it to where you want to go."
       />
 
       <div className="mt-8 space-y-4">
@@ -42,9 +42,12 @@ function PathsPage() {
         <p className="text-sm text-muted-foreground">Your path is next.</p>
         <Link
           to="/roadmap-builder"
-          className="tap mt-3 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+          className="tap group mt-3 inline-flex items-center justify-between gap-4 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/95"
         >
-          Build my roadmap <ArrowRight className="h-4 w-4" />
+          <span>Build my roadmap</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
+            <ArrowRight className="h-4 w-4" />
+          </span>
         </Link>
       </div>
     </Workspace>

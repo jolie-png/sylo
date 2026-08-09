@@ -133,11 +133,11 @@ function Landing() {
               <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
                 One next move, not twenty.
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                 No dashboard to learn. Just the single highest-leverage thing to do right now, and why it matters this week.
               </p>
 
-              <div className="field-tonal mt-auto pt-4 flex items-start gap-2.5 rounded-lg p-3">
+              <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
                 <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
                   1
                 </span>
@@ -154,11 +154,11 @@ function Landing() {
               <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
                 Your school, not a brochure.
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                 When the name-brand program doesn&apos;t exist where you are, Sylo names the real equivalent — built on the same ingredients that actually matter.
               </p>
 
-              <div className="field-tonal mt-auto pt-4 flex items-start gap-2.5 rounded-lg p-3">
+              <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
                 <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-blue text-[10px] font-semibold text-tag-blue-foreground">
                   →
                 </span>
@@ -177,11 +177,11 @@ function Landing() {
               <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
                 See what&apos;s actually blocking you.
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                 Your biggest gap, stated plainly, with the deadline attached — not buried three clicks deep.
               </p>
 
-              <div className="field-tonal mt-auto pt-4 flex items-start gap-2.5 rounded-lg p-3">
+              <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
                 <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-amber text-tag-amber-foreground">
                   <AlertTriangle className="h-3 w-3" />
                 </span>

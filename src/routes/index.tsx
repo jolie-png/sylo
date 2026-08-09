@@ -5,6 +5,8 @@ import { TypingHero } from "@/components/TypingHero";
 import { RoadmapWorkspacePreview } from "@/components/roadmap-workspace-preview";
 import { WavyRouteLine } from "@/components/wavy-route-line";
 import { getOpportunity } from "@/lib/wayfind-data";
+import { useInView } from "@/lib/use-in-view";
+import { cn } from "@/lib/utils";
 
 
 export const Route = createFileRoute("/")({
@@ -38,17 +40,21 @@ const dashboardOp = required(
   "op-ucla-urfp",
 );
 const translationOp = required(getOpportunity("op-ucla-bisep"), "op-ucla-bisep");
-const courseOp = required(getOpportunity("op-gt-createx-learn"), "op-gt-createx-learn");
 
 
 function Landing() {
+  const wavyTop = useInView();
+  const cards = useInView();
+  const wavyBottom = useInView();
+  const cta = useInView();
+
   return (
     <div className="min-h-screen bg-canvas">
       {/* Compact workspace chrome: 44px bar, hairline border, solid card surface. */}
       <header className="sticky top-0 z-40 h-11 border-b bg-card">
         <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <SyloMark className="h-6 w-6" animated={false} />
+            <SyloMark className="h-6 w-6" animated={true} />
             <span className="text-sm font-medium tracking-tight">Sylo</span>
 
           </div>
@@ -66,7 +72,7 @@ function Landing() {
                 <TypingHero />
               </div>
               <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-                Tell Sylo where you want to end up. It reads your major, year, and school&apos;s actual
+                Tell Sylo where you want to end up. It reads your major, year, and school&apos;s
                 programs, then returns a personalized roadmap — one ranked next move at a time.
               </p>
 
@@ -96,11 +102,26 @@ function Landing() {
           </div>
         </section>
 
-        <div className="flex justify-center py-2">
-          <WavyRouteLine height={192} className="text-primary/60" />
+        <div
+          ref={wavyTop.ref}
+          className={cn(
+            "flex justify-center pt-8 pb-2 transition-all duration-700",
+            wavyTop.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+          )}
+        >
+          <div className="flex flex-col items-center">
+            <WavyRouteLine height={144} className="text-primary/60" />
+            <WavyRouteLine height={144} className="text-primary/60" />
+          </div>
         </div>
 
-        <section className="py-14 sm:py-18">
+        <section
+          ref={cards.ref}
+          className={cn(
+            "py-4 sm:py-6 transition-all duration-700 delay-200",
+            cards.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+          )}
+        >
           <div className="grid gap-3 sm:grid-cols-3">
             {/* 01 */}
             <div className="flex flex-col rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
@@ -161,8 +182,8 @@ function Landing() {
                   <AlertTriangle className="h-3 w-3" />
                 </span>
                 <div>
-                  <span className="text-sm font-medium tracking-tight">{courseOp.courseCode ?? courseOp.name}</span>
-                  <p className="mt-1 text-xs text-primary">→ {courseOp.timeline}</p>
+                  <span className="text-sm font-medium tracking-tight">No faculty mentor identified</span>
+                  <p className="mt-1 text-xs text-primary">→ URFP requires one before you apply — find a PI this quarter or miss the Nov 15 deadline.</p>
                 </div>
               </div>
             </div>
@@ -171,11 +192,26 @@ function Landing() {
 
 
 
-        <div className="flex justify-center py-2">
-          <WavyRouteLine height={192} className="text-primary/60" />
+        <div
+          ref={wavyBottom.ref}
+          className={cn(
+            "flex justify-center py-2 transition-all duration-700",
+            wavyBottom.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+          )}
+        >
+          <div className="flex flex-col items-center">
+            <WavyRouteLine height={144} className="text-primary/60" />
+            <WavyRouteLine height={144} className="text-primary/60" />
+          </div>
         </div>
 
-        <section className="py-20 sm:py-28">
+        <section
+          ref={cta.ref}
+          className={cn(
+            "py-6 sm:py-8 transition-all duration-700 delay-200",
+            cta.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+          )}
+        >
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
               The invisible advisor every well-connected student already has.<br /><span className="text-primary">Now it&apos;s yours.</span>
@@ -183,7 +219,7 @@ function Landing() {
             <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground text-balance">
               No sign-up required. Real roadmaps in seconds.
             </p>
-            <div className="mt-8">
+            <div className="mt-8 pb-40">
               <Link
                 to="/roadmap-builder"
                 className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground hover:bg-primary/95"
@@ -201,7 +237,7 @@ function Landing() {
       <footer className="border-t bg-card px-6 py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
-            <SyloMark className="h-5 w-5" animated={false} />
+            <SyloMark className="h-5 w-5" animated={true} />
             <span className="text-sm font-semibold tracking-tight">Sylo</span>
           </div>
           <p className="text-xs text-muted-foreground">

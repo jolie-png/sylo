@@ -38,12 +38,6 @@ const dashboardOp = getOpportunity("op-ucla-urfp") ?? {
   brandEquivalent: undefined,
 };
 
-const translationOp = getOpportunity("op-ucla-bisep") ?? {
-  name: "Biomedical Science Enrichment Program (BISEP)",
-  leverage: "Gets you into a real lab before most sophomores know how to ask.",
-};
-
-
 function Landing() {
   const wavyTop = useInView();
   const cards = useInView();
@@ -152,21 +146,19 @@ function Landing() {
             <div className="flex flex-col rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">02</p>
               <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
-                Your school, not a brochure.
+                Your school, not a generic list.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                When the name-brand program doesn&apos;t exist where you are, Sylo names the real equivalent — built on the same ingredients that actually matter.
+                Sylo searches real programs at your specific school — fellowships, research labs, pipeline programs — not a one-size-fits-all database.
               </p>
 
               <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
                 <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-blue text-[10px] font-semibold text-tag-blue-foreground">
-                  →
+                  ✓
                 </span>
                 <div>
-                  <span className="text-sm font-medium tracking-tight">{translationOp.name}</span>
-                  <p className="mt-1 text-xs text-primary">
-                    Real program at your school — no brand-name equivalent needed
-                  </p>
+                  <span className="text-sm font-medium tracking-tight">Found 5 programs at UCLA</span>
+                  <p className="mt-1 text-xs text-primary">BISEP, URFP, PMSS, HHMI Pathways, MCDB Research</p>
                 </div>
               </div>
             </div>

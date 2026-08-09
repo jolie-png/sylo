@@ -39,8 +39,10 @@ function AboutPage() {
             &ldquo;how&apos;d you get this?&rdquo; The answer is almost never &ldquo;I applied online.&rdquo;
             It&apos;s a pipeline program most students have never heard of — an insight series, a bridge
             program, a sophomore summit — that quietly fed them into recruiting a year before applications
-            even opened. And the only reason they found it? Someone told them. A mentor, a parent in the
-            industry, an older friend who&apos;d already been through it.
+            even opened. The information is technically online, buried on a corporate careers page or
+            tucked into a PDF no one clicks. But unless you already know what to search for, you&apos;ll
+            never find it. The students who do? Someone told them. A mentor, a parent in the industry,
+            an older friend who&apos;d already been through it.
           </p>
           <p className="font-medium text-foreground">
             The path exists. The programs exist. Most students just never see the map.

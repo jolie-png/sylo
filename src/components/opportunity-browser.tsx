@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Pin, PinOff } from "lucide-react";
 import { Tag, FoundViaSearchBadge } from "@/components/workspace";
-import { useWayfind } from "@/lib/wayfind-store";
+import { useWayfind } from "@/lib/sylo-store";
 
 /**
  * Browsable grid of every verified opportunity on the student's own track.
@@ -53,7 +53,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
         <p className="mt-8 rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
           {filter === "pinned"
             ? "Nothing pinned yet. Tap the pin on any card to save it here."
-            : "Sylo doesn't have verified opportunity data for this path yet, so there's nothing to browse here. Add your own steps on the dashboard and they'll show up on your roadmap and progress tracker."}
+            : "Sylo hasn't found opportunities for this path yet. Try generating your roadmap again, or add your own steps on the dashboard."}
         </p>
       ) : (
         <div className="mt-5 columns-2 gap-4 md:columns-3 [column-fill:_balance]">

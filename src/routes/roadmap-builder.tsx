@@ -5,6 +5,7 @@ import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-
 import { useWayfind } from "@/lib/wayfind-store";
 import { MAJORS, TRACKS, YEARS, opportunitiesForTrack } from "@/lib/wayfind-data";
 import { SchoolCombobox } from "@/components/school-combobox";
+import { ResumeUpload } from "@/components/resume-upload";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/roadmap-builder")({
@@ -237,6 +238,16 @@ function Builder() {
 
           {moreOpen ? (
             <div className="mt-4 space-y-4 pl-0">
+              <ResumeUpload
+                onParsed={(data) => {
+                  // Auto-fill the local state from resume data
+                  if (data.experience?.trim()) setExperience(data.experience);
+                  if (data.skills?.trim()) setSkills(data.skills);
+                  if (data.priorWork?.trim()) setPriorWork(data.priorWork);
+                  if (data.clubs?.trim()) setClubs(data.clubs);
+                  if (data.alreadyDone?.trim()) setAlreadyDone(data.alreadyDone);
+                }}
+              />
               <ContextField
                 label="Experience & background"
                 placeholder="e.g. Built a React app for a class project, tutored intro CS for two semesters…"

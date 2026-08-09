@@ -2,11 +2,12 @@
 // Nothing outside this file may be presented as real.
 
 import { createElement, type ReactNode } from "react";
-import { Dna, Compass, TrendingUp, Microscope, Sparkles } from "lucide-react";
+import { Dna, Compass, TrendingUp, Microscope, Sparkles, Code } from "lucide-react";
 
 export type TrackId =
   | "physician-scientist"
   | "product-manager"
+  | "software-engineer"
   | "investment-banking"
   | "research-phd"
   /** No verified opportunity dataset — the honest "my goal is something else" path. */
@@ -146,6 +147,19 @@ export const TRACKS: CareerTrack[] = [
     ],
   },
   {
+    id: "software-engineer",
+    label: "Software Engineer",
+    icon: createElement(Code, { className: "h-5 w-5" }),
+    identity: "You want to build things that work at scale.",
+    blurb: "Top internship pipelines recruit 9–12 months early and screen for projects and DSA, not GPA.",
+
+    brandPrograms: [
+      { name: "Google STEP", sponsor: "Google", note: "Freshman/sophomore SWE internship pipeline" },
+      { name: "Meta University", sponsor: "Meta", note: "Engineering internship for underrepresented students" },
+      { name: "Microsoft Explore", sponsor: "Microsoft", note: "First-year SWE exploration internship" },
+    ],
+  },
+  {
     id: "investment-banking",
     label: "Investment Banker",
 
@@ -174,9 +188,9 @@ export const TRACKS: CareerTrack[] = [
     id: "something-else",
     label: "Something else",
     icon: createElement(Sparkles, { className: "h-5 w-5" }),
-    identity: "Your goal isn't one of the four above.",
+    identity: "Your goal isn't one of the above.",
     blurb:
-      "Sylo doesn't have verified opportunity data for this path yet — you'll get an honest empty board you can fill with your own steps.",
+      "Sylo will search for real opportunities at your school for whatever goal you describe.",
     brandPrograms: [],
   },
 ];
@@ -296,9 +310,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     name: "Idea Center Product Apprenticeship",
     track: "product-manager",
     category: "Internship",
-    access: "translated",
-    brandEquivalent: "Google APM",
-    missingHere: "No large tech company recruits APMs on this campus.",
+    access: "direct",
     school: "any",
     deadline: "2026-08-30",
     timeframe: "Cohort closes Aug 30",
@@ -306,16 +318,14 @@ export const OPPORTUNITIES: Opportunity[] = [
     contact: "ideacenter@campus.edu",
     link: "https://campus.edu/idea-center",
     timeline: "One cohort per semester; interviews in the two weeks after close.",
-    leverage: "Paid shipping experience on a real product — the closest local stand-in for an APM internship.",
+    leverage: "Paid shipping experience on a real product — hands-on PM work that strengthens any APM application.",
   },
   {
     id: "op-product-club",
     name: "Campus Product Guild Case Team",
     track: "product-manager",
     category: "Club",
-    access: "translated",
-    brandEquivalent: "Meta RPM",
-    missingHere: "There is no rotational PM pipeline recruiting here, so case reps have to be manufactured.",
+    access: "direct",
     school: "any",
     deadline: "2026-09-05",
     timeframe: "Team selection Sept 5",

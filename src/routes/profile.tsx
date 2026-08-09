@@ -6,6 +6,7 @@ import { useWayfind } from "@/lib/wayfind-store";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
 import { SchoolCombobox } from "@/components/school-combobox";
 import { MAJORS, TRACKS, YEARS } from "@/lib/wayfind-data";
+import { ResumeUpload } from "@/components/resume-upload";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/profile")({
@@ -206,6 +207,17 @@ function ProfilePage() {
         </p>
 
         <div className="mt-4 space-y-4">
+          <ResumeUpload
+            onParsed={(data) => {
+              update({
+                experience: data.experience?.trim() || profile!.experience,
+                skills: data.skills?.trim() || profile!.skills,
+                priorWork: data.priorWork?.trim() || profile!.priorWork,
+                clubs: data.clubs?.trim() || profile!.clubs,
+                alreadyDone: data.alreadyDone?.trim() || profile!.alreadyDone,
+              }, true);
+            }}
+          />
           <ProfileContextField
             label="Experience & background"
             placeholder="e.g. Built a React app for a class project, tutored intro CS for two semesters…"

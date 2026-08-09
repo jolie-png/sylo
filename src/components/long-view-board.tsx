@@ -5,13 +5,13 @@ import { StatusTag, Tag } from "@/components/workspace";
 import { cn } from "@/lib/utils";
 import { termFor, termsFromDeadlines, type Term } from "@/lib/terms";
 import {
-  getOpportunity,
   milestonesForTrack,
   YEARS,
   type Milestone,
   type Opportunity,
   type StepStatus,
 } from "@/lib/wayfind-data";
+import { useWayfind } from "@/lib/sylo-store";
 
 type Selection =
   | { kind: "opportunity"; op: Opportunity; status: StepStatus; reasoning?: string }
@@ -35,8 +35,10 @@ export function LongViewBoard({
   studentYear: string;
   school: string;
 }) {
+  const { resolveOpportunity } = useWayfind();
+
   const resolved = steps
-    .map((s) => ({ step: s, op: getOpportunity(s.opportunityId) }))
+    .map((s) => ({ step: s, op: resolveOpportunity(s.opportunityId) }))
     .filter((r): r is { step: Step; op: Opportunity } => !!r.op)
     .sort((a, b) => a.op.deadline.localeCompare(b.op.deadline));
 

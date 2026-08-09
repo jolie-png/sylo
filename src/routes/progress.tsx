@@ -19,7 +19,7 @@ import {
   FoundViaSearchBadge,
 } from "@/components/workspace";
 import { LongViewBoard } from "@/components/long-view-board";
-import { useWayfind } from "@/lib/wayfind-store";
+import { useWayfind } from "@/lib/sylo-store";
 import { type StepStatus } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
 

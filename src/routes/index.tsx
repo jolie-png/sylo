@@ -48,11 +48,11 @@ function Landing() {
       <header className="sticky top-0 z-40 h-11 border-b bg-card">
         <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
+            <SyloMark className="h-6 w-6" animated={false} />
             <span className="text-sm font-medium tracking-tight">Sylo</span>
-            <span className="hidden h-4 w-px bg-border sm:block" />
-            <span className="hidden text-xs text-muted-foreground sm:block">Guidance workspace</span>
+
           </div>
-          <span className="tag bg-tag-blue text-tag-blue-foreground">Preview</span>
+
         </div>
       </header>
 

@@ -317,3 +317,20 @@ export function useWayfind() {
   if (!ctx) throw new Error("useWayfind must be used inside WayfindProvider");
   return ctx;
 }
+
+import type { ParsedResumeData } from "./resume-validation";
+
+/** Merge parsed resume data into existing profile, only overwriting non-empty fields. */
+export function mergeResumeData(
+  existing: Profile,
+  parsed: ParsedResumeData,
+): Profile {
+  return {
+    ...existing,
+    experience: parsed.experience?.trim() || existing.experience,
+    skills: parsed.skills?.trim() || existing.skills,
+    priorWork: parsed.priorWork?.trim() || existing.priorWork,
+    clubs: parsed.clubs?.trim() || existing.clubs,
+    alreadyDone: parsed.alreadyDone?.trim() || existing.alreadyDone,
+  };
+}

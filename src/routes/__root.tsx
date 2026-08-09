@@ -11,7 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { WayfindProvider } from "../lib/wayfind-store";
+import { WayfindProvider } from "../lib/sylo-store";
 
 function NotFoundComponent() {
   return (

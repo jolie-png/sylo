@@ -10,7 +10,7 @@ import {
   OwnGoalBadge,
   FoundViaSearchBadge,
 } from "@/components/workspace";
-import { useWayfind } from "@/lib/wayfind-store";
+import { useWayfind } from "@/lib/sylo-store";
 import { getTrack } from "@/lib/wayfind-data";
 import { OpportunityBrowser } from "@/components/opportunity-browser";
 
@@ -225,12 +225,16 @@ function Details() {
         </PropertyRow>
         <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
         <PropertyRow label="Contact">
-          {op.contact || <span className="text-muted-foreground">Not published</span>}
+          {op.contact && !op.contact.includes("@campus.edu") ? op.contact : <span className="text-muted-foreground">Check your campus portal</span>}
         </PropertyRow>
         <PropertyRow label="Link">
-          <a href={op.link} className="tap rounded-md font-medium text-primary hover:underline">
-            {op.link}
-          </a>
+          {op.link && !op.link.includes("campus.edu") ? (
+            <a href={op.link} target="_blank" rel="noopener noreferrer" className="tap rounded-md font-medium text-primary hover:underline">
+              {op.link}
+            </a>
+          ) : (
+            <span className="text-muted-foreground">School-specific — check your campus portal</span>
+          )}
         </PropertyRow>
         {op.sources?.length ? (
           // Both sources when there are two — the visible proof that

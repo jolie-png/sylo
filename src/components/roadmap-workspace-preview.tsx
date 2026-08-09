@@ -1,4 +1,5 @@
-import { LayoutGrid, List, Plus, PanelsTopLeft, ChevronDown, Route as RouteIcon } from "lucide-react";
+import { LayoutGrid, List, Plus, PanelsTopLeft, ChevronDown } from "lucide-react";
+import { SyloMark } from "@/components/SyloMark";
 import { OPPORTUNITIES, TRACKS, PERSONAS } from "@/lib/wayfind-data";
 import { termFor, termsFromDeadlines, padTerms } from "@/lib/terms";
 
@@ -54,7 +55,7 @@ export function RoadmapWorkspacePreview() {
         {/* Left rail — tracks */}
         <aside className="hidden w-44 shrink-0 flex-col border-r bg-card py-3 sm:flex">
           <div className="flex items-center gap-2 px-3 pb-3">
-            <RouteIcon className="h-4 w-4" />
+            <SyloMark className="h-4 w-4 text-primary" />
             <span className="text-sm font-semibold tracking-tight">Sylo</span>
           </div>
           <div className="flex items-center justify-between px-3 pb-1.5">

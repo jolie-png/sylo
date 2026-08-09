@@ -2676,7 +2676,7 @@
   },
   {
     "id": "pipe-stanford-bio-x",
-    "name": "Stanford Bio-X Undergraduate Research",
+    "name": "Stanford Sapp Family CS Bio-X Undergraduate Summer Research Program",
     "track": "physician-scientist",
     "category": "Research",
     "access": "direct",
@@ -2722,7 +2722,7 @@
       "Sophomore or Junior"
     ],
     "contact": "",
-    "link": "https://www.nigms.nih.gov/training/instpredoc/pages/PredocOverview-MSTP.aspx",
+    "link": "https://www.nigms.nih.gov/training/instpredoc/Pages/MSTP",
     "timeline": "Applications Dec-Jan; programs run June-August",
     "leverage": "Direct pipeline into MD-PhD programs \u2014 many participants receive early interviews at host institutions.",
     "tags": [
@@ -2788,7 +2788,7 @@
       "0-1 years experience"
     ],
     "contact": "",
-    "link": "https://www.metacareers.com/jobs/rpm",
+    "link": "https://www.metacareers.com/v2/jobs/1680851879404795/",
     "timeline": "Applications open Aug-Sep; interviews Oct-Nov",
     "leverage": "Two rotations across Meta's product portfolio \u2014 gives breadth across consumer, enterprise, and platform products.",
     "tags": [
@@ -2842,7 +2842,7 @@
   },
   {
     "id": "pipe-product-school-micro",
-    "name": "Product School Micro-Certification",
+    "name": "Product School Product Management Certification",
     "track": "product-manager",
     "category": "Course",
     "access": "direct",
@@ -2853,9 +2853,9 @@
       "None \u2014 open enrollment"
     ],
     "contact": "",
-    "link": "https://productschool.com/micro-certifications",
+    "link": "https://productschool.com/certifications",
     "timeline": "Start anytime; complete at your own pace",
-    "leverage": "Low-cost credential that teaches PM frameworks (PRDs, user stories, metrics). Good for demonstrating intentionality in applications.",
+    "leverage": "Industry-recognized PM credential that teaches frameworks (personas, user stories, metrics). Good for demonstrating intentionality in applications.",
     "tags": [
       "self-paced",
       "certification",

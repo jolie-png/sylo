@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Map, KanbanSquare, FileText, User, ChevronDown as ChevronDownIcon, RotateCcw, Sparkles } from "lucide-react";
+import { Map, KanbanSquare, FileText, User, ChevronDown as ChevronDownIcon, RotateCcw, Sparkles, Info } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { SyloMark } from "@/components/SyloMark";
@@ -13,6 +13,7 @@ const NAV = [
   { to: "/progress", label: "Progress", icon: KanbanSquare },
   { to: "/opportunity-details", label: "Opportunities", icon: FileText },
   { to: "/profile", label: "Profile", icon: User },
+  { to: "/about", label: "About", icon: Info },
 ] as const;
 
 export function Workspace({ children, wide = false }: { children: ReactNode; wide?: boolean }) {

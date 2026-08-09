@@ -43,7 +43,7 @@ export function InlineNoteEditor({
     <div className="flex flex-col gap-3 rounded-xl border bg-background p-3">
       <div>
         <label className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Reasoning / headline
+          Summary
         </label>
         <input
           ref={reasoningRef}

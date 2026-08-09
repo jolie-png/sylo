@@ -433,7 +433,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     category: "Internship",
     access: "direct",
     school: "Georgia Institute of Technology",
-    deadline: "2026-03-17",
+    deadline: "2027-03-17",
     timeframe: "Summer — 12 weeks",
     requirements: ["Completed Startup Lab or equivalent", "Working prototype", "Team of 2-4 students"],
     contact: "CREATE-X Launch Team",

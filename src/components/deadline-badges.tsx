@@ -23,10 +23,10 @@ export function getDeadlineStatus(deadline: string, recurring = false) {
     return { label: "Deadline passed", state: "expired" as const };
   }
   const days = Math.ceil((dl.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  if (days <= 14) return { label: `${days}d left`, state: "urgent" as const };
-  if (days <= 30) return { label: `${days}d left`, state: "soon" as const };
+  if (days <= 14) return { label: `Due in ${days}d`, state: "urgent" as const };
+  if (days <= 30) return { label: `Due in ${days}d`, state: "soon" as const };
   return {
-    label: dl.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    label: `Due by ${dl.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
     state: "open" as const,
   };
 }

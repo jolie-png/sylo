@@ -108,7 +108,7 @@ function Builder() {
         </p>
 
         <div className="mt-8 space-y-3">
-          {TRACKS.map((t) => {
+          {TRACKS.map((t, idx) => {
             const selected = trackId === t.id;
             const peeking = peek === t.id;
             const sample = opportunitiesForTrack(t.id)
@@ -157,7 +157,7 @@ function Builder() {
                   </span>
                 </button>
 
-                {sample.length ? (
+                {idx === 0 && sample.length ? (
                 <div className="px-4 pb-4">
                   <button
                     type="button"

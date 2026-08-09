@@ -56,7 +56,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
             : "Sylo hasn't found opportunities for this path yet. Try generating your roadmap again, or add your own steps on the dashboard."}
         </p>
       ) : (
-        <div className="mt-5 columns-2 gap-4 md:columns-3 [column-fill:_balance]">
+        <div className="mt-5 columns-1 gap-4 sm:columns-2 [column-fill:_balance]">
           {shown.map((op) => {
             const pinned = pinnedIds.includes(op.id);
             const full = resolveOpportunity(op.id);

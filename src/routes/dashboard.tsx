@@ -97,6 +97,41 @@ function Dashboard() {
 
       <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{roadmap.summary}</p>
 
+      {roadmap.gapAnalysis ? (
+        <section className="mt-6 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.05] to-transparent p-5 sm:p-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-primary/80">Where you stand</h2>
+          
+          <div className="mt-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">What you&apos;ve got</p>
+            <ul className="mt-2 space-y-1.5">
+              {roadmap.gapAnalysis.strengths.map((s, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-green-500/15 text-[10px] text-green-700 dark:text-green-400">✓</span>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Gaps to close</p>
+            <div className="mt-2 space-y-3">
+              {roadmap.gapAnalysis.gaps.map((g, i) => (
+                <div key={i} className="rounded-xl border bg-card p-3.5">
+                  <p className="text-sm font-semibold tracking-tight">{g.gap}</p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{g.why}</p>
+                  <p className="mt-1.5 text-[13px] font-medium text-primary">→ {g.action}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="mt-5 rounded-lg bg-primary/10 px-3 py-2 text-[13px] font-medium leading-relaxed text-primary">
+            {roadmap.gapAnalysis.bottomLine}
+          </p>
+        </section>
+      ) : null}
+
       {noDataset ? (
         <NoDatasetState profile={profile} track={track} />
       ) : (

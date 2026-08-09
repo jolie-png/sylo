@@ -52,6 +52,26 @@ export type Roadmap = {
   topOpportunityId: string;
   steps: Step[];
   alternates: { title: string; detail: string }[];
+  /** Gap analysis: what the student has vs. what they need for their goal. */
+  gapAnalysis?: GapAnalysis;
+};
+
+export type GapItem = {
+  /** What's missing or underdeveloped. */
+  gap: string;
+  /** Why this gap matters for their stated goal. */
+  why: string;
+  /** The concrete next action to close it. */
+  action: string;
+};
+
+export type GapAnalysis = {
+  /** What the student already has going for them (2-3 bullet points). */
+  strengths: string[];
+  /** Specific gaps between where they are and their goal (2-4 items). */
+  gaps: GapItem[];
+  /** One-sentence bottom line: the single biggest thing to focus on. */
+  bottomLine: string;
 };
 
 export type CustomStep = {
@@ -102,6 +122,7 @@ export function fromGenerated(r: GeneratedRoadmap): Roadmap {
     summary: r.summary,
     topOpportunityId: r.topOpportunityId,
     alternates: r.alternates,
+    gapAnalysis: r.gapAnalysis,
     steps: r.steps.map((s) => ({
       id: s.opportunityId,
       opportunityId: s.opportunityId,

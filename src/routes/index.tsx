@@ -70,7 +70,7 @@ function Landing() {
                 programs, then returns a personalized roadmap — one ranked next move at a time.
               </p>
 
-              <div className="mt-10 flex flex-col items-center justify-center">
+              <div className="mt-10 flex flex-col items-center justify-center gap-3">
                 <Link
                   to="/roadmap-builder"
                   className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground hover:bg-primary/95"
@@ -79,6 +79,12 @@ function Landing() {
                   <span className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
                     <ArrowRight className="h-5 w-5" />
                   </span>
+                </Link>
+                <Link
+                  to="/opportunities"
+                  className="tap text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  Or browse all programs &amp; pipelines →
                 </Link>
               </div>
             </div>

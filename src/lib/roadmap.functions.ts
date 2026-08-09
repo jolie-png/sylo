@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
-import { TRACKS, OPPORTUNITIES } from "./wayfind-data";
+import { TRACKS } from "./wayfind-data";
+import { OPPORTUNITIES } from "./opportunities-db";
 
 const Input = z.object({
   trackId: z.string(),
@@ -28,6 +29,15 @@ const RoadmapSchema = z.object({
     }),
   ),
   alternates: z.array(z.object({ title: z.string(), detail: z.string() })),
+  gapAnalysis: z.object({
+    strengths: z.array(z.string()),
+    gaps: z.array(z.object({
+      gap: z.string(),
+      why: z.string(),
+      action: z.string(),
+    })),
+    bottomLine: z.string(),
+  }).optional(),
 });
 
 export type GeneratedRoadmap = z.infer<typeof RoadmapSchema>;
@@ -68,10 +78,11 @@ export const generateRoadmap = createServerFn({ method: "POST" })
       "Every opportunityId MUST be an id from dataset.opportunities. Use each id at most once.",
       "Return every opportunity in the dataset, ordered by leverage and by how soon its window closes.",
       "topOpportunityId is the single highest-leverage next move and must be the first step.",
-      "reasoning: 1-2 sentences, plain second person, referencing the student's year, major, or school. No hedging, no generic advice.",
+      "reasoning: 1-2 sentences, plain second person, referencing the student's year, major, or school. If background context is provided, explain why this step matters given their specific gaps — e.g. 'You don't have research experience yet, so this is the fastest on-ramp.' No hedging, no generic advice.",
       "If the student has provided background context (skills, experience, clubs, prior work), use it to personalize the reasoning — explain why a step matters given where they already are.",
       "summary: 1-2 forward-framed sentences about where the student stands. Never give a score, percentage, or peer comparison.",
       "alternates: exactly 2 short alternate branches worth knowing about, grounded in the dataset.",
+      "If the student has provided background context (skills, experience, prior work, clubs), include a 'gapAnalysis' field in your response with: strengths (2-3 things they already have going for them), gaps (2-4 specific things missing between where they are and their goal, each with gap/why/action), and bottomLine (single most important thing to focus on right now). If no background context is provided, omit the gapAnalysis field entirely.",
     ].join(" ");
 
     const contextLines: string[] = [

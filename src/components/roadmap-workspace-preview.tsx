@@ -1,6 +1,7 @@
 import { LayoutGrid, List, Plus, PanelsTopLeft, ChevronDown } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
-import { OPPORTUNITIES, TRACKS, PERSONAS } from "@/lib/wayfind-data";
+import { TRACKS, PERSONAS } from "@/lib/wayfind-data";
+import { OPPORTUNITIES } from "@/lib/opportunities-db";
 import { termFor, termsFromDeadlines, padTerms } from "@/lib/terms";
 
 /**

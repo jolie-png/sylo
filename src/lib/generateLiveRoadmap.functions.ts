@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createAnthropicClient, hashKey } from "./anthropic.server";
 import { TRACKS, type Opportunity, type OpportunitySource } from "./wayfind-data";
+import type { GapAnalysis } from "./wayfind-store";
 
 const Input = z.object({
   trackId: z.string(),
@@ -54,6 +55,11 @@ const LiveResponseSchema = z.object({
   summary: z.string(),
   opportunities: z.array(LiveOpportunitySchema),
   alternates: z.array(z.object({ title: z.string(), detail: z.string() })).optional(),
+  gapAnalysis: z.object({
+    strengths: z.array(z.string()),
+    gaps: z.array(z.object({ gap: z.string(), why: z.string(), action: z.string() })),
+    bottomLine: z.string(),
+  }).optional(),
 });
 
 export type LiveRoadmap = {
@@ -62,6 +68,7 @@ export type LiveRoadmap = {
   steps: { opportunityId: string; reasoning: string }[];
   alternates: { title: string; detail: string }[];
   opportunities: Opportunity[];
+  gapAnalysis?: GapAnalysis;
 };
 
 // --- Rate limiting & caching ------------------------------------------------
@@ -173,6 +180,8 @@ function buildSystemPrompt() {
     "4. Prefer programs specific to the student's school, year, and major.",
     "5. If search results don't have enough real opportunities, return found=false.",
     "6. Return 3-6 opportunities if available, ordered by leverage.",
+    "7. If student context is provided (skills, experience, prior work), include a 'gapAnalysis' object in your JSON response with: strengths (2-3 strings), gaps (array of {gap, why, action}), bottomLine (string). Omit if no student context.",
+    "8. In the reasoning field for each opportunity, reference the student's specific gaps — explain why THIS opportunity matters given what they're missing.",
     "",
     "reasoning: 1-2 sentences, plain second person.",
     "summary: 1-2 forward-framed sentences.",
@@ -186,6 +195,7 @@ function buildSystemPrompt() {
       found: true, summary: "string",
       opportunities: [{ name: "string", category: "Research", deadline: "", timeframe: "string", requirements: ["string"], contact: "", link: "https://...", timeline: "string", leverage: "string", reasoning: "string", sources: [{ title: "string", url: "https://..." }], gapLabel: "optional", upstream: "optional", unlocks: ["optional"], window: "optional" }],
       alternates: [{ title: "string", detail: "string" }],
+      gapAnalysis: { strengths: ["string"], gaps: [{ gap: "string", why: "string", action: "string" }], bottomLine: "string" },
     }, null, 0),
   ].join("\n");
 }
@@ -219,6 +229,7 @@ function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
     "",
     "Extract real opportunities from these results. Only include things the search results actually describe.",
     "Use the student's background to rank results by relevance — prioritize opportunities that fit their current skill level and fill gaps in their experience.",
+    "If the student provided background context above, also include a gapAnalysis object identifying their strengths, specific gaps, and single most important focus area.",
     "Return strict JSON.",
   ].join("\n");
 }
@@ -293,6 +304,7 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     steps,
     alternates: (parsed.alternates ?? []).map((a) => ({ title: trim(a.title, 120), detail: trim(a.detail, 280) })).filter((a) => a.title && a.detail).slice(0, 2),
     opportunities,
+    gapAnalysis: parsed.gapAnalysis,
   };
 }
 

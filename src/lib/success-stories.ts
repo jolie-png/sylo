@@ -18,7 +18,7 @@ export type StoryStep = {
 export type SuccessStory = {
   id: string;
   name: string;
-  avatar: string;
+  avatar: "code" | "trending-up" | "heart" | "briefcase" | "microscope";
   school: string;
   major: string;
   startYear: string;
@@ -33,7 +33,7 @@ export const SUCCESS_STORIES: SuccessStory[] = [
   {
     id: "story-swe",
     name: "Shivana",
-    avatar: "💻",
+    avatar: "code",
     school: "UC Berkeley",
     major: "Computer Science",
     startYear: "Freshman",
@@ -52,7 +52,7 @@ export const SUCCESS_STORIES: SuccessStory[] = [
   {
     id: "story-finance",
     name: "Daniel",
-    avatar: "📈",
+    avatar: "trending-up",
     school: "St. John's University",
     major: "Accounting",
     startYear: "Freshman",
@@ -70,7 +70,7 @@ export const SUCCESS_STORIES: SuccessStory[] = [
   {
     id: "story-premed",
     name: "Luke",
-    avatar: "🧬",
+    avatar: "heart",
     school: "UCLA",
     major: "Biology",
     startYear: "Freshman",
@@ -88,7 +88,7 @@ export const SUCCESS_STORIES: SuccessStory[] = [
   {
     id: "story-pm",
     name: "Catherine",
-    avatar: "📊",
+    avatar: "briefcase",
     school: "UC San Diego",
     major: "Cognitive Science & Computer Science",
     startYear: "Sophomore",

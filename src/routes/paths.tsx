@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowRight, Briefcase, ChevronRight, Code, Heart, Sparkles, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Workspace, PageHeader } from "@/components/workspace";
 import { SUCCESS_STORIES, type SuccessStory } from "@/lib/success-stories";
@@ -51,6 +51,17 @@ function PathsPage() {
   );
 }
 
+function StoryIcon({ icon }: { icon: string }) {
+  const cls = "h-5 w-5 text-foreground/70";
+  switch (icon) {
+    case "code": return <Code className={cls} />;
+    case "trending-up": return <TrendingUp className={cls} />;
+    case "heart": return <Heart className={cls} />;
+    case "briefcase": return <Briefcase className={cls} />;
+    default: return <Sparkles className={cls} />;
+  }
+}
+
 function StoryCard({
   story,
   expanded,
@@ -67,8 +78,8 @@ function StoryCard({
         onClick={onToggle}
         className="tap flex w-full items-start gap-4 p-5 text-left"
       >
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-xl">
-          {story.avatar}
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+          <StoryIcon icon={story.avatar} />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">

@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutList, KanbanSquare, FileText, User, ChevronDown as ChevronDownIcon, RotateCcw } from "lucide-react";
+import { Map, KanbanSquare, FileText, User, ChevronDown as ChevronDownIcon, RotateCcw } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { SyloMark } from "@/components/SyloMark";
@@ -8,7 +8,7 @@ import type { StepStatus } from "@/lib/wayfind-data";
 
 
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutList },
+  { to: "/dashboard", label: "Roadmap", icon: Map },
   { to: "/progress", label: "Progress", icon: KanbanSquare },
   { to: "/opportunity-details", label: "Opportunities", icon: FileText },
   { to: "/profile", label: "Profile", icon: User },

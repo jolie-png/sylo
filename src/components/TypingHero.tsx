@@ -47,7 +47,7 @@ export function TypingHero() {
 
   return (
     <h1 className="mx-auto max-w-3xl text-center text-[40px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[56px]">
-      The map to becoming a{" "}
+      Your roadmap to becoming a{" "}
       <span className="text-primary">
         {text}
         <span

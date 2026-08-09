@@ -37,6 +37,8 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
     pool = trackOpportunities;
   }
 
+  const pinnedCount = allOpportunities.filter((op) => pinnedIds.includes(op.id)).length;
+
   // Apply category + track + search filters
   const shown = pool.filter((op) => {
     if (view === "all" && categoryFilter && op.category !== categoryFilter) return false;
@@ -87,7 +89,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          Pinned{pinnedIds.length ? ` (${pinnedIds.length})` : ""}
+          Pinned{pinnedCount ? ` (${pinnedCount})` : ""}
         </button>
       </div>
 

@@ -86,7 +86,7 @@ function AboutPage() {
           networking. But the actual entry point (a sophomore insight program that feeds directly into summer
           analyst recruiting) opened and closed without them knowing it existed.
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-3 text-sm leading-relaxed text-foreground">
           By senior year: the skills, the grades, the interest. But no pipeline, no internship, no way in.
         </p>
         <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">

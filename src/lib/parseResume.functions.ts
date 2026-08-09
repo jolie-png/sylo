@@ -49,12 +49,13 @@ async function extractText(buffer: Buffer, ext: string): Promise<string> {
     case ".txt":
       return buffer.toString("utf-8");
     case ".pdf": {
-      // pdf-parse uses `export =` (CJS); dynamic import in ESM yields the function directly
+      // pdf-parse v2 uses a class-based API
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const pdfModule = await import("pdf-parse") as any;
-      const pdfParse = pdfModule.default ?? pdfModule;
-      const data = await pdfParse(buffer);
-      return data.text as string;
+      const { PDFParse } = await import("pdf-parse") as any;
+      const parser = new PDFParse({ verbosity: 0, data: buffer });
+      await parser.load();
+      const result = await parser.getText();
+      return result.text as string;
     }
     case ".docx": {
       const mammoth = await import("mammoth");

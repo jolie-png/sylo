@@ -25,7 +25,7 @@ function AboutPage() {
 
       {/* The problem */}
       <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Nobody connects the dominoes.</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Nobody shows you the timeline.</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>
             Career platforms tell students what&apos;s out there. Academic systems tell students what&apos;s required.
@@ -33,7 +33,7 @@ function AboutPage() {
             Not a missing database. A missing connection.
           </p>
           <p>
-            Higher education runs on a domino effect. Skip one foundational course, and you don&apos;t just delay
+            Higher education runs on a chain reaction. Skip one foundational course, and you don&apos;t just delay
             a class — you break the eligibility chain for the fellowship, the lab placement, the internship
             that depended on it. Miss the course, and your timeline doesn&apos;t slip by a semester. It slips by a year.
           </p>
@@ -64,10 +64,10 @@ function AboutPage() {
           or when. If they&apos;d had Sylo freshman year — the moment they were even considering finance —
           it would have shown them: apply to these insight programs by September of sophomore year, because
           that&apos;s the actual entry point to junior-summer recruiting. One ranked next move. One deadline.
-          The domino that unlocks everything after it.
+          The step that unlocks everything after it.
         </p>
         <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
-          They didn&apos;t fail because they weren&apos;t good enough. They failed because nobody connected the dominoes in time.
+          They didn&apos;t fail because they weren&apos;t good enough. They failed because nobody showed them the timeline.
         </p>
       </section>
 
@@ -84,7 +84,7 @@ function AboutPage() {
             Not a resume optimizer. Not an internship board. Those tools assume a student already knows the
             destination and just needs help polishing the application or filtering a list. The actual gap sits
             earlier: knowing which door to walk toward, and that this semester&apos;s course registration is
-            already the first domino in that chain.
+            already the first step in that chain.
           </p>
         </div>
       </section>
@@ -131,7 +131,7 @@ function AboutPage() {
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           Every connected student already has one — a parent, an older friend, a mentor, or just the right
           feed of LinkedIn posts — quietly telling them what to do next, and quietly telling them which
-          dominoes matter.
+          steps matter.
         </p>
         <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
           Sylo gives that advisor to every student, at every decision point, from the moment they pick a destination.

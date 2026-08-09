@@ -270,29 +270,31 @@ function Dashboard() {
                   label={`Mark ${op.name} complete`}
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Link
-                      to="/opportunity-details"
-                      search={{ id: op.id }}
-                      className={cn(
-                        "text-sm font-semibold tracking-tight",
-                        done ? "text-muted-foreground line-through" : "hover:underline",
-                      )}
-                    >
-                      {op.name}
-                    </Link>
-                    <span className="text-xs text-muted-foreground">{op.timeframe}</span>
-                    <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
-                    {op.origin === "live" ? <FoundViaSearchBadge /> : null}
-                    {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}
-                    {stepNotes[step.opportunityId] ? (
-                      <NoteIndicator note={stepNotes[step.opportunityId]} />
-                    ) : null}
+                  <div className="flex items-start gap-2">
+                    <div className="flex flex-1 flex-wrap items-center gap-2">
+                      <Link
+                        to="/opportunity-details"
+                        search={{ id: op.id }}
+                        className={cn(
+                          "text-sm font-semibold tracking-tight",
+                          done ? "text-muted-foreground line-through" : "hover:underline",
+                        )}
+                      >
+                        {op.name}
+                      </Link>
+                      <span className="text-xs text-muted-foreground">{op.timeframe}</span>
+                      <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
+                      {op.origin === "live" ? <FoundViaSearchBadge /> : null}
+                      {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}
+                      {stepNotes[step.opportunityId] ? (
+                        <NoteIndicator note={stepNotes[step.opportunityId]} />
+                      ) : null}
+                    </div>
                     <button
                       type="button"
                       onClick={() => setEditingStepId(step.id)}
                       aria-label={`Edit note for ${op.name}`}
-                      className="tap tap-surface rounded-lg border p-1.5 text-muted-foreground"
+                      className="tap tap-surface shrink-0 rounded-lg border p-1.5 text-muted-foreground"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
@@ -635,7 +637,7 @@ function Dashboard() {
       */}
 
       <section className="mt-10 border-t pt-5">
-        <h2 className="text-sm font-semibold tracking-tight">More opportunities at your school</h2>
+        <h2 className="text-sm font-semibold tracking-tight">More opportunities available to you</h2>
         <div className="mt-3 space-y-2">
           {browsableOpportunities(profile.trackId)
             .slice(0, 3)

@@ -13,9 +13,11 @@ import {
 import { useWayfind } from "@/lib/sylo-store";
 import { getTrack, milestonesForTrack, YEARS } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
+import { formatTargetDate } from "@/lib/terms";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
+import { AcademicTermSelector } from "@/components/academic-term-selector";
 import { CascadePanel } from "@/components/cascade-panel";
 import { WavyConnector, StatusAccentBar } from "@/components/roadmap-connector";
 import { InlineNoteEditor } from "@/components/inline-note-editor";
@@ -381,12 +383,10 @@ function Dashboard() {
               rows={2}
               className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
             />
-            <input
-              type="date"
+            <AcademicTermSelector
               value={targetDate}
-              onChange={(e) => setTargetDate(e.target.value)}
-              aria-label="Target date (optional)"
-              className="rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+              currentYear={profile.year}
+              onChange={setTargetDate}
             />
             <div className="flex gap-2">
               <button
@@ -436,12 +436,10 @@ function Dashboard() {
                     rows={2}
                     className="w-full rounded-xl border bg-background px-3 py-1.5 text-sm outline-none focus:border-primary/40"
                   />
-                  <input
-                    type="date"
+                  <AcademicTermSelector
                     value={s.targetDate ?? ""}
-                    onChange={(e) => updateCustomStep(s.id, { targetDate: e.target.value })}
-                    aria-label="Edit target date"
-                    className="rounded-xl border bg-background px-3 py-1.5 text-sm outline-none focus:border-primary/40"
+                    currentYear={profile.year}
+                    onChange={(term) => updateCustomStep(s.id, { targetDate: term || undefined })}
                   />
                   <button
                     type="button"
@@ -476,12 +474,12 @@ function Dashboard() {
                         <OwnGoalBadge />
                         <StatusTag status={s.status} onChange={(st) => updateCustomStep(s.id, { status: st })} />
                         {s.targetDate ? (
-                          <span className="text-xs text-muted-foreground">Target {s.targetDate}</span>
+                          <span className="text-xs text-muted-foreground">{formatTargetDate(s.targetDate)}</span>
+                        ) : null}
+                        {s.note ? (
+                          <NoteIndicator note={s.note} />
                         ) : null}
                       </div>
-                      {s.note ? (
-                        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.note}</p>
-                      ) : null}
                     </div>
                     <div className="flex shrink-0 gap-1">
                       <button
@@ -598,6 +596,7 @@ function Dashboard() {
       </section>
 
 
+      {/* What's ahead — commented out, redundant with roadmap steps above
       <section className="mt-12">
         <h2 className="border-b pb-3 text-lg font-semibold tracking-tight">What&apos;s ahead</h2>
         <div className="mt-5 grid gap-8 sm:grid-cols-2">
@@ -633,6 +632,7 @@ function Dashboard() {
           <span className="pb-1 text-sm text-muted-foreground">steps complete</span>
         </div>
       </section>
+      */}
 
       <section className="mt-10 border-t pt-5">
         <button

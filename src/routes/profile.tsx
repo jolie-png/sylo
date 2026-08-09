@@ -93,7 +93,7 @@ function ProfilePage() {
       <PageHeader
         icon={<User className="h-5 w-5" />}
         title={profile.name || profile.personaName ? `${profile.name || profile.personaName}'s Profile` : "My Profile"}
-        subtitle="Changes here propagate to your dashboard and progress tracker."
+        subtitle="Changes here propagate to your roadmap and progress tracker."
       />
 
       {busy ? <p className="mt-4 text-sm text-muted-foreground">{busyLabel}</p> : null}

@@ -635,28 +635,32 @@ function Dashboard() {
       */}
 
       <section className="mt-10 border-t pt-5">
-        <button
-          type="button"
-          onClick={() => setShowAlternates((v) => !v)}
-          className="tap flex items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground"
-        >
-          {showAlternates ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-          Explore more paths
-        </button>
-        {showAlternates ? (
-          <div className="mt-4 space-y-4 pl-6">
-            {roadmap.alternates.map((a) => (
-              <div key={a.title} className="card-tonal rounded-2xl p-4">
-                <p className="text-sm font-semibold tracking-tight">{a.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{a.detail}</p>
-              </div>
+        <h2 className="text-sm font-semibold tracking-tight">More opportunities at your school</h2>
+        <div className="mt-3 space-y-2">
+          {browsableOpportunities(profile.trackId)
+            .filter((op) => !roadmap.steps.some((s) => s.opportunityId === op.id))
+            .slice(0, 3)
+            .map((op) => (
+              <Link
+                key={op.id}
+                to="/opportunity-details"
+                search={{ id: op.id }}
+                className="tap flex items-center justify-between rounded-xl border bg-card p-3 text-sm hover:border-primary/30"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium tracking-tight truncate">{op.name}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{op.category} · {op.timeframe}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </Link>
             ))}
-          </div>
-        ) : null}
+        </div>
+        <Link
+          to="/opportunity-details"
+          className="tap mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+        >
+          See all opportunities <ChevronRight className="h-3.5 w-3.5" />
+        </Link>
       </section>
     </Workspace>
   );

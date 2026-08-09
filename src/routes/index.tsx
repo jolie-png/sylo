@@ -34,11 +34,11 @@ function required<T>(value: T | undefined, id: string): T {
 
 
 const dashboardOp = required(
-  getOpportunity("op-bbrc-scholars"),
-  "op-bbrc-scholars",
+  getOpportunity("op-ucla-urfp"),
+  "op-ucla-urfp",
 );
-const translationOp = required(getOpportunity("op-bbrc-scholars"), "op-bbrc-scholars");
-const courseOp = required(getOpportunity("op-pioneer-health"), "op-pioneer-health");
+const translationOp = required(getOpportunity("op-ucla-bisep"), "op-ucla-bisep");
+const courseOp = required(getOpportunity("op-gt-createx-learn"), "op-gt-createx-learn");
 
 
 function Landing() {
@@ -138,9 +138,9 @@ function Landing() {
                   →
                 </span>
                 <div>
-                  <span className="text-sm font-medium tracking-tight">{translationOp.brandEquivalent} → {translationOp.name}</span>
+                  <span className="text-sm font-medium tracking-tight">{translationOp.name}</span>
                   <p className="mt-1 text-xs text-primary">
-                    Same outcome, already at your school
+                    Real program at your school — no brand-name equivalent needed
                   </p>
                 </div>
               </div>
@@ -161,8 +161,8 @@ function Landing() {
                   <AlertTriangle className="h-3 w-3" />
                 </span>
                 <div>
-                  <span className="text-sm font-medium tracking-tight">{dashboardOp.gapLabel}</span>
-                  <p className="mt-1 text-xs text-primary">→ {dashboardOp.window}</p>
+                  <span className="text-sm font-medium tracking-tight">{courseOp.courseCode ?? courseOp.name}</span>
+                  <p className="mt-1 text-xs text-primary">→ {courseOp.timeline}</p>
                 </div>
               </div>
             </div>

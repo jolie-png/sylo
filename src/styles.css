@@ -1,0 +1,272 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Sylo design system — Apple-inspired liquid glass.
+ * Clean white canvas, deep purple accent, generous whitespace,
+ * large radii, and refined frosted-glass surfaces.
+ * Tokens only; never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --font-sans: "Figtree", -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Onest", "Figtree", -apple-system, BlinkMacSystemFont, ui-sans-serif, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-mint: var(--mint);
+  --color-mint-foreground: var(--mint-foreground);
+  --color-tag-gray: var(--tag-gray);
+  --color-tag-gray-foreground: var(--tag-gray-foreground);
+  --color-tag-blue: var(--tag-blue);
+  --color-tag-blue-foreground: var(--tag-blue-foreground);
+  --color-tag-green: var(--tag-green);
+  --color-tag-green-foreground: var(--tag-green-foreground);
+  --color-tag-amber: var(--tag-amber);
+  --color-tag-amber-foreground: var(--tag-amber-foreground);
+}
+
+/*
+ * Product-Roadmap register: quiet off-white canvas, solid white cards,
+ * one saturated accent (Sylo purple), thin neutral hairlines, 12px radii.
+ */
+:root {
+  --radius: 12px;
+  --background: #ffffff;
+  --canvas: #f8f8f5;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --primary: #3b1f6b;
+  --primary-foreground: #f8f8f5;
+  --secondary: #efeee8;
+  --secondary-foreground: #171717;
+  --muted: #f2f1ec;
+  --muted-foreground: #666666;
+  --accent: #efeee8;
+  --accent-foreground: #171717;
+  --destructive: #d13b57;
+  --destructive-foreground: #f8f8f5;
+  --border: #e5e4dd;
+  --input: #e5e4dd;
+  --ring: #3b1f6b;
+  --mint: #3b1f6b;
+  --mint-foreground: #ffffff;
+  --tag-gray: #f2f1ec;
+  --tag-gray-foreground: #666666;
+  --tag-blue: rgba(59, 31, 107, 0.09);
+  --tag-blue-foreground: #3b1f6b;
+  --tag-green: rgba(22, 163, 74, 0.12);
+  --tag-green-foreground: #15803d;
+  --tag-amber: rgba(217, 119, 6, 0.12);
+  --tag-amber-foreground: #b45309;
+  --shadow-card: 0 1px 2px rgba(23, 23, 23, 0.04);
+  --shadow-raise: 0 10px 24px -14px rgba(23, 23, 23, 0.22);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--canvas);
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  /* Wrap instead of spilling past the card edge on long labels. */
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-align: left;
+}
+
+
+/* Primary content surface: solid white card on the quiet canvas. */
+@utility glass {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Chrome surface: sidebar / top bar. */
+@utility glass-panel {
+  background-color: var(--card);
+}
+
+@utility glass-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+@utility nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background-color: var(--accent);
+    color: var(--color-foreground);
+  }
+}
+
+/* Shared interaction pattern: hover, pressed, and keyboard-focus feedback. */
+@utility tap {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
+  outline: none;
+
+  &:active {
+    transform: scale(0.985);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary) 45%, transparent);
+  }
+}
+
+@utility tap-surface {
+  &:hover {
+    border-color: color-mix(in oklab, var(--color-primary) 30%, var(--border));
+    background-color: var(--accent);
+  }
+}
+
+/* Nested card inside a card — one step quieter than the parent surface. */
+@utility card-tonal {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    background-color: var(--accent);
+  }
+}
+
+/* Read-only property rows and inputs. */
+@utility field-tonal {
+  background-color: var(--muted);
+  border: 1px solid transparent;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--border);
+  }
+
+  &:focus-within {
+    border-color: color-mix(in oklab, var(--color-primary) 45%, transparent);
+    background-color: var(--card);
+  }
+}
+
+/* Big honest count — "3 / 6 steps complete". */
+@utility field-xl {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Kanban column shell — muted tray holding white cards. */
+@utility column-tray {
+  background-color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+@utility drag-lift {
+  opacity: 0.4;
+}
+
+@utility drop-placeholder {
+  border: 1px dashed color-mix(in oklab, var(--color-primary) 35%, var(--border));
+  border-radius: 12px;
+  background-color: transparent;
+}

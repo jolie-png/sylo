@@ -1,0 +1,449 @@
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import {
+  KanbanSquare,
+  Clock,
+  ChevronDown,
+  ChevronRight,
+  ChevronsDownUp,
+  ChevronsUpDown,
+} from "lucide-react";
+import { StatusAccentBar, StatusDot } from "@/components/roadmap-connector";
+import {
+  Workspace,
+  PageHeader,
+  StatusTag,
+  NotionCheckbox,
+  Tag,
+  OwnGoalBadge,
+  FoundViaSearchBadge,
+} from "@/components/workspace";
+import { LongViewBoard } from "@/components/long-view-board";
+import { useWayfind } from "@/lib/wayfind-store";
+import { type StepStatus } from "@/lib/wayfind-data";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/progress")({
+  head: () => ({
+    meta: [
+      { title: "Progress Tracker — Sylo" },
+      {
+        name: "description",
+        content:
+          "Board and list views of your roadmap steps. Drag a step between Not started, In progress, and Complete.",
+      },
+      { property: "og:title", content: "Progress Tracker — Sylo" },
+      {
+        property: "og:description",
+        content: "Honest counts, never a score. Your roadmap steps as a live database view.",
+      },
+    ],
+  }),
+  component: Progress,
+});
+
+const COLUMNS: { key: StepStatus; label: string }[] = [
+  { key: "not-started", label: "Not Started" },
+  { key: "in-progress", label: "In Progress" },
+  { key: "complete", label: "Complete" },
+];
+
+/** "Due in 3 days" reads faster than a raw date. Derived from data we already have. */
+function relativeDue(iso?: string) {
+  if (!iso) return null;
+  const target = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(target.getTime())) return null;
+  const today = new Date();
+  const days = Math.round(
+    (target.getTime() - new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()) /
+      86_400_000,
+  );
+  if (days < 0) return { text: "Window closed", urgent: false };
+  if (days === 0) return { text: "Due today", urgent: true };
+  if (days === 1) return { text: "Due tomorrow", urgent: true };
+  if (days <= 14) return { text: `Due in ${days} days`, urgent: days <= 7 };
+  if (days <= 60) return { text: `Due in ${Math.round(days / 7)} weeks`, urgent: false };
+  return { text: `Due in ${Math.round(days / 30)} months`, urgent: false };
+}
+
+function Progress() {
+  const {
+    profile,
+    roadmap,
+    setStatus,
+    toggleComplete,
+    hydrated,
+    customSteps,
+    updateCustomStep,
+    resolveOpportunity,
+  } = useWayfind();
+  const navigate = useNavigate();
+  const [view, setView] = useState<"board" | "list" | "long view">("board");
+  const [drag, setDrag] = useState<{ id: string; custom: boolean } | null>(null);
+  const [overCol, setOverCol] = useState<StepStatus | null>(null);
+  const [collapsedCols, setCollapsedCols] = useState<Record<string, boolean>>({});
+  const [openCards, setOpenCards] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (hydrated && (!profile || !roadmap)) navigate({ to: "/roadmap-builder" });
+  }, [hydrated, profile, roadmap, navigate]);
+
+  if (!profile || !roadmap) return null;
+
+  const done =
+    roadmap.steps.filter((s) => s.status === "complete").length +
+    customSteps.filter((s) => s.status === "complete").length;
+  const total = roadmap.steps.length + customSteps.length;
+
+  return (
+    <Workspace wide>
+      <PageHeader
+        icon={<KanbanSquare className="h-5 w-5" />}
+        title="Progress Tracker"
+        subtitle="Board and list views of every step on your roadmap."
+      />
+
+      <div className="mt-6 flex items-baseline gap-2.5">
+        <span className="field-xl text-foreground">
+          {done}
+          <span className="text-muted-foreground/50"> / {total}</span>
+        </span>
+        <span className="pb-1 text-sm text-muted-foreground">steps complete</span>
+      </div>
+
+      <div className="mt-6 inline-flex gap-1 rounded-full border bg-card p-1">
+        {(["board", "list", "long view"] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => setView(v)}
+            className={cn(
+              "tap rounded-full px-4 py-1.5 text-sm font-medium capitalize",
+              view === v
+                ? "bg-secondary text-foreground"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+
+      {view === "long view" ? (
+        <LongViewBoard
+          trackId={profile.trackId}
+          steps={roadmap.steps}
+          studentYear={profile.year}
+          school={profile.school}
+        />
+      ) : view === "board" ? (
+        <div className="mt-6 grid items-start gap-4 sm:grid-cols-3">
+          {COLUMNS.map((col) => {
+            const items = roadmap.steps.filter((s) => s.status === col.key);
+            const mine = customSteps.filter((s) => s.status === col.key);
+            const count = items.length + mine.length;
+            const dense = !!collapsedCols[col.key];
+            return (
+              <div
+                key={col.key}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setOverCol(col.key);
+                }}
+                onDragLeave={() => setOverCol((c) => (c === col.key ? null : c))}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (drag) {
+                    if (drag.custom) updateCustomStep(drag.id, { status: col.key });
+                    else setStatus(drag.id, col.key);
+                  }
+                  setDrag(null);
+                  setOverCol(null);
+                }}
+                className={cn(
+                  "column-tray flex min-h-[220px] flex-col p-2",
+                  overCol === col.key && "border-primary/40 bg-primary/[0.05]",
+                )}
+              >
+                <div className="flex items-center justify-between gap-2 px-1 pb-2.5">
+                  <span className="flex items-center gap-2">
+                    <StatusDot status={col.key} />
+                    <span className="text-sm font-semibold tracking-tight">{col.label}</span>
+                    <span className="tag bg-tag-gray text-tag-gray-foreground tabular-nums">
+                      {count}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCollapsedCols((c) => ({ ...c, [col.key]: !c[col.key] }))
+                    }
+                    aria-label={
+                      dense ? `Expand cards in ${col.label}` : `Collapse cards in ${col.label}`
+                    }
+                    className="tap rounded-md p-1 text-muted-foreground hover:text-foreground"
+                  >
+                    {dense ? (
+                      <ChevronsUpDown className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronsDownUp className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {items.map((s) => {
+                    const op = resolveOpportunity(s.opportunityId);
+                    if (!op) return null;
+                    const due = relativeDue(op.deadline);
+                    const expanded = !dense && !!openCards[s.id];
+                    const isDragging = drag?.id === s.opportunityId;
+                    return (
+                      <div
+                        key={s.id}
+                        draggable
+                        onDragStart={() => setDrag({ id: s.opportunityId, custom: false })}
+                        onDragEnd={() => {
+                          setDrag(null);
+                          setOverCol(null);
+                        }}
+                        title="Drag to another column"
+                        className={cn(
+                          "relative cursor-grab rounded-xl px-3 py-3 pl-4 active:cursor-grabbing",
+                          "card-tonal",
+                          isDragging && "drag-lift drop-placeholder",
+                        )}
+                      >
+                        <StatusAccentBar status={s.status} />
+                        <p className="text-sm font-semibold leading-snug tracking-tight">
+                          <Link
+                            to="/opportunity-details"
+                            search={{ id: op.id }}
+                            className="hover:underline"
+                          >
+                            {op.name}
+                          </Link>
+                        </p>
+                        {op.origin === "live" ? (
+                          <div className="mt-2">
+                            <FoundViaSearchBadge />
+                          </div>
+                        ) : null}
+                        <div className="mt-2 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setOpenCards((o) => ({ ...o, [s.id]: !o[s.id] }))}
+                            className="tap inline-flex items-center gap-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground"
+                          >
+                            {expanded ? (
+                              <ChevronDown className="h-3.5 w-3.5" />
+                            ) : (
+                              <ChevronRight className="h-3.5 w-3.5" />
+                            )}
+                            {expanded ? "Hide detail" : "Detail"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const order: StepStatus[] = [
+                                "not-started",
+                                "in-progress",
+                                "complete",
+                              ];
+                              setStatus(s.opportunityId, order[(order.indexOf(s.status) + 1) % 3]);
+                            }}
+                            className="tap inline-flex rounded-md text-xs font-medium text-primary hover:underline"
+                          >
+                            Advance
+                          </button>
+                        </div>
+                        {expanded ? (
+                          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                            {s.reasoning}
+                          </p>
+                        ) : null}
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2 text-[11px] text-muted-foreground">
+                          <StatusDot status={s.status} withLabel />
+                          {due ? (
+                            <span
+                              className={cn(
+                                "inline-flex shrink-0 items-center gap-1 whitespace-nowrap tabular-nums",
+                                due.urgent && "text-tag-amber-foreground",
+                              )}
+                            >
+                              <Clock className="h-3.5 w-3.5" />
+                              {due.text}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {mine.map((s) => {
+                    const expanded = !dense && !!openCards[s.id];
+                    const due = relativeDue(s.targetDate);
+                    return (
+                      <div
+                        key={s.id}
+                        draggable
+                        onDragStart={() => setDrag({ id: s.id, custom: true })}
+                        onDragEnd={() => {
+                          setDrag(null);
+                          setOverCol(null);
+                        }}
+                        title="Your own goal — drag to another column"
+                        className={cn(
+                          "relative cursor-grab rounded-xl border border-dashed border-foreground/25 bg-card px-3 py-3 pl-4 transition-colors duration-150 hover:bg-accent active:cursor-grabbing",
+                          drag?.id === s.id && "drag-lift drop-placeholder",
+                        )}
+                      >
+                        <StatusAccentBar status={s.status} />
+                        <p className="text-sm font-semibold leading-snug tracking-tight">{s.title}</p>
+                        <div className="mt-2">
+                          <OwnGoalBadge />
+                        </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          {s.note ? (
+                            <button
+                              type="button"
+                              onClick={() => setOpenCards((o) => ({ ...o, [s.id]: !o[s.id] }))}
+                              className="tap inline-flex items-center gap-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground"
+                            >
+                              {expanded ? (
+                                <ChevronDown className="h-3.5 w-3.5" />
+                              ) : (
+                                <ChevronRight className="h-3.5 w-3.5" />
+                              )}
+                              {expanded ? "Hide detail" : "Detail"}
+                            </button>
+                          ) : null}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const order: StepStatus[] = [
+                                "not-started",
+                                "in-progress",
+                                "complete",
+                              ];
+                              updateCustomStep(s.id, {
+                                status: order[(order.indexOf(s.status) + 1) % 3],
+                              });
+                            }}
+                            className="tap inline-flex rounded-md text-xs font-medium text-primary hover:underline"
+                          >
+                            Advance
+                          </button>
+                        </div>
+                        {expanded && s.note ? (
+                          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                            {s.note}
+                          </p>
+                        ) : null}
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2 text-[11px] text-muted-foreground">
+                          <StatusDot status={s.status} withLabel />
+                          {due ? (
+                            <span
+                              className={cn(
+                                "inline-flex shrink-0 items-center gap-1 whitespace-nowrap tabular-nums",
+                                due.urgent && "text-tag-amber-foreground",
+                              )}
+                            >
+                              <Clock className="h-3.5 w-3.5" />
+                              {due.text}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {count === 0 ? (
+                    <p className="drop-placeholder px-2 py-4 text-center text-xs text-muted-foreground">
+                      Drop a step here.
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="mt-6 rounded-2xl border bg-card p-4">
+          <div className="flex items-center gap-3 border-b pb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <span className="w-4" />
+            <span className="min-w-0 flex-1">Step</span>
+            <span className="w-28">Status</span>
+            <span className="hidden w-32 sm:block">Timeframe</span>
+            <span className="hidden w-24 sm:block">Category</span>
+          </div>
+          {roadmap.steps.map((s) => {
+            const op = resolveOpportunity(s.opportunityId);
+            if (!op) return null;
+            return (
+              <div key={s.id} className="tap flex items-center gap-3 border-b py-3 last:border-b-0 hover:bg-accent">
+                <NotionCheckbox
+                  checked={s.status === "complete"}
+                  onChange={() => toggleComplete(s.opportunityId)}
+                  label={`Mark ${op.name} complete`}
+                />
+                <span className="flex min-w-0 flex-1 items-center gap-2">
+                  <Link
+                    to="/opportunity-details"
+                    search={{ id: op.id }}
+                    className={cn(
+                      "min-w-0 truncate text-sm font-medium hover:underline",
+                      s.status === "complete" && "text-muted-foreground line-through",
+                    )}
+                  >
+                    {op.name}
+                  </Link>
+                  {op.origin === "live" ? <FoundViaSearchBadge /> : null}
+                </span>
+                <span className="w-28">
+                  <StatusTag status={s.status} />
+                </span>
+                <span className="hidden w-32 text-xs text-muted-foreground sm:block">
+                  {op.timeframe}
+                </span>
+                <span className="hidden w-24 sm:block">
+                  <Tag>{op.category}</Tag>
+                </span>
+              </div>
+            );
+          })}
+          {customSteps.map((s) => (
+            <div
+              key={s.id}
+              className="tap flex items-center gap-3 border-b border-dashed py-3 last:border-b-0 hover:bg-accent"
+            >
+              <NotionCheckbox
+                checked={s.status === "complete"}
+                onChange={() =>
+                  updateCustomStep(s.id, {
+                    status: s.status === "complete" ? "not-started" : "complete",
+                  })
+                }
+                label={`Mark ${s.title} complete`}
+              />
+              <span
+                className={cn(
+                  "flex min-w-0 flex-1 items-center gap-2 truncate text-sm font-medium",
+                  s.status === "complete" && "text-muted-foreground line-through",
+                )}
+              >
+                <span className="truncate">{s.title}</span>
+                <OwnGoalBadge />
+              </span>
+              <span className="w-28">
+                <StatusTag status={s.status} />
+              </span>
+              <span className="hidden w-32 text-xs text-muted-foreground sm:block">
+                {s.targetDate ?? "—"}
+              </span>
+              <span className="hidden w-24 text-xs text-muted-foreground sm:block">—</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </Workspace>
+  );
+}

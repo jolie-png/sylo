@@ -88,7 +88,7 @@ export const parseResume = createServerFn({ method: "POST" })
     // 2. Validate extension
     const ext = data.filename.slice(data.filename.lastIndexOf(".")).toLowerCase();
     if (!ALLOWED_EXTENSIONS.includes(ext as (typeof ALLOWED_EXTENSIONS)[number])) {
-      return { error: true, message: "Unsupported file type. Please upload a PDF, TXT, or DOCX file." };
+      return { error: true, message: "Unsupported file type. Please upload a PDF file." };
     }
 
     // 3. Extract text based on extension

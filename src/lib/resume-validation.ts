@@ -1,6 +1,6 @@
 /** Shared constants and validation for resume upload (client + server). */
 
-export const ALLOWED_EXTENSIONS = [".pdf", ".txt", ".docx"] as const;
+export const ALLOWED_EXTENSIONS = [".pdf"] as const;
 export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 /** Fields extracted from a resume by Claude. All optional — empty means Claude couldn't find it. */
@@ -22,7 +22,7 @@ export function validateResumeFile(file: File): ValidationResult {
   const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
 
   if (!ALLOWED_EXTENSIONS.includes(ext as (typeof ALLOWED_EXTENSIONS)[number])) {
-    return { valid: false, message: "Please upload a PDF, TXT, or DOCX file." };
+    return { valid: false, message: "Please upload a PDF file." };
   }
 
   if (file.size > MAX_FILE_SIZE_BYTES) {

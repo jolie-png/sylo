@@ -112,7 +112,7 @@ export function ResumeUpload({ onParsed, disabled }: ResumeUploadProps) {
       <input
         ref={inputRef}
         type="file"
-        accept=".pdf,.txt,.docx"
+        accept=".pdf"
         className="hidden"
         onChange={handleInputChange}
         disabled={disabled || status === "uploading" || status === "processing"}
@@ -131,7 +131,7 @@ export function ResumeUpload({ onParsed, disabled }: ResumeUploadProps) {
         >
           <Upload className="h-8 w-8 text-muted-foreground" />
           <span className="text-sm font-medium text-foreground">Upload your resume</span>
-          <span className="text-xs text-muted-foreground">PDF, TXT, or DOCX &middot; max 5 MB</span>
+          <span className="text-xs text-muted-foreground">PDF &middot; max 5 MB</span>
         </button>
       )}
 

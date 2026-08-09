@@ -34,11 +34,11 @@ function required<T>(value: T | undefined, id: string): T {
 
 
 const dashboardOp = required(
-  getOpportunity("op-research-methods-seminar"),
-  "op-research-methods-seminar",
+  getOpportunity("op-bbrc-scholars"),
+  "op-bbrc-scholars",
 );
 const translationOp = required(getOpportunity("op-bbrc-scholars"), "op-bbrc-scholars");
-const courseOp = dashboardOp;
+const courseOp = required(getOpportunity("op-pioneer-health"), "op-pioneer-health");
 
 
 function Landing() {
@@ -103,7 +103,7 @@ function Landing() {
         <section className="py-14 sm:py-18">
           <div className="grid gap-3 sm:grid-cols-3">
             {/* 01 */}
-            <div className="rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
+            <div className="flex flex-col rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">01</p>
               <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
                 One next move, not twenty.
@@ -112,19 +112,19 @@ function Landing() {
                 No dashboard to learn. Just the single highest-leverage thing to do right now, and why it matters this week.
               </p>
 
-              <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
+              <div className="field-tonal mt-auto pt-4 flex items-start gap-2.5 rounded-lg p-3">
                 <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
                   1
                 </span>
                 <div>
                   <span className="text-sm font-medium tracking-tight">{dashboardOp.name}</span>
-                  <p className="mt-1 text-xs text-primary">→ {dashboardOp.leverage}</p>
+                  <p className="mt-1 text-xs text-primary">→ {dashboardOp.unlocks?.[0] ?? dashboardOp.leverage}</p>
                 </div>
               </div>
             </div>
 
             {/* 02 */}
-            <div className="rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
+            <div className="flex flex-col rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">02</p>
               <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
                 Your school, not a brochure.
@@ -133,21 +133,21 @@ function Landing() {
                 When the name-brand program doesn&apos;t exist where you are, Sylo names the real equivalent — built on the same ingredients that actually matter.
               </p>
 
-              <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
+              <div className="field-tonal mt-auto pt-4 flex items-start gap-2.5 rounded-lg p-3">
                 <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-blue text-[10px] font-semibold text-tag-blue-foreground">
                   →
                 </span>
                 <div>
-                  <span className="text-sm font-medium tracking-tight">{translationOp.missingHere}</span>
+                  <span className="text-sm font-medium tracking-tight">{translationOp.brandEquivalent} → {translationOp.name}</span>
                   <p className="mt-1 text-xs text-primary">
-                    {translationOp.name} is the real on-ramp for {translationOp.brandEquivalent} — same outcome
+                    Same outcome, already at your school
                   </p>
                 </div>
               </div>
             </div>
 
             {/* 03 */}
-            <div className="rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
+            <div className="flex flex-col rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">03</p>
               <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
                 See what&apos;s actually blocking you.
@@ -156,15 +156,13 @@ function Landing() {
                 Your biggest gap, stated plainly, with the deadline attached — not buried three clicks deep.
               </p>
 
-              <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
+              <div className="field-tonal mt-auto pt-4 flex items-start gap-2.5 rounded-lg p-3">
                 <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-amber text-tag-amber-foreground">
                   <AlertTriangle className="h-3 w-3" />
                 </span>
                 <div>
-                  <span className="text-sm font-medium tracking-tight">
-                    {courseOp.courseCode ? `${courseOp.courseCode} · ${courseOp.name}` : courseOp.name}
-                  </span>
-                  <p className="mt-1 text-xs text-primary">→ {courseOp.timeline}</p>
+                  <span className="text-sm font-medium tracking-tight">{dashboardOp.gapLabel}</span>
+                  <p className="mt-1 text-xs text-primary">→ {dashboardOp.window}</p>
                 </div>
               </div>
             </div>

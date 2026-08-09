@@ -323,14 +323,14 @@ function Builder() {
               onClick={() => demo("maya")}
               className="tap tap-surface rounded-lg border bg-card px-4 py-1.5 text-sm"
             >
-              Maya · Biology
+              Maya · Biology @ UCLA
             </button>
             <button
               type="button"
               onClick={() => demo("alex")}
               className="tap tap-surface rounded-lg border bg-card px-4 py-1.5 text-sm"
             >
-              Alex · Computer Science
+              Alex · CS @ Georgia Tech
             </button>
           </div>
         </div>

@@ -129,6 +129,26 @@ for (const rec of [...seedRecords, ...externalRecords]) {
 const LOWER_NAMES = ALL_RECORDS.map((r) => r.name.toLowerCase());
 const LOWER_TAGS = ALL_RECORDS.map((r) => r.tags.map((t) => t.toLowerCase()));
 
+/** Full-text search corpus: everything searchable about each record, concatenated. */
+const SEARCH_CORPUS = ALL_RECORDS.map((r) =>
+  [
+    r.name,
+    r.category,
+    r.leverage,
+    r.timeframe,
+    r.timeline,
+    r.track,
+    r.region,
+    ...r.tags,
+    ...r.requirements,
+    ...r.yearRelevance,
+    r.brandEquivalent ?? "",
+    r.source ?? "",
+  ]
+    .join(" ")
+    .toLowerCase(),
+);
+
 export const OPPORTUNITY_COUNT = ALL_RECORDS.length;
 export const MAX_RESULTS = 50;
 
@@ -183,15 +203,21 @@ export function searchOpportunities(filters: OpportunityFilters = {}): Opportuni
     const rec = ALL_RECORDS[i];
     let score = 0;
 
-    // Text query filter
+    // Text query filter — split into words, match any word against the full corpus
     if (q) {
-      const nameIdx = LOWER_NAMES[i].indexOf(q);
-      const tagMatch = LOWER_TAGS[i].some((t) => t.includes(q));
-      if (nameIdx < 0 && !tagMatch) continue;
-      // Prefix match scores higher
-      if (nameIdx === 0) score += 10;
-      else if (nameIdx > 0) score += 5;
-      if (tagMatch) score += 3;
+      const words = q.split(/\s+/).filter((w) => w.length >= 2);
+      if (words.length === 0) continue;
+
+      const corpus = SEARCH_CORPUS[i];
+      const matchCount = words.filter((w) => corpus.includes(w)).length;
+
+      if (matchCount === 0) continue;
+
+      // Score based on how many query words matched
+      score += matchCount * 3;
+      // Bonus for name match
+      if (LOWER_NAMES[i].includes(q)) score += 10;
+      else if (words.some((w) => LOWER_NAMES[i].includes(w))) score += 5;
     }
 
     // Track filter

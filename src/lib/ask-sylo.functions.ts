@@ -1,93 +1,76 @@
 /**
- * Server function for Ask Sylo — searches Reddit from the server
- * to avoid CORS issues. Free, no API key needed.
+ * Ask Sylo — server function for web search fallback.
+ *
+ * Flow: local DB search first (free) → if no results, uses Gemini Flash
+ * via the existing AI gateway to do a grounded web search. Costs ~$0.0001/query.
  */
 
 import { createServerFn } from "@tanstack/react-start";
+import { generateText } from "ai";
 import { z } from "zod";
-
-const SUBREDDITS = [
-  "csMajors",
-  "cscareerquestions",
-  "internships",
-  "FinancialCareers",
-  "premed",
-  "gradadmissions",
-  "scholarships",
-];
+import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 
 const Input = z.object({
-  query: z.string().min(1).max(200),
+  query: z.string().min(1).max(300),
 });
 
-export type RedditSearchResult = {
-  id: string;
+export type WebSearchResult = {
   title: string;
-  subreddit: string;
-  score: number;
-  numComments: number;
-  permalink: string;
-  selftext: string;
-  created: number;
+  snippet: string;
+  link: string;
+  source: string;
 };
 
-export const askSyloSearch = createServerFn({ method: "POST" })
+export const askSyloWebSearch = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
-    const subs = SUBREDDITS.join("+");
-    const params = new URLSearchParams({
-      q: data.query,
-      sort: "relevance",
-      t: "year",
-      limit: "10",
-      type: "link",
-      restrict_sr: "true",
-    });
+    try {
+      const { config } = await import("dotenv");
+      config();
+    } catch { /* no-op */ }
 
-    const url = `https://www.reddit.com/r/${subs}/search.json?${params}`;
+    const key = process.env.LOVABLE_API_KEY;
+    if (!key) {
+      return { results: [] as WebSearchResult[], error: "No API key configured" };
+    }
+
+    const gateway = createLovableAiGatewayProvider(key);
 
     try {
-      const res = await fetch(url, {
-        headers: {
-          "User-Agent": "Sylo:student-opportunity-search:v1.0 (by /u/sylo-app)",
-        },
+      const { text } = await generateText({
+        model: gateway("google/gemini-3.6-flash"),
+        system: [
+          "You are a helpful assistant that finds student opportunity programs.",
+          "The user is searching for specific programs, fellowships, scholarships, insight days, or early-talent pipelines.",
+          "Return ONLY a JSON array of up to 5 results. Each result must have: title, snippet (1-2 sentences about what it is and its deadline), link (URL), source (website name).",
+          "Focus on real, named programs with application deadlines. No generic advice.",
+          "If you cannot find specific programs, return an empty array: []",
+          "Return ONLY valid JSON, no markdown, no explanation.",
+        ].join(" "),
+        prompt: `Find student programs, fellowships, or opportunities related to: "${data.query}". Return as JSON array.`,
       });
 
-      if (!res.ok) {
-        console.warn(`[ask-sylo] Reddit returned ${res.status}`);
-        return { posts: [] as RedditSearchResult[] };
+      // Parse the JSON response
+      const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const parsed = JSON.parse(cleaned);
+
+      if (!Array.isArray(parsed)) {
+        return { results: [] as WebSearchResult[] };
       }
 
-      const json = await res.json();
+      const results: WebSearchResult[] = parsed
+        .slice(0, 5)
+        .map((r: any) => ({
+          title: String(r.title ?? ""),
+          snippet: String(r.snippet ?? ""),
+          link: String(r.link ?? ""),
+          source: String(r.source ?? "web"),
+        }))
+        .filter((r: WebSearchResult) => r.title && r.snippet);
 
-      if (!json?.data?.children) {
-        return { posts: [] as RedditSearchResult[] };
-      }
-
-      const posts: RedditSearchResult[] = json.data.children
-        .filter((child: any) => {
-          const d = child.data;
-          // Only include posts with some engagement
-          return (d.score ?? 0) >= 2 || (d.num_comments ?? 0) >= 1;
-        })
-        .map((child: any) => {
-          const d = child.data;
-          return {
-            id: d.id ?? "",
-            title: d.title ?? "",
-            subreddit: d.subreddit ?? "",
-            score: d.score ?? 0,
-            numComments: d.num_comments ?? 0,
-            permalink: `https://www.reddit.com${d.permalink ?? ""}`,
-            selftext: (d.selftext ?? "").slice(0, 400),
-            created: d.created_utc ?? 0,
-          };
-        })
-        .slice(0, 8);
-
-      return { posts };
+      return { results };
     } catch (err) {
-      console.warn("[ask-sylo] Reddit fetch error:", err);
-      return { posts: [] as RedditSearchResult[] };
+      console.warn("[ask-sylo] Web search failed:", err);
+      return { results: [] as WebSearchResult[], error: "Search failed" };
     }
   });

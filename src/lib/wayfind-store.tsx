@@ -246,9 +246,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /**
-   * The instant-demo path. Local seed data only, no network call of any kind —
-   * live search must never be wired into this. Clearing `liveOpportunities`
-   * keeps a previous live board from leaking into Maya's or Alex's roadmap.
+   * The instant-demo path. Sets profile with rich context so live search
+   * auto-triggers on the dashboard and builds a real roadmap for the persona.
    */
   const loadPersona = useCallback((personaId: string) => {
     const persona = PERSONAS.find((p) => p.id === personaId);
@@ -258,10 +257,32 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       year: persona.year,
       school: persona.school,
       trackId: persona.track,
-      goalText: "",
+      goalText: persona.track === "something-else" ? "" : TRACKS.find(t => t.id === persona.track)?.label ?? "",
       personaName: persona.name,
+      // Realistic demo context so live search and gap analysis work well
+      experience: persona.id === "maya"
+        ? "Volunteered at campus health clinic for one semester, completed intro bio lab sequence"
+        : "Built a full-stack task manager with React and Node.js, contributed to an open-source Python library",
+      skills: persona.id === "maya"
+        ? "Lab techniques (PCR, gel electrophoresis), SPSS, medical terminology, Spanish"
+        : "Python, Java, TypeScript, React, Node.js, SQL, Git, AWS basics",
+      priorWork: persona.id === "maya"
+        ? "Campus health clinic volunteer (Fall 2024), biology tutor"
+        : "Software engineering intern at a seed-stage startup (Summer 2024)",
+      clubs: persona.id === "maya"
+        ? "Pre-med society, undergraduate research association"
+        : "ACM chapter, hackathon team (won 2nd place at HackGT), CS tutoring",
+      alreadyDone: persona.id === "maya"
+        ? "Shadowed a physician for 40 hours, applied to two research labs (waitlisted)"
+        : "Applied to Google STEP (rejected), completed LeetCode 150, took Coursera ML course",
     });
-    setRoadmapState(personaRoadmap(persona));
+    // Set a minimal roadmap so dashboard renders (live search auto-triggers via NoDatasetState)
+    setRoadmapState({
+      summary: `Loading ${persona.name}'s roadmap — searching for real opportunities...`,
+      topOpportunityId: "",
+      steps: [],
+      alternates: [],
+    });
     setLiveOpportunities([]);
   }, []);
 

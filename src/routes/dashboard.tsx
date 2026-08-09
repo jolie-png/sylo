@@ -127,7 +127,7 @@ function Dashboard() {
     .sort((a, b) => a.deadline.localeCompare(b.deadline))
     .slice(0, 3);
   const currentYearIndex = YEARS.indexOf(profile.year);
-  const futureYears = (["Junior", "Senior"] as const).filter(
+  const futureYears = (["Sophomore", "Junior", "Senior"] as const).filter(
     (y) => currentYearIndex < 0 || YEARS.indexOf(y) > currentYearIndex,
   );
 
@@ -141,6 +141,20 @@ function Dashboard() {
       />
 
       <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{roadmap.summary}</p>
+
+      {roadmap.gapAnalysis?.strengths?.length ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {roadmap.gapAnalysis.strengths.map((s, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-800 dark:border-green-900 dark:bg-green-950/30 dark:text-green-300"
+            >
+              <span className="text-green-600 dark:text-green-400">✓</span>
+              {s}
+            </span>
+          ))}
+        </div>
+      ) : null}
 
       {roadmap.gapAnalysis ? (
         <section className="mt-6 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.05] to-transparent p-5 sm:p-6">

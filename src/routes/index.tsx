@@ -242,6 +242,9 @@ function Landing() {
             <SyloMark className="h-5 w-5" animated={true} />
             <span className="text-sm font-semibold tracking-tight">Sylo</span>
           </div>
+          <Link to="/paths" className="text-sm text-muted-foreground hover:text-foreground hover:underline">
+            Paths that worked
+          </Link>
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Sylo. All rights reserved.
           </p>

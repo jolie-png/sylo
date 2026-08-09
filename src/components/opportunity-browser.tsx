@@ -25,7 +25,8 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
   const [query, setQuery] = useState("");
 
   const trackOpportunities = browsableOpportunities(trackId);
-  const allOpportunities = OPPORTUNITIES as Opportunity[];
+  // Include live opportunities so pinned live results show up
+  const allOpportunities = [...new Map([...trackOpportunities, ...OPPORTUNITIES].map(op => [op.id, op])).values()] as Opportunity[];
 
   // Determine the pool based on view
   let pool: Opportunity[];

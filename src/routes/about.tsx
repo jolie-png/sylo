@@ -31,9 +31,8 @@ function AboutPage() {
             Everyone knows internships matter. Everyone knows networking matters. But what does that
             actually look like in practice? You&apos;re told to &ldquo;put yourself out there&rdquo; — so you
             mass-message hundreds of people on LinkedIn, show up to career fairs, and hope someone responds.
-            And even when someone does: what do you pitch? What&apos;s on your profile that makes them want
-            to help you? How do you build the experience that makes you worth referring — when you don&apos;t
-            know which experiences actually matter for where you&apos;re trying to go?
+            And even when someone does — how do you build the experience that makes you worth referring,
+            when you don&apos;t know which experiences actually matter for where you&apos;re trying to go?
           </p>
           <p>
             You see someone post that they&apos;re starting at Goldman Sachs, and in the comments:

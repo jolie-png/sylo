@@ -46,19 +46,6 @@ export function AskSylo() {
   const [open, setOpen] = useState(false);
   const { addCustomStep } = useWayfind();
 
-  // Allow other components to open the chat via a custom event
-  useEffect(() => {
-    const handler = (e: Event) => {
-      setOpen(true);
-      const query = (e as CustomEvent).detail?.query;
-      if (query) {
-        // Small delay so the panel renders before sending
-        setTimeout(() => handleSend(query), 100);
-      }
-    };
-    window.addEventListener("open-ask-sylo", handler);
-    return () => window.removeEventListener("open-ask-sylo", handler);
-  }, [handleSend]);
   // Draggable position (bottom-right anchor)
   const [pos, setPos] = useState({ right: 24, bottom: 24 });
   const dragRef = useRef<{ startX: number; startY: number; startRight: number; startBottom: number } | null>(null);
@@ -151,6 +138,20 @@ export function AskSylo() {
     },
     [input],
   );
+
+  // Allow other components to open the chat via a custom event
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setOpen(true);
+      const query = (e as CustomEvent).detail?.query;
+      if (query) {
+        // Small delay so the panel renders before sending
+        setTimeout(() => handleSend(query), 100);
+      }
+    };
+    window.addEventListener("open-ask-sylo", handler);
+    return () => window.removeEventListener("open-ask-sylo", handler);
+  }, [handleSend]);
 
   const handleAddToRoadmap = useCallback(
     (op: OpportunityRecord) => {

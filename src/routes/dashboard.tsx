@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ChevronRight, ChevronDown, Compass, Plus, Pencil, Trash2, AlertCircle, RefreshCw, Loader2, GripVertical } from "lucide-react";
+import { ChevronRight, ChevronDown, Map, Plus, Pencil, Trash2, AlertCircle, RefreshCw, Loader2, GripVertical } from "lucide-react";
 import {
   Workspace,
   PageHeader,
@@ -98,7 +98,7 @@ function Dashboard() {
   return (
     <Workspace wide>
       <PageHeader
-        icon={<Compass className="h-5 w-5" />}
+        icon={<Map className="h-5 w-5" />}
         title="Your Roadmap"
         subtitle={`${profile.major} Major → ${track?.label ?? "Your goal"}`}
         meta={[profile.major, profile.year, profile.school]}

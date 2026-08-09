@@ -23,118 +23,123 @@ function AboutPage() {
         subtitle="The missing layer between what you're studying and where you're headed."
       />
 
-      {/* The problem */}
+      {/* Hook */}
       <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Nobody shows you the timeline.</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Everyone knows what matters. Nobody knows the steps.</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>
-            Career platforms tell students what&apos;s out there. Academic systems tell students what&apos;s required.
-            Nobody connects the two to a specific student&apos;s actual situation — and that&apos;s the real gap.
-            Not a missing database. A missing connection.
+            Everyone knows internships matter. Everyone knows networking matters. But what does that
+            actually look like in practice? You&apos;re told to &ldquo;put yourself out there&rdquo; — so you
+            mass-message hundreds of people on LinkedIn, show up to career fairs, and hope someone responds.
+            And even when someone does: what do you pitch? What&apos;s on your profile that makes them want
+            to help you? How do you build the experience that makes you worth referring — when you don&apos;t
+            know which experiences actually matter for where you&apos;re trying to go?
           </p>
           <p>
-            Higher education runs on a chain reaction. Skip one foundational course, and you don&apos;t just delay
-            a class — you break the eligibility chain for the fellowship, the lab placement, the internship
-            that depended on it. Miss the course, and your timeline doesn&apos;t slip by a semester. It slips by a year.
+            You see someone post that they&apos;re starting at Goldman Sachs, and in the comments:
+            &ldquo;how&apos;d you get this?&rdquo; The answer is almost never &ldquo;I applied online.&rdquo;
+            It&apos;s a pipeline program most students have never heard of — an insight series, a bridge
+            program, a sophomore summit — that quietly fed them into recruiting a year before applications
+            even opened. And the only reason they found it? Someone told them. A mentor, a parent in the
+            industry, an older friend who&apos;d already been through it.
+          </p>
+          <p className="font-medium text-foreground">
+            The path exists. The programs exist. Most students just never see the map.
           </p>
         </div>
       </section>
 
-      {/* The example */}
+      {/* The gap */}
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold tracking-tight">The real gap.</h2>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
+          <p>
+            Career platforms tell students what&apos;s out there. Academic systems tell students what&apos;s
+            required. Career centers say &ldquo;go network&rdquo; and &ldquo;build your brand.&rdquo; Nobody
+            connects the three into a concrete sequence of steps for one specific student at one specific
+            school — and that&apos;s the real gap. Not a missing database. Not a missing motivation. A missing
+            connection.
+          </p>
+          <p>
+            Higher education runs on a chain reaction. Miss one early step, and you don&apos;t just fall behind
+            — you break the eligibility chain for the fellowship, the lab placement, the internship that
+            depended on it. Your timeline doesn&apos;t slip by a semester. It slips by a year.
+          </p>
+        </div>
+      </section>
+
+      {/* Real story */}
       <section className="mt-8 rounded-2xl border border-primary/15 bg-primary/5 p-5 sm:p-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">Real story</p>
         <p className="mt-3 text-sm leading-relaxed text-foreground">
-          A student{" "}
           <a
             href="https://www.wallstreetoasis.com/forum/investment-banking/advice-for-college-senior-w-no-internship-experience"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
-            shared their story online
+            One student shared their experience online
           </a>
-          : they knew they wanted finance by the end of sophomore year. They had a 3.8 GPA. They could
-          build financial models. They&apos;d been trading since high school. But they spent two years
-          focused on coursework and technical skills — the things they assumed mattered — while the
-          actual entry point (sophomore insight programs at Goldman, JP Morgan, Citi) opened and closed
-          without them even knowing it existed.
+          : they knew they wanted finance by sophomore year. 3.8 GPA. Financial modeling skills. Trading
+          since high school. They did everything they thought mattered — coursework, technical skills, even
+          networking. But the actual entry point (a sophomore insight program that feeds directly into summer
+          analyst recruiting) opened and closed without them knowing it existed.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          By senior year they had the skills, the grades, and the interest — but no pipeline, no
-          network, and no internship. Everything they&apos;d focused on was real. It just wasn&apos;t
-          the thing that actually opened the door.
+          By senior year: the skills, the grades, the interest. But no pipeline, no internship, no way in.
         </p>
         <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
-          Sylo would have told them, sophomore fall: &ldquo;Your next move isn&apos;t another finance
-          class. It&apos;s applying to the Goldman Sachs Insight Series by September 15 — because
-          that&apos;s what actually unlocks junior-summer recruiting.&rdquo;
+          They didn&apos;t fail because they weren&apos;t good enough. They failed because nobody showed
+          them what to actually do next.
         </p>
       </section>
 
       {/* What Sylo is */}
       <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">What Sylo is.</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Sylo is the map.</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>
-            <span className="font-medium text-foreground">Sylo is the missing intelligence layer between a student&apos;s
-            degree plan and their future opportunities.</span> A student tells Sylo where they want to end up.
-            Sylo maps the single next highest-leverage move — tied to their real major, year, and school.
+            A student tells Sylo where they want to end up. Sylo gives them one ranked next move — tied to
+            their real major, year, and school. Not a list to scroll. Not &ldquo;network more.&rdquo; One
+            step, one deadline, one reason why it matters right now.
           </p>
-          <p>
-            Not a resume optimizer. Not an internship board. Those tools assume a student already knows the
-            destination and just needs help polishing the application or filtering a list. The actual gap sits
-            earlier: knowing which door to walk toward, and that this semester&apos;s course registration is
-            already the first step in that chain.
+          <p className="font-medium text-foreground">
+            It&apos;s the kind of clarity that used to require knowing the right person — delivered to every
+            student, at every school, the moment they pick a destination.
           </p>
         </div>
       </section>
 
-      {/* What Sylo isn't */}
+      {/* What makes it different */}
       <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">What Sylo isn&apos;t.</h2>
+        <h2 className="text-lg font-semibold tracking-tight">What makes it different.</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>
-            Opening ChatGPT isn&apos;t the same thing. A general model answers questions a student already knows
-            to ask, and it has no idea what a specific school actually offers or what depends on what. Sylo
-            doesn&apos;t wait to be asked — it reasons over a verified dataset of real opportunities and each
-            student&apos;s real progress.
+            Not a resume optimizer — that assumes you already know what to put on it. Not an internship
+            board — that assumes you already know what to search for. Not ChatGPT — that answers questions
+            you already know to ask, with no idea what your school actually offers or what depends on what.
           </p>
           <p>
-            And it&apos;s not a generic career quiz. Sylo doesn&apos;t tell students what they should want.
-            It takes the destination they already have and shows them the fastest, most honest path from here to there.
+            Sylo reasons over a student&apos;s real progress, real school, and real opportunities — the same
+            kind of structured academic data that planning systems already manage — and turns it into: here&apos;s
+            what to do next, here&apos;s why, and here&apos;s the deadline.
           </p>
         </div>
       </section>
 
-      {/* Opportunity translation */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Opportunity translation.</h2>
-        <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
-          <p>
-            When Sylo notices a student&apos;s school has no formal pipeline for a competitive opportunity,
-            it doesn&apos;t leave them stuck — it surfaces the real equivalent already sitting inside their own
-            university, built on the same ingredients the brand-name program actually looks for.
-          </p>
-          <p>
-            That only works because Sylo is reasoning over a student&apos;s actual academic record and actual school,
-            not generic advice.
-          </p>
-        </div>
-      </section>
-
-      {/* The invisible advisor */}
+      {/* Closing */}
       <section className="mt-8 rounded-2xl border bg-card p-5 sm:p-6">
         <div className="flex items-center gap-3">
           <SyloMark className="h-6 w-6" animated />
           <h2 className="text-lg font-semibold tracking-tight">The invisible advisor.</h2>
         </div>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Every connected student already has one — a parent, an older friend, a mentor, or just the right
-          feed of LinkedIn posts — quietly telling them what to do next, and quietly telling them which
-          steps matter.
+          Every connected student already has someone — a parent in the industry, an older sibling who went
+          through recruiting, a mentor who says &ldquo;apply to this specific thing by this specific
+          date.&rdquo; That&apos;s not networking. That&apos;s having the map.
         </p>
         <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
-          Sylo gives that advisor to every student, at every decision point, from the moment they pick a destination.
+          Sylo gives that map to every student, from the moment they pick a destination.
         </p>
       </section>
 

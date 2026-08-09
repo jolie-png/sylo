@@ -20,7 +20,7 @@ function PathsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <Workspace>
+    <Workspace wide>
       <PageHeader
         icon={<Sparkles className="h-5 w-5" />}
         title="Paths that worked"

@@ -193,8 +193,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
       ) : (
         /* Pinterest-style masonry grid */
         <div className={cn(
-          "mt-5 columns-1 gap-4 [column-fill:_balance]",
-          view === "all" ? "sm:columns-2 md:columns-3" : "sm:columns-2",
+          "mt-5 columns-1 gap-4 [column-fill:_balance] sm:columns-2 md:columns-3",
         )}>
           {shown.map((op) => {
             const pinned = pinnedIds.includes(op.id);
@@ -216,7 +215,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                     navigate({ to: "/opportunity-details", search: { id: op.id } });
                   }
                 }}
-                className="tap card-tonal mb-4 block break-inside-avoid cursor-pointer rounded-2xl border p-4 text-left transition-shadow hover:shadow-sm"
+                className="tap card-tonal mb-4 block break-inside-avoid cursor-pointer rounded-2xl border p-3.5 text-left transition-shadow hover:shadow-sm"
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-semibold leading-snug tracking-tight">{op.name}</p>

@@ -638,7 +638,6 @@ function Dashboard() {
         <h2 className="text-sm font-semibold tracking-tight">More opportunities at your school</h2>
         <div className="mt-3 space-y-2">
           {browsableOpportunities(profile.trackId)
-            .filter((op) => !roadmap.steps.some((s) => s.opportunityId === op.id))
             .slice(0, 3)
             .map((op) => (
               <Link

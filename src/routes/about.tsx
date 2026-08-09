@@ -44,30 +44,30 @@ function AboutPage() {
       <section className="mt-8 rounded-2xl border border-primary/15 bg-primary/5 p-5 sm:p-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">Real story</p>
         <p className="mt-3 text-sm leading-relaxed text-foreground">
-          A college student{" "}
+          A student{" "}
           <a
             href="https://www.wallstreetoasis.com/forum/investment-banking/advice-for-college-senior-w-no-internship-experience"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
-            posted online
+            shared their story online
           </a>
-          {" "}as a rising senior with zero finance internships. They&apos;d switched from pre-med to
-          economics at the end of sophomore year — but didn&apos;t learn about the actual recruiting
-          timeline until junior spring. By then, every sophomore insight program (Goldman Sachs, JP Morgan,
-          Citi) had already closed. Summer analyst recruiting was over. They were a senior with no
-          pipeline, no network, and no way back in.
+          : they knew they wanted finance by the end of sophomore year. They had a 3.8 GPA. They could
+          build financial models. They&apos;d been trading since high school. But they spent two years
+          focused on coursework and technical skills — the things they assumed mattered — while the
+          actual entry point (sophomore insight programs at Goldman, JP Morgan, Citi) opened and closed
+          without them even knowing it existed.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          The information existed. The programs existed. They just didn&apos;t know what to look for,
-          or when. If they&apos;d had Sylo freshman year — the moment they were even considering finance —
-          it would have shown them: apply to these insight programs by September of sophomore year, because
-          that&apos;s the actual entry point to junior-summer recruiting. One ranked next move. One deadline.
-          The step that unlocks everything after it.
+          By senior year they had the skills, the grades, and the interest — but no pipeline, no
+          network, and no internship. Everything they&apos;d focused on was real. It just wasn&apos;t
+          the thing that actually opened the door.
         </p>
         <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
-          They didn&apos;t fail because they weren&apos;t good enough. They failed because nobody showed them the timeline.
+          Sylo would have told them, sophomore fall: &ldquo;Your next move isn&apos;t another finance
+          class. It&apos;s applying to the Goldman Sachs Insight Series by September 15 — because
+          that&apos;s what actually unlocks junior-summer recruiting.&rdquo;
         </p>
       </section>
 

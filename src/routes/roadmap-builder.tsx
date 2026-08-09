@@ -398,7 +398,7 @@ function Builder() {
 
 
         <label className="mt-8 block">
-          <span className="text-sm font-medium text-muted-foreground">Describe your goal (optional for tracks above, required for Something else)</span>
+          <span className="text-sm font-medium text-muted-foreground">In your own words</span>
           <input
             value={goalText}
             onChange={(e) => setGoalText(e.target.value)}

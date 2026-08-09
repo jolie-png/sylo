@@ -42,16 +42,25 @@ function AboutPage() {
 
       {/* The example */}
       <section className="mt-8 rounded-2xl border border-primary/15 bg-primary/5 p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">Example</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">Real example</p>
         <p className="mt-3 text-sm leading-relaxed text-foreground">
-          Maya is a first-generation biology major who wants to become a physician-scientist. Postponing
-          a single fall research methods course doesn&apos;t just delay a requirement — it breaks the eligibility
-          chain for the faculty mentor she needs by October, which breaks the recommendation letter she needs
-          in November, which breaks the fellowship application due in January.
+          A first-generation biology sophomore at UCLA wants to become a physician-scientist. The{" "}
+          <span className="font-medium">Undergraduate Research Fellows Program (URFP)</span> — which
+          funds a year of mentored research and requires a faculty sponsor — has its deadline on{" "}
+          <span className="font-medium">November 14</span>. But you can&apos;t apply without an existing
+          faculty relationship. And you can&apos;t build a faculty relationship without being in a lab.
+          And getting into a lab means applying to{" "}
+          <span className="font-medium">BISEP</span> (the Biomedical Science Enrichment Program) the
+          previous spring — a 6-week summer intensive that places freshmen into their first research lab.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Sylo shows her that chain before she registers, not after she&apos;s missed it: take Research Methods
-          this fall, because it&apos;s the exact domino that unlocks everything after it.
+          Miss BISEP&apos;s spring deadline → no lab placement that summer → no faculty relationship
+          by fall → no URFP application in November → no funded research, no letter, no fellowship.
+          The whole chain slips a year.
+        </p>
+        <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
+          Sylo shows that chain the moment you pick &ldquo;physician-scientist&rdquo; — not after
+          you&apos;ve already missed the first domino.
         </p>
       </section>
 

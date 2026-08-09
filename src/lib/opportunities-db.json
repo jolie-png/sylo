@@ -13,7 +13,7 @@
       "Underrepresented background"
     ],
     "contact": "https://www.goldmansachs.com/careers/students",
-    "link": "https://www.goldmansachs.com/careers/students/programs/americas/undergraduate-camp.html",
+    "link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/possibilities-series",
     "timeline": "Apply fall \u2192 attend multi-day summit in Feb \u2192 fast-track to sophomore internship interviews.",
     "leverage": "Nearly half of sophomore IB interns attended this insight program first. Miss the Oct deadline and you're out for the cycle.",
     "tags": [
@@ -188,7 +188,7 @@
       "Interest in asset management or finance"
     ],
     "contact": "https://www.girlswhoinvest.org",
-    "link": "https://www.girlswhoinvest.org/summer-intensive-program",
+    "link": "https://www.girlswhoinvest.org/scholars-program",
     "timeline": "4-week intensive training \u2192 guaranteed paid internship at a partner asset management firm.",
     "leverage": "The most reliable pipeline for women into buy-side finance. Training + guaranteed placement. Miss November and you're out.",
     "tags": [
@@ -222,7 +222,7 @@
       "Completed one CodePath course preferred"
     ],
     "contact": "https://www.codepath.org",
-    "link": "https://www.codepath.org/courses/internship-for-tech-excellence",
+    "link": "https://www.codepath.org/courses",
     "timeline": "Free training \u2192 guaranteed internship placement at partner companies. One cohort per year.",
     "leverage": "Eliminates the cold-apply grind \u2014 CodePath trains you and places you directly. 90%+ placement rate. Sept deadline means you need to act now.",
     "tags": [
@@ -256,7 +256,7 @@
       "US citizen or permanent resident"
     ],
     "contact": "https://www.seo-usa.org",
-    "link": "https://www.seo-usa.org/tech-developer",
+    "link": "https://tech.seo-usa.org/",
     "timeline": "6-week immersion + interview prep + direct placement at top tech firms. Miss Oct and wait a year.",
     "leverage": "One of the highest-conversion diversity tech pipelines \u2014 comprehensive training plus direct placement. You don't cold-apply after this.",
     "tags": [
@@ -601,7 +601,7 @@
       "CS or related major"
     ],
     "contact": "https://www.uber.com/us/en/careers/",
-    "link": "https://www.uber.com/us/en/careers/teams/university/",
+    "link": "https://www.uber.com/us/en/careers/",
     "timeline": "6-month part-time mentorship \u2192 fast-track to summer internship. Runs during the school year.",
     "leverage": "Part-time mentorship from Uber engineers that feeds directly into their intern pipeline. You build skills AND get the referral simultaneously.",
     "tags": [
@@ -984,42 +984,6 @@
     "source": "Julian048/CS-Programs-Fellowships-Insights"
   },
   {
-    "id": "pipe-code2040",
-    "name": "Code2040 Fellows Program",
-    "track": "software-engineer",
-    "category": "Fellowship",
-    "access": "direct",
-    "school": "any",
-    "deadline": "2026-10-15",
-    "timeframe": "Window: Sept\u2013Oct",
-    "requirements": [
-      "Any year",
-      "Black or Latinx",
-      "CS or related major"
-    ],
-    "contact": "https://www.code2040.org",
-    "link": "https://www.code2040.org/fellows-program",
-    "timeline": "Summer fellowship matching Black and Latinx students to top tech companies. Mentorship + community year-round.",
-    "leverage": "Direct placement at companies like Google, Slack, and Lyft \u2014 plus a lifelong professional network of Black and Latinx technologists.",
-    "tags": [
-      "fellowship",
-      "diversity-cohort",
-      "placement-guaranteed",
-      "deadline-critical",
-      "big-tech"
-    ],
-    "yearRelevance": [
-      "Sophomore",
-      "Junior",
-      "Senior"
-    ],
-    "region": "National",
-    "confidence": "curated",
-    "lastVerified": "2026-07-01",
-    "recurring": true,
-    "source": "Julian048/CS-Programs-Fellowships-Insights"
-  },
-  {
     "id": "pipe-8vc-fellowship",
     "name": "8VC Fellowship (Venture Capital)",
     "track": "product-manager",
@@ -1250,7 +1214,7 @@
       "Women or non-binary in tech"
     ],
     "contact": "https://ghc.anitab.org",
-    "link": "https://ghc.anitab.org/attend/scholarships/",
+    "link": "https://ghc.anitab.org/attend/",
     "timeline": "World's largest women-in-tech conference. On-site interviews + networking. Scholarship covers attendance + travel.",
     "leverage": "Companies hire directly at GHC \u2014 some students leave with offers the same week. The scholarship deadline is months before the conference; miss it and attendance costs $1,000+.",
     "tags": [
@@ -1987,7 +1951,7 @@
       "Interest in consulting, tax, or advisory"
     ],
     "contact": "https://www.ey.com/careers",
-    "link": "https://www.ey.com/en_us/careers/students/programs",
+    "link": "https://www.ey.com/en_us/careers/students",
     "timeline": "Multi-day immersive for freshmen/sophomores \u2192 strong pipeline to EY's summer internship.",
     "leverage": "EY's dedicated underclassman early-ID. One of the Big 4 accounting firms \u2014 attending this signals interest 2 years before recruiting.",
     "tags": [
@@ -2060,7 +2024,7 @@
       "Enrolled at an LSAMP alliance institution"
     ],
     "contact": "https://www.nsf.gov/funding/pgm_summ.jsp?pims_id=13646",
-    "link": "https://www.pathwaystoscience.org/programs.aspx?descriptorhub=LSAMP_NSF+LSAMP",
+    "link": "https://new.nsf.gov/funding/opportunities/louis-stokes-alliances-minority-participation",
     "timeline": "Enroll through your campus coordinator \u2192 access research stipends, summer bridge programs, mentoring, and conference travel throughout undergrad.",
     "leverage": "LSAMP operates at 700+ institutions through 58 alliances. It provides sustained mentoring plus research stipends across multiple years \u2014 not a one-shot summer program. Students who participate earn STEM degrees at significantly higher rates.",
     "tags": [
@@ -2139,7 +2103,7 @@
       "Intent to pursue PhD or MD/PhD"
     ],
     "contact": "https://www.nigms.nih.gov/training/MARC",
-    "link": "https://www.pathwaystoscience.org/programs.aspx?descriptorhub=MARC_NIH+MARC",
+    "link": "https://www.nigms.nih.gov/training/MARC/Pages/default.aspx",
     "timeline": "Apply to your campus program spring of sophomore year \u2192 2-year stipend ($13,000+/year) through junior and senior year + summer research + GRE prep + conference travel.",
     "leverage": "MARC scholars are admitted to biomedical PhD programs at 2\u20133x the national average rate. The two-year stipend lets you focus entirely on research instead of working a side job \u2014 and the NIH name on your CV signals serious intent to grad school admissions.",
     "tags": [
@@ -2177,7 +2141,7 @@
       "Intent to pursue PhD"
     ],
     "contact": "https://www.nigms.nih.gov/training/RISE",
-    "link": "https://www.pathwaystoscience.org/programs.aspx?descriptorhub=RISE_NIH+RISE",
+    "link": "https://www.nigms.nih.gov/training/pages/twdprograms.aspx",
     "timeline": "Join sophomore or junior year \u2192 academic year research stipend + summer intensives + tutoring + conference presentations through graduation.",
     "leverage": "RISE provides a research stipend during the academic year (not just summer), which lets you build sustained lab relationships instead of starting fresh each summer. Programs at minority-serving institutions feed directly into top PhD programs.",
     "tags": [
@@ -2788,7 +2752,7 @@
       "0-1 years experience"
     ],
     "contact": "",
-    "link": "https://www.metacareers.com/v2/jobs/1680851879404795/",
+    "link": "https://www.metacareers.com/life/programs/pathways/rpm",
     "timeline": "Applications open Aug-Sep; interviews Oct-Nov",
     "leverage": "Two rotations across Meta's product portfolio \u2014 gives breadth across consumer, enterprise, and platform products.",
     "tags": [

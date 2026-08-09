@@ -43,7 +43,7 @@ const RoadmapSchema = z.object({
 export type GeneratedRoadmap = z.infer<typeof RoadmapSchema>;
 
 export const generateRoadmap = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => Input.parse(input))
+  .validator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
     try { const { config } = await import("dotenv"); config(); } catch { /* no-op */ }
     const key = process.env.LOVABLE_API_KEY;

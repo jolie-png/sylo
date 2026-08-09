@@ -1,174 +1,284 @@
-import { LayoutGrid, List, Plus, PanelsTopLeft, ChevronDown } from "lucide-react";
+import { Map, AlertCircle, ChevronRight, GripVertical, Lightbulb } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { TRACKS, PERSONAS } from "@/lib/wayfind-data";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
-import { termFor, termsFromDeadlines, padTerms } from "@/lib/terms";
 
 /**
- * Static, presentational mock of the Sylo guidance workspace, styled after a
- * project-roadmap tool: left rail of tracks, thin toolbar with a progress bar,
- * a term-gridded timeline canvas of status-coloured cards, and an inspector.
- * Content is derived from the seed dataset — no hardcoded demo copy.
+ * Static, presentational mock of the Sylo roadmap dashboard — matching the
+ * real UI: vertical step list with numbered items, status accent bars,
+ * wavy dotted connectors between steps, gap alert, and highest-leverage
+ * highlight. Derived from seed data — no hardcoded demo copy.
  */
 
-const maya = PERSONAS.find((p) => p.id === "maya");
+const alex = PERSONAS.find((p) => p.id === "alex");
 
-type Lane = { label: string; meta: string; status: "complete" | "in-progress" | "planned"; col: number };
+type MockStep = {
+  name: string;
+  timeframe: string;
+  status: "complete" | "in-progress" | "not-started";
+  reasoning?: string;
+  gapLabel?: string;
+};
 
 const PREVIEW_OPS = OPPORTUNITIES.filter((o) => o.track === "physician-scientist")
   .slice()
   .sort((a, b) => a.deadline.localeCompare(b.deadline))
   .slice(0, 5);
 
-// Columns come from the deadlines actually present in the data, so every card
-// lands in the term that contains its real deadline.
-const TERMS = padTerms(termsFromDeadlines(PREVIEW_OPS.map((o) => o.deadline)), 4);
-const QUARTERS = TERMS.map((t) => t.label);
-
-const STEPS: Lane[] = PREVIEW_OPS.map((o, i) => ({
-  label: o.name,
-  meta: o.timeframe,
-  status: i === 0 ? "complete" : i === 1 ? "in-progress" : "planned",
-  col: Math.max(0, TERMS.findIndex((t) => t.key === termFor(o.deadline)?.key)),
+const STEPS: MockStep[] = PREVIEW_OPS.map((o, i) => ({
+  name: o.name,
+  timeframe: o.timeframe,
+  status: i === 0 ? "complete" : i === 1 ? "in-progress" : "not-started",
+  reasoning: o.leverage,
+  gapLabel: i === 1 ? (o as any).gapLabel : undefined,
 }));
 
-
-const STATUS_BAR: Record<Lane["status"], string> = {
-  complete: "bg-tag-green-foreground",
-  "in-progress": "bg-tag-amber-foreground",
-  planned: "bg-foreground/25",
-};
-
-const STATUS_LABEL: Record<Lane["status"], string> = {
-  complete: "Complete",
-  "in-progress": "In progress",
-  planned: "Planned",
-};
-
+const topOp = PREVIEW_OPS[1]; // the in-progress one is the "highest leverage next move"
 const completed = STEPS.filter((s) => s.status === "complete").length;
 
-export function RoadmapWorkspacePreview() {
-  const active = STEPS[1] ?? STEPS[0];
+const STATUS_BAR: Record<MockStep["status"], string> = {
+  complete: "bg-tag-green-foreground/70",
+  "in-progress": "bg-tag-blue-foreground/60",
+  "not-started": "bg-foreground/15",
+};
 
+const STATUS_TAG: Record<MockStep["status"], { label: string; cls: string }> = {
+  complete: { label: "Complete", cls: "bg-tag-green text-tag-green-foreground" },
+  "in-progress": { label: "In progress", cls: "bg-tag-blue text-tag-blue-foreground" },
+  "not-started": { label: "Not started", cls: "bg-tag-gray text-tag-gray-foreground" },
+};
+
+function MiniWavyConnector() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 32"
+      preserveAspectRatio="none"
+      className="h-7 w-5 text-primary/30"
+    >
+      <path
+        d="M12 0 C 4 8, 20 18, 12 32"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeDasharray="2 5"
+      />
+    </svg>
+  );
+}
+
+export function RoadmapWorkspacePreview() {
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-card)]">
-      <div className="flex min-h-[420px]">
-        {/* Left rail — tracks */}
-        <aside className="hidden w-44 shrink-0 flex-col border-r bg-card py-3 sm:flex">
-          <div className="flex items-center gap-2 px-3 pb-3">
-            <SyloMark className="h-4 w-4 text-primary" />
+      <div className="flex min-h-[460px]">
+        {/* Left sidebar — navigation */}
+        <aside className="hidden w-52 shrink-0 flex-col border-r bg-card py-4 lg:flex">
+          <div className="flex items-center gap-2.5 px-4 pb-4">
+            <SyloMark className="h-5 w-5 text-primary" />
             <span className="text-sm font-semibold tracking-tight">Sylo</span>
           </div>
-          <div className="flex items-center justify-between px-3 pb-1.5">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Tracks
-            </span>
-            <ChevronDown className="h-3 w-3 text-muted-foreground" />
-          </div>
-          <ul className="space-y-0.5 px-2">
-            {TRACKS.map((t, i) => (
-              <li
-                key={t.id}
+          <nav className="space-y-0.5 px-3">
+            {[
+              { label: "Roadmap", active: true },
+              { label: "Success Maps", active: false },
+              { label: "Progress", active: false },
+              { label: "Opportunities", active: false },
+              { label: "Profile", active: false },
+              { label: "About", active: false },
+            ].map((item) => (
+              <div
+                key={item.label}
                 className={
-                  i === 0
-                    ? "flex items-center gap-2 rounded-lg bg-secondary px-2 py-1.5 text-sm font-medium"
-                    : "flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted-foreground"
+                  item.active
+                    ? "flex items-center gap-2 rounded-lg bg-secondary px-2.5 py-2 text-sm font-medium"
+                    : "flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-muted-foreground"
                 }
               >
-                <span className="truncate">{t.label}</span>
-              </li>
+                {item.label === "Roadmap" && <Map className="h-3.5 w-3.5" />}
+                <span>{item.label}</span>
+              </div>
             ))}
-            <li className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted-foreground">
-              <Plus className="h-3.5 w-3.5" />
-              New track
-            </li>
-          </ul>
+          </nav>
         </aside>
 
-        {/* Main column */}
-        <div className="flex min-w-0 flex-1 flex-col">
-          {/* Toolbar */}
-          <div className="flex h-11 shrink-0 items-center justify-between gap-3 border-b px-3">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <PanelsTopLeft className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="truncate text-sm font-medium tracking-tight">Physician-scientist track</span>
-              <span className="hidden items-center gap-2 sm:flex">
-                <span className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
-                  <span
-                    className="block h-full rounded-full bg-primary"
-                    style={{ width: `${(completed / STEPS.length) * 100}%` }}
-                  />
-                </span>
-                <span className="text-xs tabular-nums text-muted-foreground">
-                  {completed}/{STEPS.length}
-                </span>
+        {/* Main content — roadmap */}
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          {/* Page header */}
+          <div className="shrink-0 border-b px-4 py-3 sm:px-5">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary">
+                <Map className="h-4 w-4" />
               </span>
+              <div>
+                <h2 className="text-sm font-bold tracking-tight">Your Roadmap</h2>
+                <p className="text-[11px] text-muted-foreground">
+                  {alex?.major ?? "Biology"} Major → Physician-Scientist
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-secondary">
-                <LayoutGrid className="h-3.5 w-3.5" />
-              </span>
-              <span className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground">
-                <List className="h-3.5 w-3.5" />
-              </span>
-              <span className="ml-1 hidden items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1.5 text-xs font-medium sm:flex">
-                <Plus className="h-3.5 w-3.5" />
-                Add step
-              </span>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {[alex?.major ?? "Biology", alex?.year ?? "Sophomore", alex?.school ?? "UCLA"].map((m) => (
+                <span key={m} className="rounded-md bg-tag-gray px-1.5 py-0.5 text-[10px] font-medium text-tag-gray-foreground">
+                  {m}
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* Timeline canvas */}
-          <div className="relative flex-1 bg-canvas">
-            <div className="grid grid-cols-4 border-b bg-card text-[10px] uppercase tracking-widest text-muted-foreground">
-              {QUARTERS.map((q) => (
-                <div key={q} className="truncate border-r px-2 py-2 last:border-r-0">
-                  {q}
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5">
+            {/* Gap alert banner */}
+            <div className="overflow-hidden rounded-xl border-2 border-amber-500/35 bg-gradient-to-br from-amber-500/[0.12] to-amber-500/[0.04] p-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/20 text-amber-700">
+                  <AlertCircle className="h-3 w-3" />
+                </span>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-700/90">
+                  Your biggest gap
+                </p>
+              </div>
+              <p className="mt-1.5 text-[12px] font-semibold leading-snug tracking-tight sm:text-[13px]">
+                No faculty mentor identified
+              </p>
+            </div>
+
+            {/* Highest-leverage move */}
+            {topOp ? (
+              <div className="mt-3 rounded-xl border border-primary/10 bg-primary/5 p-3">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-primary/80">
+                  Your highest-leverage next move
+                </p>
+                <p className="mt-1 text-[12px] font-semibold tracking-tight sm:text-[13px]">{topOp.name}</p>
+                <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground line-clamp-2">
+                  {topOp.leverage}
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="rounded-md bg-tag-amber px-1.5 py-0.5 text-[10px] font-medium text-tag-amber-foreground">
+                    {topOp.timeframe}
+                  </span>
+                  <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-primary">
+                    Open details <ChevronRight className="h-3 w-3" />
+                  </span>
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : null}
 
-            {/* Column grid lines */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[29px] grid grid-cols-4">
-              {QUARTERS.map((q) => (
-                <div key={q} className="border-r last:border-r-0" />
-              ))}
-            </div>
+            {/* Step list header */}
+            <h3 className="mt-4 text-[12px] font-semibold tracking-tight sm:text-[13px]">
+              Here&apos;s your roadmap
+            </h3>
+            <p className="mt-0.5 text-[10px] text-muted-foreground">
+              {completed}/{STEPS.length} steps complete
+            </p>
 
-            <div className="relative space-y-2 p-3">
-              {STEPS.map((s) => (
-                <div key={s.label} className="grid grid-cols-4 gap-2">
-                  <div className="col-span-2" style={{ gridColumnStart: s.col + 1 }}>
-                    <div className="relative overflow-hidden rounded-lg border bg-card p-2.5 pl-3 shadow-[var(--shadow-card)]">
-                      <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-[3px] ${STATUS_BAR[s.status]}`} />
-                      <p className="truncate text-[13px] font-medium tracking-tight">{s.label}</p>
-                      <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                        {STATUS_LABEL[s.status]} · {s.meta}
-                      </p>
+            {/* Vertical step list */}
+            <ol className="mt-3 space-y-0">
+              {STEPS.map((step, i) => (
+                <li key={step.name}>
+                  {i > 0 && (
+                    <div className="flex justify-start pl-5" aria-hidden="true">
+                      <MiniWavyConnector />
+                    </div>
+                  )}
+                  <div className="relative flex items-start gap-2.5 rounded-xl bg-muted/40 py-2.5 pl-3.5 pr-3">
+                    {/* Status accent bar */}
+                    <span
+                      aria-hidden="true"
+                      className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-full ${STATUS_BAR[step.status]}`}
+                    />
+                    {/* Drag handle + number */}
+                    <span className="flex w-4 shrink-0 flex-col items-center gap-0.5 pt-0.5">
+                      <GripVertical className="h-2.5 w-2.5 text-muted-foreground/40" />
+                      <span className="text-[10px] tabular-nums text-muted-foreground">{i + 1}</span>
+                    </span>
+                    {/* Checkbox */}
+                    <span
+                      className={`mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-[4px] border ${
+                        step.status === "complete"
+                          ? "border-primary bg-primary"
+                          : "border-border bg-background"
+                      }`}
+                    >
+                      {step.status === "complete" && (
+                        <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 text-primary-foreground" aria-hidden="true">
+                          <path d="M2.5 6.3 4.7 8.5 9.5 3.7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </span>
+                    {/* Content */}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span
+                          className={`text-[12px] font-semibold tracking-tight ${
+                            step.status === "complete" ? "text-muted-foreground line-through" : ""
+                          }`}
+                        >
+                          {step.name}
+                        </span>
+                        <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-medium ${STATUS_TAG[step.status].cls}`}>
+                          {STATUS_TAG[step.status].label}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-[10px] text-muted-foreground">{step.timeframe}</p>
+                      {step.reasoning && step.status !== "complete" && (
+                        <p className="mt-1 flex items-start gap-1 text-[10px] leading-relaxed text-muted-foreground/80">
+                          <Lightbulb className="mt-0.5 h-2.5 w-2.5 shrink-0 text-primary/60" />
+                          <span className="line-clamp-1">{step.reasoning}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </div>
 
-        {/* Inspector */}
-        <aside className="hidden w-56 shrink-0 flex-col border-l bg-card p-3 lg:flex">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Inspector</p>
-          <p className="mt-2 text-sm font-medium leading-snug tracking-tight">{active?.label}</p>
-          <div className="mt-3 space-y-1.5">
-            {[
-              ["Status", active ? STATUS_LABEL[active.status] : "—"],
-              ["Window", active?.meta ?? "—"],
-              ["Student", maya ? `${maya.year} · ${maya.major}` : "—"],
-              ["School", maya?.school ?? "—"],
-            ].map(([k, v]) => (
-              <div key={k} className="field-tonal rounded-lg px-2.5 py-2">
-                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{k}</p>
-                <p className="mt-0.5 text-xs font-medium leading-snug">{v}</p>
-              </div>
-            ))}
+        {/* Right panel — gap analysis */}
+        <aside className="hidden w-56 shrink-0 flex-col border-l bg-card p-4 xl:flex">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-primary/70">Where you stand</p>
+
+          <div className="mt-3">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">What you&apos;ve got</p>
+            <ul className="mt-1.5 space-y-1">
+              {["Strong GPA in sciences", "Lab experience (1 quarter)"].map((s) => (
+                <li key={s} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                  <span className="mt-0.5 flex h-3 w-3 shrink-0 items-center justify-center rounded-full bg-green-500/15 text-[8px] text-green-700 dark:text-green-400">✓</span>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-3">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Gaps to close</p>
+            <div className="mt-1.5 space-y-2">
+              {[
+                { gap: "No faculty mentor", action: "Find a PI this quarter" },
+                { gap: "No clinical exposure", action: "Shadow through MAPS" },
+              ].map((g) => (
+                <div key={g.gap} className="rounded-lg border bg-card p-2">
+                  <p className="text-[11px] font-semibold tracking-tight">{g.gap}</p>
+                  <p className="mt-0.5 text-[10px] font-medium text-primary">→ {g.action}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-auto pt-4">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-lg font-bold tabular-nums text-foreground">
+                {completed}<span className="text-muted-foreground/50">/{STEPS.length}</span>
+              </span>
+              <span className="text-[10px] text-muted-foreground">steps done</span>
+            </div>
+            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${(completed / STEPS.length) * 100}%` }}
+              />
+            </div>
           </div>
         </aside>
       </div>

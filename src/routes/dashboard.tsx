@@ -649,6 +649,7 @@ function Dashboard() {
         </div>
         <Link
           to="/opportunity-details"
+          search={{ id: undefined }}
           className="tap mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
           See all opportunities <ChevronRight className="h-3.5 w-3.5" />

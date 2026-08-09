@@ -22,7 +22,7 @@ export type WebSearchResult = {
 };
 
 export const askSyloWebSearch = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => Input.parse(input))
+  .validator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
     try {
       const { config } = await import("dotenv");

@@ -16,7 +16,7 @@ export function TypingHero() {
   const [index, setIndex] = useState(0);
   const [text, setText] = useState("");
   const [phase, setPhase] = useState<"typing" | "holding" | "deleting" | "gap">("typing");
-  const frameRef = useRef<ReturnType<typeof setTimeout>>();
+  const frameRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     const phrase = PHRASES[index]!;

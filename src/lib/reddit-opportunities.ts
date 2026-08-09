@@ -180,7 +180,7 @@ const SearchInput = z.object({
 });
 
 export const searchRedditOpportunities = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => SearchInput.parse(input))
+  .validator((input: unknown) => SearchInput.parse(input))
   .handler(async ({ data }) => {
     const subreddits = data.subreddits ?? [...RELEVANT_SUBREDDITS];
     const query = data.query ?? "program deadline fellowship application";
@@ -222,7 +222,7 @@ export const searchRedditOpportunities = createServerFn({ method: "POST" })
 // ---------------------------------------------------------------------------
 
 export const getTrendingOpportunityPosts = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => {
+  .validator((input: unknown) => {
     // No input needed
     return {};
   })

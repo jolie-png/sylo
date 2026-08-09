@@ -119,7 +119,7 @@ export type Preferences = {
   style: "Discussion" | "Independent";
 };
 
-export const YEARS = ["First year", "Sophomore", "Junior", "Senior"];
+export const YEARS = ["Freshman", "Sophomore", "Junior", "Senior"];
 
 export const MAJORS = [
   "Biology",
@@ -494,6 +494,21 @@ export const PERSONAS: Persona[] = [
   {
     id: "maya",
     name: "Maya",
+    major: "Computer Science",
+    year: "Freshman",
+    school: "Georgia Institute of Technology",
+    track: "software-engineer",
+    preferences: { format: "Lecture", workload: "Heavy", style: "Independent" },
+    audit: {
+      program: "B.S. Computer Science, Intelligence thread",
+      creditsEarned: 18,
+      creditsRequired: 126,
+      remaining: ["CS 1331 (OOP)", "CS 1332 (Data Structures)", "CS electives (9 credits)", "Senior design (6 credits)", "Math electives (6 credits)"],
+    },
+  },
+  {
+    id: "alex",
+    name: "Alex",
     major: "Biology",
     year: "Sophomore",
     school: "University of California, Los Angeles",
@@ -504,21 +519,6 @@ export const PERSONAS: Persona[] = [
       creditsEarned: 52,
       creditsRequired: 180,
       remaining: ["Upper-division biology (12 units)", "Organic chemistry (8 units)", "Physics sequence (8 units)", "Biostatistics (4 units)"],
-    },
-  },
-  {
-    id: "alex",
-    name: "Alex",
-    major: "Computer Science",
-    year: "Junior",
-    school: "Georgia Institute of Technology",
-    track: "software-engineer",
-    preferences: { format: "Lecture", workload: "Heavy", style: "Independent" },
-    audit: {
-      program: "B.S. Computer Science, Intelligence thread",
-      creditsEarned: 78,
-      creditsRequired: 126,
-      remaining: ["CS electives (9 credits)", "Senior design (6 credits)", "Free electives (6 credits)"],
     },
   },
 ];

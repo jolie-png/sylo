@@ -150,9 +150,62 @@ export function personaRoadmap(persona: Persona): Roadmap {
   const pool = OPPORTUNITIES.filter((o) => o.track === persona.track).sort((a, b) =>
     a.deadline.localeCompare(b.deadline),
   );
+  const gapAnalysis: GapAnalysis = persona.id === "maya"
+    ? {
+        strengths: [
+          "Already learning Python and Java — ahead of most freshmen in CS fundamentals",
+          "Proactive about career exploration (attended career fairs, applied to STEP)",
+          "Engaged in Women in CS and GT hackathon community from day one",
+        ],
+        gaps: [
+          {
+            gap: "No project beyond coursework",
+            why: "Freshman-year programs like Google STEP and Microsoft Explore look for evidence of building things outside of class — even small projects count.",
+            action: "Build one complete side project (a web app or CLI tool) and push it to GitHub before applications open.",
+          },
+          {
+            gap: "No exposure to collaborative software development",
+            why: "Hackathons and team projects are how freshmen demonstrate they can work in real engineering environments, which STEP and Explore explicitly value.",
+            action: "Participate in HackGT as a builder (not just attendee) and ship something with a team this semester.",
+          },
+          {
+            gap: "Limited data structures & algorithms knowledge",
+            why: "Technical interviews for STEP and Explore test basic DS&A — you need this before sophomore recruiting opens.",
+            action: "Start LeetCode Easys now and take CS 1332 (Data Structures) next semester to be ready by fall recruiting.",
+          },
+        ],
+        bottomLine: "You're early — which is actually an advantage. The biggest unlock is building one real project and doing one team hackathon before STEP/Explore applications open next fall.",
+      }
+    : {
+        strengths: [
+          "Strong GPA in sciences with completed intro bio lab sequence",
+          "Clinical exposure through campus health clinic volunteering (1 semester)",
+          "Active in pre-med society and undergraduate research association",
+        ],
+        gaps: [
+          {
+            gap: "No faculty mentor identified",
+            why: "A PI relationship is required for most research fellowships and strongly weighted in med school applications.",
+            action: "Reach out to 2–3 MCDB faculty whose work interests you this quarter.",
+          },
+          {
+            gap: "No sustained research experience",
+            why: "Physician-scientist tracks expect 2+ quarters of lab work, not just coursework.",
+            action: "Apply to MCDB Faculty Research Mentorship or BISEP for a funded lab placement.",
+          },
+          {
+            gap: "Limited clinical depth beyond shadowing",
+            why: "40 hours shows interest, but programs like POSTBAC-IRTA expect hands-on patient interaction.",
+            action: "Join MAPS Pre-Med Pipeline for structured clinical exposure this year.",
+          },
+        ],
+        bottomLine: "Your biggest unlock right now is securing a faculty mentor — most research programs and fellowships on your roadmap require one before you can even apply.",
+      };
+
   return {
     summary: `You're a ${persona.year} ${persona.major} major at ${persona.school} aiming at ${track.label}. ${track.blurb} Everything below is already open to you.`,
     topOpportunityId: pool[0]?.id ?? "",
+    gapAnalysis,
     alternates: track.brandPrograms.map((b) => ({
       title: b.name,
       detail: `${b.sponsor} — ${b.note}. Not available at ${persona.school}, so Sylo routed you to the local equivalent instead.`,
@@ -294,28 +347,28 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       personaName: persona.name,
       name: persona.name,
       experience: persona.id === "maya"
-        ? "Volunteered at campus health clinic for one semester, completed intro bio lab sequence"
-        : "Built a full-stack task manager with React and Node.js, contributed to an open-source Python library",
+        ? "Built a personal portfolio site with HTML/CSS/JS, completed CS 1301 (intro to computing) with an A"
+        : "Volunteered at campus health clinic for one semester, completed intro bio lab sequence",
       skills: persona.id === "maya"
-        ? "Lab techniques (PCR, gel electrophoresis), SPSS, medical terminology, Spanish"
-        : "Python, Java, TypeScript, React, Node.js, SQL, Git, AWS basics",
+        ? "Python, Java (learning), HTML/CSS, Git basics, intro algorithms"
+        : "Lab techniques (PCR, gel electrophoresis), SPSS, medical terminology, Spanish",
       priorWork: persona.id === "maya"
-        ? "Campus health clinic volunteer (Fall 2024), biology tutor"
-        : "Software engineering intern at a seed-stage startup (Summer 2024)",
+        ? "Part-time IT help desk assistant at school library (Fall 2025)"
+        : "Campus health clinic volunteer (Fall 2024), biology tutor",
       clubs: persona.id === "maya"
-        ? "Pre-med society, undergraduate research association"
-        : "ACM chapter, hackathon team (won 2nd place at HackGT), CS tutoring",
+        ? "Women in CS, GT hackathon club (attended HackGT as participant)"
+        : "Pre-med society, undergraduate research association",
       alreadyDone: persona.id === "maya"
-        ? "Shadowed a physician for 40 hours, applied to two research labs (waitlisted)"
-        : "Applied to Google STEP (rejected), completed LeetCode 150, took Coursera ML course",
+        ? "Attended two career fairs, applied to Google STEP (haven't heard back yet)"
+        : "Shadowed a physician for 40 hours, applied to two research labs (waitlisted)",
     });
     setRoadmapState(personaRoadmap(persona));
     setLiveOpportunities([]);
     // Pre-pin a few opportunities so the demo feels lived-in
     setPinnedIds(
       persona.id === "maya"
-        ? ["op-ucla-bisep", "op-ucla-hhmi-pathways", "op-ucla-mcdb-research"]
-        : ["op-gt-createx-learn", "op-gt-coop", "op-gt-grip"],
+        ? ["op-gt-createx-learn", "op-gt-coop", "op-gt-grip"]
+        : ["op-ucla-bisep", "op-ucla-hhmi-pathways", "op-ucla-mcdb-research"],
     );
   }, []);
 

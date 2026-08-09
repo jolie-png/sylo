@@ -147,9 +147,13 @@ export function fromGenerated(r: GeneratedRoadmap): Roadmap {
 
 export function personaRoadmap(persona: Persona): Roadmap {
   const track = TRACKS.find((t) => t.id === persona.track)!;
-  const pool = OPPORTUNITIES.filter((o) => o.track === persona.track).sort((a, b) =>
-    a.deadline.localeCompare(b.deadline),
-  );
+  const pool = OPPORTUNITIES.filter((o) => o.track === persona.track).sort((a, b) => {
+    // Empty deadlines (rolling programs) sort AFTER real deadlines
+    if (!a.deadline && !b.deadline) return 0;
+    if (!a.deadline) return 1;
+    if (!b.deadline) return -1;
+    return a.deadline.localeCompare(b.deadline);
+  });
   const gapAnalysis: GapAnalysis = persona.id === "maya"
     ? {
         strengths: [
@@ -214,7 +218,9 @@ export function personaRoadmap(persona: Persona): Roadmap {
       id: o.id,
       opportunityId: o.id,
       reasoning: o.leverage,
-      status: (i === 1 ? "in-progress" : i === 2 ? "complete" : "not-started") as StepStatus,
+      // Demo feel: top step is "in-progress" (the current focus), the last
+      // rolling-deadline step is "complete" (low-barrier thing already done).
+      status: (i === 0 ? "in-progress" : i === pool.length - 1 ? "complete" : "not-started") as StepStatus,
     })),
   };
 }
@@ -364,6 +370,10 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     });
     setRoadmapState(personaRoadmap(persona));
     setLiveOpportunities([]);
+    // Reset user-specific state so no data leaks between demos
+    setCustomSteps([]);
+    setStepNotes({});
+    setStepReasoningOverrides({});
     // Pre-pin a few opportunities so the demo feels lived-in
     setPinnedIds(
       persona.id === "maya"

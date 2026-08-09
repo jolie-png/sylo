@@ -40,7 +40,12 @@ export function LongViewBoard({
   const resolved = steps
     .map((s) => ({ step: s, op: resolveOpportunity(s.opportunityId) }))
     .filter((r): r is { step: Step; op: Opportunity } => !!r.op)
-    .sort((a, b) => a.op.deadline.localeCompare(b.op.deadline));
+    .sort((a, b) => {
+      if (!a.op.deadline && !b.op.deadline) return 0;
+      if (!a.op.deadline) return 1;
+      if (!b.op.deadline) return -1;
+      return a.op.deadline.localeCompare(b.op.deadline);
+    });
 
   const verifiedTerms: Term[] = termsFromDeadlines(resolved.map((r) => r.op.deadline));
 

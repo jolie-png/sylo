@@ -22,18 +22,23 @@ type MockStep = {
 
 const PREVIEW_OPS = OPPORTUNITIES.filter((o) => o.track === "physician-scientist")
   .slice()
-  .sort((a, b) => a.deadline.localeCompare(b.deadline))
+  .sort((a, b) => {
+    if (!a.deadline && !b.deadline) return 0;
+    if (!a.deadline) return 1;
+    if (!b.deadline) return -1;
+    return a.deadline.localeCompare(b.deadline);
+  })
   .slice(0, 5);
 
 const STEPS: MockStep[] = PREVIEW_OPS.map((o, i) => ({
   name: o.name,
   timeframe: o.timeframe,
-  status: i === 0 ? "complete" : i === 1 ? "in-progress" : "not-started",
+  status: i === 0 ? "in-progress" : i === PREVIEW_OPS.length - 1 ? "complete" : "not-started",
   reasoning: o.leverage,
-  gapLabel: i === 1 ? (o as any).gapLabel : undefined,
+  gapLabel: i === 0 ? (o as any).gapLabel : undefined,
 }));
 
-const topOp = PREVIEW_OPS[1]; // the in-progress one is the "highest leverage next move"
+const topOp = PREVIEW_OPS[0]; // the in-progress one is the "highest leverage next move"
 const completed = STEPS.filter((s) => s.status === "complete").length;
 
 const STATUS_BAR: Record<MockStep["status"], string> = {
@@ -242,7 +247,7 @@ export function RoadmapWorkspacePreview() {
           <div className="mt-3">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">What you&apos;ve got</p>
             <ul className="mt-1.5 space-y-1">
-              {["Strong GPA in sciences", "Lab experience (1 quarter)"].map((s) => (
+              {["Strong GPA in sciences", "Clinical exposure (1 semester)"].map((s) => (
                 <li key={s} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
                   <span className="mt-0.5 flex h-3 w-3 shrink-0 items-center justify-center rounded-full bg-green-500/15 text-[8px] text-green-700 dark:text-green-400">✓</span>
                   {s}
@@ -255,8 +260,8 @@ export function RoadmapWorkspacePreview() {
             <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Gaps to close</p>
             <div className="mt-1.5 space-y-2">
               {[
-                { gap: "No faculty mentor", action: "Find a PI this quarter" },
-                { gap: "No clinical exposure", action: "Shadow through MAPS" },
+                { gap: "No faculty mentor", action: "Reach out to MCDB faculty" },
+                { gap: "No sustained research", action: "Apply to BISEP or MCDB lab" },
               ].map((g) => (
                 <div key={g.gap} className="rounded-lg border bg-card p-2">
                   <p className="text-[11px] font-semibold tracking-tight">{g.gap}</p>

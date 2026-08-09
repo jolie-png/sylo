@@ -130,6 +130,28 @@ function AboutPage() {
         </div>
       </section>
 
+      {/* Where this fits */}
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold tracking-tight">Where this fits.</h2>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
+          <p>
+            Degree planning tools already brought structure to academic requirements — mapping what you
+            need to graduate into a clear, sequenced path. Sylo extends that same approach into what
+            comes after: the career pipeline that follows the degree.
+          </p>
+          <p>
+            The foundation is the same: structured data about a specific student at a specific institution,
+            turned into a concrete plan. The difference is that instead of mapping courses to graduation,
+            Sylo maps opportunities to outcomes — using the same academic context (major, year, school,
+            progress) as the starting point.
+          </p>
+          <p className="font-medium text-foreground">
+            If degree planning is the map to graduation, Sylo is the map from graduation to career — and
+            it starts the moment a student picks a destination, not the semester before they leave.
+          </p>
+        </div>
+      </section>
+
       {/* Closing */}
       <section className="mt-8 rounded-2xl border bg-card p-5 sm:p-6">
         <div className="flex items-center gap-3">

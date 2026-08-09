@@ -216,7 +216,12 @@ function Builder() {
                       const selected = trackId === t.id;
                       const sample = opportunitiesForTrack(t.id)
                         .slice()
-                        .sort((a, b) => a.deadline.localeCompare(b.deadline))
+                        .sort((a, b) => {
+                          if (!a.deadline && !b.deadline) return 0;
+                          if (!a.deadline) return 1;
+                          if (!b.deadline) return -1;
+                          return a.deadline.localeCompare(b.deadline);
+                        })
                         .slice(0, 3);
                       const peeking = peek === t.id;
                       return (
@@ -362,7 +367,7 @@ function Builder() {
               >
                 <button
                   type="button"
-                  onClick={() => { setTrackId(t.id); setExpandedCategory(null); }}
+                  onClick={() => { setTrackId(t.id); setExpandedCategory(null); setCustomCategory(null); setCustomRole(""); }}
                   aria-pressed={selected}
                   className="tap group flex w-full items-start gap-4 rounded-xl p-4 text-left"
                 >

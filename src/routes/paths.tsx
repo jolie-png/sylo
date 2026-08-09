@@ -50,6 +50,10 @@ function PathsPage() {
           </span>
         </Link>
       </div>
+
+      <p className="mt-6 text-center text-[11px] text-muted-foreground/60">
+        Every story above links to the original public post. Names are real. Steps are reconstructed from what was shared.
+      </p>
     </Workspace>
   );
 }

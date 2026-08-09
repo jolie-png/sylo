@@ -315,7 +315,7 @@ function slug(name: string, i: number) {
 
 const trim = (s: string, max: number) => s.trim().slice(0, max);
 
-function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof Input>): LiveRoadmap | null {
+function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof Input>, knownUrls?: Set<string>): LiveRoadmap | null {
   const track = TRACKS.find((t) => t.id === data.trackId) ?? TRACKS[0];
   const seenNames = new Set<string>();
   const opportunities: Opportunity[] = [];
@@ -325,6 +325,17 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     const name = trim(raw.name, 120);
     const link = safeUrl(raw.link);
     if (!name || !link) continue;
+
+    // Anti-hallucination: if we have a set of known-good URLs from search,
+    // reject any link Claude produced that wasn't in the original results.
+    // This prevents the AI from inventing plausible-looking URLs.
+    if (knownUrls && knownUrls.size > 0 && !knownUrls.has(link)) {
+      // Check if the domain at least matches a known result (looser check)
+      const linkHost = hostOf(link);
+      const hasMatchingDomain = linkHost && [...knownUrls].some((u) => hostOf(u) === linkHost);
+      if (!hasMatchingDomain) continue; // Fully hallucinated domain — skip entirely
+    }
+
     const nameKey = name.toLowerCase();
     if (seenNames.has(nameKey)) continue;
 
@@ -334,6 +345,12 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
       const url = safeUrl(s.url);
       const host = url && hostOf(url);
       if (!url || !host || hosts.has(host)) continue;
+      // Anti-hallucination: only accept source URLs that actually came from search
+      if (knownUrls && knownUrls.size > 0 && !knownUrls.has(url)) {
+        // Allow if at least the domain appeared in search results (page might differ)
+        const domainInSearch = [...knownUrls].some((u) => hostOf(u) === host);
+        if (!domainInSearch) continue;
+      }
       hosts.add(host);
       sources.push({ title: trim(s.title, 120) || host, url });
       if (sources.length === 3) break;
@@ -369,7 +386,16 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     steps,
     alternates: (parsed.alternates ?? []).map((a) => ({ title: trim(a.title, 120), detail: trim(a.detail, 280) })).filter((a) => a.title && a.detail).slice(0, 2),
     opportunities,
-    gapAnalysis: parsed.gapAnalysis,
+    // Sanitize gap analysis — strip any hallucinated URLs from text fields
+    gapAnalysis: parsed.gapAnalysis ? {
+      strengths: parsed.gapAnalysis.strengths.map((s) => s.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200)),
+      gaps: parsed.gapAnalysis.gaps.map((g) => ({
+        gap: g.gap.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 120),
+        why: g.why.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200),
+        action: g.action.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200),
+      })),
+      bottomLine: parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 300),
+    } : undefined,
   };
 }
 
@@ -560,7 +586,9 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
           if (json) {
             const parsed = LiveResponseSchema.safeParse(json);
             if (parsed.success && parsed.data.found) {
-              result = clean(parsed.data, data);
+              // Pass known Serper URLs so clean() can reject hallucinated links
+              const knownUrls = new Set(rawResults.map((r) => r.link));
+              result = clean(parsed.data, data, knownUrls);
             } else {
               console.error("[LIVE-ROADMAP]", parsed.success ? "found:false" : "schema error");
             }

@@ -536,11 +536,17 @@ export function opportunitiesForTrack(track: string) {
   return OPPORTUNITIES.filter((o) => o.track === track);
 }
 
-/** The track's hero "next move": earliest deadline, matching how the roadmap ranks. */
+/** The track's hero "next move": earliest real deadline first, rolling programs last. */
 export function heroOpportunityForTrack(track: string) {
   return opportunitiesForTrack(track)
     .slice()
-    .sort((a, b) => a.deadline.localeCompare(b.deadline))[0];
+    .sort((a, b) => {
+      // Empty deadlines (rolling) sort AFTER real deadlines
+      if (!a.deadline && !b.deadline) return 0;
+      if (!a.deadline) return 1;
+      if (!b.deadline) return -1;
+      return a.deadline.localeCompare(b.deadline);
+    })[0];
 }
 
 

@@ -106,7 +106,7 @@ export function AskSylo() {
           results,
         };
       } else {
-        // No local results — fall back to web search via Gemini Flash
+        // No local results — fall back to web search via Serper
         try {
           const webData = await askSyloWebSearch({ data: { query } });
           if (webData.results.length > 0) {
@@ -120,14 +120,14 @@ export function AskSylo() {
             response = {
               id: loadingMsg.id,
               role: "sylo",
-              content: `I couldn't find programs matching "${query}". Try specific names like "Goldman Sachs", "CodePath", "NSF REU", or categories like "scholarship", "fellowship", "insight day".`,
+              content: `No programs matched "${query}" in Sylo's database. Try specific names like "Goldman Sachs", "CodePath", "NSF REU", or categories like "scholarship", "fellowship", "insight day".`,
             };
           }
         } catch {
           response = {
             id: loadingMsg.id,
             role: "sylo",
-            content: `I couldn't find programs matching "${query}". Try specific names or categories like "scholarship", "fellowship", "insight day".`,
+            content: `No programs matched "${query}". Try specific names or categories like "scholarship", "fellowship", "insight day".`,
           };
         }
       }

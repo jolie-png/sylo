@@ -1,14 +1,13 @@
 /**
  * Ask Sylo — server function for web search fallback.
  *
- * Flow: local DB search first (free) → if no results, uses Gemini Flash
- * via the existing AI gateway to do a grounded web search. Costs ~$0.0001/query.
+ * Flow: local DB search first (free, in-component) → if no results, uses
+ * Serper.dev to do a real Google search and returns actual URLs that exist.
+ * No AI hallucination — results are real web pages. Costs ~$0.001/query.
  */
 
 import { createServerFn } from "@tanstack/react-start";
-import { generateText } from "ai";
 import { z } from "zod";
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 
 const Input = z.object({
   query: z.string().min(1).max(300),
@@ -21,6 +20,27 @@ export type WebSearchResult = {
   source: string;
 };
 
+type SerperOrganic = { title: string; link: string; snippet: string };
+
+async function searchSerper(query: string, apiKey: string, num = 5): Promise<SerperOrganic[]> {
+  try {
+    const res = await fetch("https://google.serper.dev/search", {
+      method: "POST",
+      headers: { "X-API-KEY": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ q: query, num }),
+    });
+    if (!res.ok) {
+      console.warn(`[ask-sylo/serper] ${res.status}`);
+      return [];
+    }
+    const data = await res.json() as { organic?: SerperOrganic[] };
+    return data.organic ?? [];
+  } catch (err) {
+    console.warn("[ask-sylo/serper] error:", err);
+    return [];
+  }
+}
+
 export const askSyloWebSearch = createServerFn({ method: "POST" })
   .validator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
@@ -29,48 +49,39 @@ export const askSyloWebSearch = createServerFn({ method: "POST" })
       config();
     } catch { /* no-op */ }
 
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) {
-      return { results: [] as WebSearchResult[], error: "No API key configured" };
+    const serperKey = process.env.SERPER_API_KEY;
+    if (!serperKey) {
+      return { results: [] as WebSearchResult[] };
     }
 
-    const gateway = createLovableAiGatewayProvider(key);
+    // Build a targeted search query for student programs
+    const searchQuery = `${data.query} student program fellowship application deadline`;
 
-    try {
-      const { text } = await generateText({
-        model: gateway("google/gemini-3.6-flash"),
-        system: [
-          "You are a helpful assistant that finds student opportunity programs.",
-          "The user is searching for specific programs, fellowships, scholarships, insight days, or early-talent pipelines.",
-          "Return ONLY a JSON array of up to 5 results. Each result must have: title, snippet (1-2 sentences about what it is and its deadline), link (URL), source (website name).",
-          "Focus on real, named programs with application deadlines. No generic advice.",
-          "If you cannot find specific programs, return an empty array: []",
-          "Return ONLY valid JSON, no markdown, no explanation.",
-        ].join(" "),
-        prompt: `Find student programs, fellowships, or opportunities related to: "${data.query}". Return as JSON array.`,
-      });
+    const organic = await searchSerper(searchQuery, serperKey, 6);
 
-      // Parse the JSON response
-      const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-      const parsed = JSON.parse(cleaned);
+    if (organic.length === 0) {
+      return { results: [] as WebSearchResult[] };
+    }
 
-      if (!Array.isArray(parsed)) {
-        return { results: [] as WebSearchResult[] };
+    // Extract domain name for the "source" field
+    function extractDomain(url: string): string {
+      try {
+        const hostname = new URL(url).hostname.replace(/^www\./, "");
+        return hostname;
+      } catch {
+        return "web";
       }
-
-      const results: WebSearchResult[] = parsed
-        .slice(0, 5)
-        .map((r: any) => ({
-          title: String(r.title ?? ""),
-          snippet: String(r.snippet ?? ""),
-          link: String(r.link ?? ""),
-          source: String(r.source ?? "web"),
-        }))
-        .filter((r: WebSearchResult) => r.title && r.snippet);
-
-      return { results };
-    } catch (err) {
-      console.warn("[ask-sylo] Web search failed:", err);
-      return { results: [] as WebSearchResult[], error: "Search failed" };
     }
+
+    const results: WebSearchResult[] = organic
+      .filter((r) => r.title && r.snippet && r.link)
+      .slice(0, 5)
+      .map((r) => ({
+        title: r.title,
+        snippet: r.snippet,
+        link: r.link,
+        source: extractDomain(r.link),
+      }));
+
+    return { results };
   });

@@ -53,11 +53,13 @@ export const generateRoadmap = createServerFn({ method: "POST" })
 
     // "Something else" (or any track with no verified dataset): stay honest —
     // no AI call, no invented programs, just the student's own words.
-    if (pool.length === 0) {
+    // The "something-else" track may have generic records in the DB, but those
+    // aren't matched to the student's actual goal — treat them as no data.
+    if (pool.length === 0 || track.id === "something-else") {
       return {
         summary: data.goalText
-          ? `You're a ${data.year} ${data.major} major at ${data.school} working toward: ${data.goalText}. Sylo doesn't have verified opportunity data for this path yet, so nothing below is invented — add your own steps and Sylo will sequence them.`
-          : `You're a ${data.year} ${data.major} major at ${data.school}. Sylo doesn't have verified opportunity data for this path yet, so nothing below is invented — add your own steps and Sylo will sequence them.`,
+          ? `You're a ${data.year} ${data.major} major at ${data.school} working toward: ${data.goalText}. Sylo's verified dataset doesn't cover this path yet — add your own steps below and Sylo will sequence them.`
+          : `You're a ${data.year} ${data.major} major at ${data.school}. Sylo's verified dataset doesn't cover this path yet — add your own steps below and Sylo will sequence them.`,
         topOpportunityId: "",
         steps: [],
         alternates: [],
@@ -117,7 +119,25 @@ export const generateRoadmap = createServerFn({ method: "POST" })
       }
       const top = validIds.has(r.topOpportunityId) ? r.topOpportunityId : steps[0].opportunityId;
       steps.sort((a, b) => (a.opportunityId === top ? -1 : b.opportunityId === top ? 1 : 0));
-      return { ...r, steps, topOpportunityId: top };
+
+      // Anti-hallucination: strip any URLs from reasoning text (the AI should
+      // never embed links — real links come from the opportunity data itself).
+      const sanitizeText = (s: string) => s.replace(/https?:\/\/[^\s)]+/g, "").trim();
+      const cleanedSteps = steps.map((s) => ({ ...s, reasoning: sanitizeText(s.reasoning).slice(0, 300) }));
+      const summary = sanitizeText(r.summary).slice(0, 400);
+
+      // Sanitize gap analysis text if present
+      const gapAnalysis = r.gapAnalysis ? {
+        strengths: r.gapAnalysis.strengths.map((s) => sanitizeText(s).slice(0, 200)),
+        gaps: r.gapAnalysis.gaps.map((g) => ({
+          gap: sanitizeText(g.gap).slice(0, 120),
+          why: sanitizeText(g.why).slice(0, 200),
+          action: sanitizeText(g.action).slice(0, 200),
+        })),
+        bottomLine: sanitizeText(r.gapAnalysis.bottomLine).slice(0, 300),
+      } : undefined;
+
+      return { ...r, summary, steps: cleanedSteps, topOpportunityId: top, gapAnalysis };
     };
 
     try {
@@ -140,7 +160,13 @@ export const generateRoadmap = createServerFn({ method: "POST" })
         }
       }
       // Deterministic dataset-grounded fallback — never fabricates.
-      const sorted = [...pool].sort((a, b) => a.deadline.localeCompare(b.deadline));
+      const sorted = [...pool].sort((a, b) => {
+        // Empty deadlines (rolling) sort after real deadlines
+        if (!a.deadline && !b.deadline) return 0;
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return a.deadline.localeCompare(b.deadline);
+      });
       return clean({
         summary: `You're a ${data.year} ${data.major} major at ${data.school} heading toward ${track.label}. ${track.blurb}`,
         topOpportunityId: sorted[0].id,

@@ -124,7 +124,13 @@ function Dashboard() {
   // The Long View: verified openings now, then general patterns for the years still ahead.
   const termOps = browsableOpportunities(profile.trackId)
     .slice()
-    .sort((a, b) => a.deadline.localeCompare(b.deadline))
+    .sort((a, b) => {
+      // Empty deadlines (rolling) sort after real deadlines
+      if (!a.deadline && !b.deadline) return 0;
+      if (!a.deadline) return 1;
+      if (!b.deadline) return -1;
+      return a.deadline.localeCompare(b.deadline);
+    })
     .slice(0, 3);
   const currentYearIndex = YEARS.indexOf(profile.year);
   const futureYears = (["Sophomore", "Junior", "Senior"] as const).filter(
@@ -140,10 +146,10 @@ function Dashboard() {
         meta={[profile.major, profile.year, profile.school]}
       />
 
-      <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{roadmap.summary}</p>
+      <p className="animate-reveal mt-6 text-sm leading-relaxed text-muted-foreground">{roadmap.summary}</p>
 
       {roadmap.gapAnalysis ? (
-        <section className="mt-6 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.05] to-transparent p-5 sm:p-6">
+        <section className="animate-reveal mt-6 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.05] to-transparent p-5 sm:p-6" style={{ animationDelay: "100ms" }}>
           <h2 className="text-sm font-semibold uppercase tracking-wide text-primary/80">Where you stand</h2>
           
           <div className="mt-4">
@@ -244,7 +250,7 @@ function Dashboard() {
 
 
       {topOp?.gapLabel ? (
-        <div className="mt-6 overflow-hidden rounded-2xl border-2 border-amber-500/35 bg-gradient-to-br from-amber-500/[0.14] to-amber-500/[0.04] p-6 shadow-sm shadow-amber-500/10">
+        <div className="animate-reveal mt-6 overflow-hidden rounded-2xl border-2 border-amber-500/35 bg-gradient-to-br from-amber-500/[0.14] to-amber-500/[0.04] p-6 shadow-sm shadow-amber-500/10" style={{ animationDelay: "200ms" }}>
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/20 text-amber-700">
               <AlertCircle className="h-3.5 w-3.5" />
@@ -261,7 +267,7 @@ function Dashboard() {
 
 
       {topOp ? (
-        <div className="mt-6 rounded-2xl border border-primary/10 bg-primary/5 p-5">
+        <div className="animate-reveal mt-6 rounded-2xl border border-primary/10 bg-primary/5 p-5" style={{ animationDelay: "300ms" }}>
           <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">
             Your highest-leverage next move
           </p>
@@ -283,7 +289,7 @@ function Dashboard() {
 
 
       {!noDataset ? (
-      <h2 className="mt-12 text-lg font-semibold tracking-tight">
+      <h2 className="animate-reveal mt-12 text-lg font-semibold tracking-tight" style={{ animationDelay: "400ms" }}>
         Here&apos;s your roadmap
       </h2>
       ) : null}
@@ -402,7 +408,7 @@ function Dashboard() {
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {customSteps.length === 0 ? (
             <li className="text-sm text-muted-foreground">
-              Nothing of your own on the board yet — add a step and it lands here.
+              Nothing of your own on the board yet — add a step to get started.
             </li>
           ) : null}
           {customSteps.map((s) => (
@@ -657,7 +663,7 @@ function Dashboard() {
       </section>
 
       <section className="mt-8 border-t pt-5">
-        <h2 className="text-sm font-semibold tracking-tight">See the roadmaps that lead others to success</h2>
+        <h2 className="text-sm font-semibold tracking-tight">See the roadmaps that led others to success</h2>
         <div className="mt-3 space-y-2">
           {SUCCESS_STORIES.slice(0, 2).map((story) => (
             <Link
@@ -738,8 +744,9 @@ function SortableStep({
           className="flex w-5 shrink-0 cursor-grab flex-col items-center gap-0.5 pt-1 active:cursor-grabbing"
           {...attributes}
           {...listeners}
+          aria-label={`Reorder step ${index + 1}`}
         >
-          <GripVertical className="h-3 w-3 text-muted-foreground/50" />
+          <GripVertical className="h-3 w-3 text-muted-foreground/50" aria-hidden="true" />
           <span className="text-sm tabular-nums text-muted-foreground">{index + 1}</span>
         </span>
         <NotionCheckbox
@@ -907,7 +914,7 @@ function ProgressStrip({ tiles }: { tiles: ProgressTile[] }) {
       </div>
       <p className="mt-3 text-[13px] text-muted-foreground">
         {built === 0
-          ? "Nothing filled in yet — the first tile is the seminar below."
+          ? "The first tile is the seminar below — everything starts there."
           : "Filled tiles are moves you've already made. The empty ones are still yours to take."}
       </p>
     </div>
@@ -986,7 +993,7 @@ function ProgressTileButton({
             </p>
             <p className="mt-1.5 text-sm font-semibold tracking-tight">{tile.label}</p>
             <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
-              {tile.note ?? "No note yet — add one from your roadmap."}
+              {tile.note ?? "Add a note from your roadmap."}
             </p>
           </>
         ) : (

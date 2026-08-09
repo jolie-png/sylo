@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, AlertTriangle } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { TypingHero } from "@/components/TypingHero";
 import { RoadmapWorkspacePreview } from "@/components/roadmap-workspace-preview";
 import { WavyRouteLine } from "@/components/wavy-route-line";
 import { getOpportunity } from "@/lib/wayfind-data";
+import { useWayfind } from "@/lib/sylo-store";
 import { useInView } from "@/lib/use-in-view";
 import { cn } from "@/lib/utils";
 
@@ -43,6 +44,8 @@ function Landing() {
   const cards = useInView();
   const wavyBottom = useInView();
   const cta = useInView();
+  const { loadPersona } = useWayfind();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -84,12 +87,31 @@ function Landing() {
                     <ArrowRight className="h-5 w-5" />
                   </span>
                 </Link>
-                <Link
-                  to="/paths"
-                  className="tap text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                >
-                  See paths that worked →
-                </Link>
+              <p className="text-sm font-medium text-muted-foreground">
+                <span className="relative inline-block">
+                  <span className="group/demo cursor-default py-2">
+                    <span className="text-primary underline-offset-4 group-hover/demo:underline">Try an instant demo →</span>
+                    <span className="pointer-events-none absolute left-1/2 top-full z-50 flex -translate-x-1/2 gap-2 rounded-full border bg-card px-2 py-1.5 shadow-lg opacity-0 transition-opacity duration-200 group-hover/demo:pointer-events-auto group-hover/demo:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => { loadPersona("alex"); navigate({ to: "/dashboard" }); }}
+                        className="tap whitespace-nowrap rounded-full bg-secondary px-4 py-1.5 text-sm font-medium text-foreground hover:bg-primary hover:text-primary-foreground"
+                      >
+                        Alex · Biology @ UCLA
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { loadPersona("maya"); navigate({ to: "/dashboard" }); }}
+                        className="tap whitespace-nowrap rounded-full bg-secondary px-4 py-1.5 text-sm font-medium text-foreground hover:bg-primary hover:text-primary-foreground"
+                      >
+                        Maya · CS @ Georgia Tech
+                      </button>
+                    </span>
+                    {/* Invisible bridge so cursor doesn't leave the hover zone between trigger and dropdown */}
+                    <span className="pointer-events-none absolute left-0 right-0 top-full h-3 group-hover/demo:pointer-events-auto" />
+                  </span>
+                </span>
+              </p>
               </div>
             </div>
           </div>

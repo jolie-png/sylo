@@ -237,6 +237,10 @@ function Details() {
           {op.missingHere && (
             <PropertyRow label="Why this instead">{op.missingHere}</PropertyRow>
           )}
+          <div className="mt-2 flex items-center gap-1.5 px-3 text-[10px] text-muted-foreground/70">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500/60" />
+            Last verified Aug 2026
+          </div>
         </div>
 
         {step === undefined && (

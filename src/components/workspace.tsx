@@ -153,18 +153,32 @@ export function StatusTag({ status, onChange }: { status: StepStatus; onChange?:
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
+        onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}
+        aria-haspopup="listbox"
+        aria-expanded={open}
         className={cn("tag cursor-pointer select-none", s.cls)}
       >
         {s.label}
-        <ChevronDownIcon className="ml-1 inline h-3 w-3 opacity-60" />
+        <ChevronDownIcon className="ml-1 inline h-3 w-3 opacity-60" aria-hidden="true" />
       </button>
       {open && (
-        <span className="absolute left-0 top-full z-50 mt-1 flex flex-col rounded-lg border bg-card p-1 shadow-lg">
+        <span
+          className="absolute left-0 top-full z-50 mt-1 flex flex-col rounded-lg border bg-card p-1 shadow-lg"
+          role="listbox"
+          aria-label="Step status"
+          onBlur={(e) => {
+            // Close if focus leaves the dropdown entirely
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+          }}
+        >
           {(Object.keys(map) as StepStatus[]).map((key) => (
             <button
               key={key}
               type="button"
+              role="option"
+              aria-selected={key === status}
               onClick={() => { onChange(key); setOpen(false); }}
+              onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}
               className={cn(
                 "tap rounded-md px-3 py-1.5 text-left text-xs font-medium whitespace-nowrap",
                 key === status ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground",

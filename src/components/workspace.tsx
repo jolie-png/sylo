@@ -9,9 +9,9 @@ import type { StepStatus } from "@/lib/wayfind-data";
 
 const NAV = [
   { to: "/dashboard", label: "Roadmap", icon: Map },
+  { to: "/paths", label: "Paths", icon: Sparkles },
   { to: "/progress", label: "Progress", icon: KanbanSquare },
   { to: "/opportunity-details", label: "Opportunities", icon: FileText },
-  { to: "/paths", label: "Paths", icon: Sparkles },
   { to: "/profile", label: "Profile", icon: User },
 ] as const;
 

@@ -88,12 +88,12 @@ function Landing() {
                     <ArrowRight className="h-5 w-5" />
                   </span>
                 </Link>
-                {/* <Link
-                  to="/opportunities"
+                <Link
+                  to="/paths"
                   className="tap text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                 >
-                  Or browse all programs &amp; pipelines →
-                </Link> */}
+                  See paths that worked →
+                </Link>
               </div>
             </div>
           </div>

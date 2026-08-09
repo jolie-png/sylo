@@ -397,13 +397,8 @@ function Builder() {
         </div>
 
 
-        <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
-          None of these fit? Choose <span className="font-medium text-foreground">Something else</span> and
-          describe your goal — Sylo will search for real opportunities instead of guessing.
-        </p>
-
         <label className="mt-8 block">
-          <span className="text-sm font-medium text-muted-foreground">Or describe it in your own words (optional)</span>
+          <span className="text-sm font-medium text-muted-foreground">Describe your goal (optional for tracks above, required for Something else)</span>
           <input
             value={goalText}
             onChange={(e) => setGoalText(e.target.value)}

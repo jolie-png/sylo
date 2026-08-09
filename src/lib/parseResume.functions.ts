@@ -52,13 +52,9 @@ async function extractText(buffer: Buffer, ext: string): Promise<string> {
     case ".txt":
       return buffer.toString("utf-8");
     case ".pdf": {
-      // pdf-parse v2 uses a class-based API
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { PDFParse } = await import("pdf-parse") as any;
-      const parser = new PDFParse({ verbosity: 0, data: buffer });
-      await parser.load();
-      const result = await parser.getText();
-      return result.text as string;
+      const { extractText: extractPdfText } = await import("unpdf");
+      const result = await extractPdfText(new Uint8Array(buffer));
+      return (result.text || []).join("\n");
     }
     case ".docx": {
       const mammoth = await import("mammoth");

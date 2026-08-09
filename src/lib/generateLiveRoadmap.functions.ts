@@ -73,7 +73,7 @@ export type LiveRoadmap = {
 
 // --- Rate limiting & caching ------------------------------------------------
 
-const TIMEOUT_MS = 30_000;
+const TIMEOUT_MS = 60_000;
 const PER_SESSION_LIMIT = 6;
 const GLOBAL_LIMIT = 120;
 const RATE_WINDOW_MS = 60 * 60 * 1000;

@@ -144,7 +144,7 @@ export function personaRoadmap(persona: Persona): Roadmap {
   );
   return {
     summary: `You're a ${persona.year} ${persona.major} major at ${persona.school} aiming at ${track.label}. ${track.blurb} Everything below is already open to you.`,
-    topOpportunityId: pool[0].id,
+    topOpportunityId: pool[0]?.id ?? "",
     alternates: track.brandPrograms.map((b) => ({
       title: b.name,
       detail: `${b.sponsor} — ${b.note}. Not available at ${persona.school}, so Sylo routed you to the local equivalent instead.`,
@@ -246,8 +246,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /**
-   * The instant-demo path. Sets profile with rich context so live search
-   * auto-triggers on the dashboard and builds a real roadmap for the persona.
+   * Instant-demo path. Sets profile with real context and loads the seed
+   * roadmap (real programs at real schools). No network call needed.
    */
   const loadPersona = useCallback((personaId: string) => {
     const persona = PERSONAS.find((p) => p.id === personaId);
@@ -257,9 +257,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       year: persona.year,
       school: persona.school,
       trackId: persona.track,
-      goalText: persona.track === "something-else" ? "" : TRACKS.find(t => t.id === persona.track)?.label ?? "",
+      goalText: TRACKS.find(t => t.id === persona.track)?.label ?? "",
       personaName: persona.name,
-      // Realistic demo context so live search and gap analysis work well
       experience: persona.id === "maya"
         ? "Volunteered at campus health clinic for one semester, completed intro bio lab sequence"
         : "Built a full-stack task manager with React and Node.js, contributed to an open-source Python library",
@@ -276,13 +275,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
         ? "Shadowed a physician for 40 hours, applied to two research labs (waitlisted)"
         : "Applied to Google STEP (rejected), completed LeetCode 150, took Coursera ML course",
     });
-    // Set a minimal roadmap so dashboard renders (live search auto-triggers via NoDatasetState)
-    setRoadmapState({
-      summary: `Loading ${persona.name}'s roadmap — searching for real opportunities...`,
-      topOpportunityId: "",
-      steps: [],
-      alternates: [],
-    });
+    setRoadmapState(personaRoadmap(persona));
     setLiveOpportunities([]);
   }, []);
 

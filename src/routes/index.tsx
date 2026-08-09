@@ -50,14 +50,14 @@ function Landing() {
   return (
     <div className="min-h-screen bg-canvas">
       {/* Compact workspace chrome: 44px bar, hairline border, solid card surface. */}
-      <header className="sticky top-0 z-40 h-11 border-b bg-card">
+      <header className="sticky top-0 z-40 h-11 border-b bg-card/95 backdrop-blur-sm">
         <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <SyloMark className="h-6 w-6" animated={true} />
             <span className="text-sm font-medium tracking-tight">Sylo</span>
 
           </div>
-          <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link to="/about" className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground">
             Why Sylo?
           </Link>
         </div>
@@ -68,11 +68,11 @@ function Landing() {
           {/* Sticky stage: hero follows the scroll for a longer distance, then releases. */}
           <div className="relative h-[100vh]">
             <div className="sticky top-11 z-10 flex h-[calc(100vh-2.75rem)] w-full flex-col items-center justify-center text-center">
-              <p className="text-sm font-medium text-primary">Real guidance, crafted for your path.</p>
+              <p className="text-[13px] font-medium text-primary/80">Real guidance, crafted for your path.</p>
               <div className="mt-6">
                 <TypingHero />
               </div>
-              <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+              <p className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-muted-foreground sm:text-lg">
                 Tell Sylo where you want to end up. It reads your major, year, and school&apos;s
                 programs, then returns a personalized roadmap — one ranked next move at a time.
               </p>
@@ -80,7 +80,7 @@ function Landing() {
               <div className="mt-10 flex flex-col items-center justify-center gap-3">
                 <Link
                   to="/roadmap-builder"
-                  className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground hover:bg-primary/95"
+                  className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95 hover:shadow-xl hover:shadow-primary/25"
                 >
                   <span>Build my roadmap</span>
                   <span className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
@@ -125,8 +125,8 @@ function Landing() {
         <div
           ref={wavyTop.ref}
           className={cn(
-            "flex justify-center pt-8 pb-2 transition-all duration-700",
-            wavyTop.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+            "flex justify-center pt-8 pb-2 transition-all duration-500 ease-out",
+            wavyTop.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
           )}
         >
           <div className="flex flex-col items-center">
@@ -138,15 +138,15 @@ function Landing() {
         <section
           ref={cards.ref}
           className={cn(
-            "py-4 sm:py-6 transition-all duration-700 delay-200",
-            cards.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+            "py-4 sm:py-6 transition-all duration-500 ease-out delay-200",
+            cards.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
         >
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             {/* 01 */}
-            <div className="flex flex-col rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">01</p>
-              <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
+            <div className="flex flex-col rounded-xl border bg-card p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">01</p>
+              <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight">
                 One next move, not twenty.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
@@ -165,9 +165,9 @@ function Landing() {
             </div>
 
             {/* 02 */}
-            <div className="flex flex-col rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">02</p>
-              <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
+            <div className="flex flex-col rounded-xl border bg-card p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">02</p>
+              <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight">
                 Your school, not a generic list.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
@@ -186,9 +186,9 @@ function Landing() {
             </div>
 
             {/* 03 */}
-            <div className="flex flex-col rounded-xl border bg-card p-5 shadow-[var(--shadow-card)]">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">03</p>
-              <h2 className="mt-2.5 text-[17px] font-semibold leading-snug tracking-tight">
+            <div className="flex flex-col rounded-xl border bg-card p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">03</p>
+              <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight">
                 See what&apos;s actually blocking you.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
@@ -213,8 +213,8 @@ function Landing() {
         <div
           ref={wavyBottom.ref}
           className={cn(
-            "flex justify-center py-2 transition-all duration-700",
-            wavyBottom.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+            "flex justify-center py-2 transition-all duration-500 ease-out",
+            wavyBottom.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
           )}
         >
           <div className="flex flex-col items-center">
@@ -226,15 +226,17 @@ function Landing() {
         <section
           ref={cta.ref}
           className={cn(
-            "py-6 sm:py-8 transition-all duration-700 delay-200",
-            cta.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+            "py-6 sm:py-8 transition-all duration-500 ease-out delay-200",
+            cta.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
         >
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
-              The invisible advisor every well-connected student already has.<br /><span className="text-primary">Now it&apos;s yours.</span>
+            <h2 className="text-[28px] font-bold leading-[1.15] tracking-tight text-foreground sm:text-[38px]">
+              The invisible advisor every{" "}
+              <span className="whitespace-nowrap">well-connected</span> student already has.
             </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground text-balance">
+            <p className="mt-3 text-[22px] font-bold tracking-tight text-primary sm:text-[28px]">Now it&apos;s yours.</p>
+            <p className="mx-auto mt-5 max-w-md text-base text-muted-foreground text-balance">
               No sign-up required. Real roadmaps in seconds.{" "}
               <Link to="/about" className="font-medium text-primary underline-offset-4 hover:underline">
                 Learn more.
@@ -243,7 +245,7 @@ function Landing() {
             <div className="mt-8 pb-40">
               <Link
                 to="/roadmap-builder"
-                className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground hover:bg-primary/95"
+                className="tap group inline-flex items-center justify-between gap-4 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95 hover:shadow-xl hover:shadow-primary/25"
               >
                 <span>Build my roadmap</span>
                 <span className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
@@ -255,14 +257,14 @@ function Landing() {
         </section>
       </main>
 
-      <footer className="border-t bg-card px-6 py-8">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row">
+      <footer className="border-t px-6 py-6">
+        <div className="mx-auto flex max-w-5xl items-center justify-between">
           <div className="flex items-center gap-2">
-            <SyloMark className="h-5 w-5" animated={true} />
-            <span className="text-sm font-semibold tracking-tight">Sylo</span>
+            <SyloMark className="h-4 w-4" animated={false} />
+            <span className="text-xs font-medium tracking-tight text-muted-foreground">Sylo</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Sylo. All rights reserved.
+            &copy; {new Date().getFullYear()}
           </p>
         </div>
       </footer>

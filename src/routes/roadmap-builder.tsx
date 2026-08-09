@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowRight, Loader2, ChevronDown, ChevronRight, Heart, Briefcase, Code, TrendingUp, Microscope } from "lucide-react";
+import { ArrowRight, Loader2, ChevronDown, ChevronLeft, ChevronRight, Heart, Briefcase, Code, TrendingUp, Scale, Palette } from "lucide-react";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
 import { useWayfind } from "@/lib/wayfind-store";
 import { MAJORS, TRACKS, YEARS, opportunitiesForTrack, type TrackId } from "@/lib/wayfind-data";
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 const TRACK_CATEGORIES = [
   {
     id: "healthcare",
-    label: "Healthcare",
+    label: "Medicine",
     description: "Clinical care, biomedical research, and health systems.",
     icon: Heart,
     trackIds: ["physician-scientist", "nursing", "public-health"] as TrackId[],
@@ -25,7 +25,7 @@ const TRACK_CATEGORIES = [
     label: "Business",
     description: "Product, operations, strategy, and leadership roles.",
     icon: Briefcase,
-    trackIds: ["product-manager", "management-consulting", "marketing"] as TrackId[],
+    trackIds: ["management-consulting", "product-manager"] as TrackId[],
   },
   {
     id: "engineering",
@@ -42,11 +42,18 @@ const TRACK_CATEGORIES = [
     trackIds: ["investment-banking", "private-equity", "financial-planning"] as TrackId[],
   },
   {
-    id: "science",
-    label: "Science",
-    description: "Research-driven discovery across disciplines.",
-    icon: Microscope,
-    trackIds: ["research-phd", "biotech-research", "environmental-science"] as TrackId[],
+    id: "public-affairs",
+    label: "Law",
+    description: "Law school, policy fellowships, government, and public service leadership.",
+    icon: Scale,
+    trackIds: ["public-affairs", "policy-analyst", "government-relations"] as TrackId[],
+  },
+  {
+    id: "design",
+    label: "Design",
+    description: "UX, product design, graphic design, and creative technology.",
+    icon: Palette,
+    trackIds: ["design", "product-designer", "creative-director"] as TrackId[],
   },
 ] as const;
 
@@ -90,6 +97,7 @@ function Builder() {
 
   // "Tell Sylo more" context fields
   const [moreOpen, setMoreOpen] = useState(false);
+  const [resumeName, setResumeName] = useState("");
   const [experience, setExperience] = useState("");
   const [gpa, setGpa] = useState("");
   const [skills, setSkills] = useState("");
@@ -119,6 +127,7 @@ function Builder() {
       school,
       trackId,
       goalText: effectiveGoalText,
+      name: resumeName.trim() || undefined,
       experience: experience.trim() || undefined,
       gpa: gpa.trim() || undefined,
       skills: skills.trim() || undefined,
@@ -151,13 +160,13 @@ function Builder() {
       <div className="glass px-6 py-8 sm:px-10 sm:py-12">
         <Link
           to="/"
-          className="tap inline-flex items-center gap-1 rounded-full px-1 text-sm text-muted-foreground hover:text-foreground"
+          className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground"
         >
-          <span>←</span> Home
+          <ChevronLeft className="h-4 w-4" /> Home
         </Link>
-        <h1 className="mt-7 text-[40px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[56px]">Where do you want to go?</h1>
+        <h1 className="mt-7 text-[40px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[56px]">What do you want to become?</h1>
         <p className="mt-2.5 text-base text-muted-foreground">
-          Pick a destination. Sylo handles the questions you didn&apos;t know to ask.
+          Pick a path. Sylo figures out the steps.
         </p>
 
         <div className="mt-8 space-y-3">
@@ -443,6 +452,7 @@ function Builder() {
           <div className="mt-4">
             <ResumeUpload
               onParsed={(data) => {
+                if (data.name?.trim()) setResumeName(data.name);
                 if (data.experience?.trim()) setExperience(data.experience);
                 if (data.skills?.trim()) setSkills(data.skills);
                 if (data.priorWork?.trim()) setPriorWork(data.priorWork);
@@ -515,7 +525,7 @@ function Builder() {
         <div
           id="instant-demo"
           className={cn(
-            "mt-12 -mx-6 rounded-2xl border-t px-6 pt-6 transition-all duration-500 sm:-mx-10 sm:px-10",
+            "mt-12 -mx-6 rounded-2xl border-t px-6 pt-6 transition-all duration-200 sm:-mx-10 sm:px-10",
             demoPulse ? "bg-primary/[0.08] ring-1 ring-primary/30" : "ring-0",
           )}
         >
@@ -523,17 +533,17 @@ function Builder() {
           <div className="mt-4 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => demo("maya")}
-              className="tap tap-surface rounded-lg border bg-card px-4 py-1.5 text-sm"
-            >
-              Maya · CS @ Georgia Tech
-            </button>
-            <button
-              type="button"
               onClick={() => demo("alex")}
               className="tap tap-surface rounded-lg border bg-card px-4 py-1.5 text-sm"
             >
               Alex · Biology @ UCLA
+            </button>
+            <button
+              type="button"
+              onClick={() => demo("maya")}
+              className="tap tap-surface rounded-lg border bg-card px-4 py-1.5 text-sm"
+            >
+              Maya · CS @ Georgia Tech
             </button>
           </div>
         </div>

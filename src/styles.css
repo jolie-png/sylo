@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Sylo design system — Apple-inspired liquid glass.
- * Clean white canvas, deep purple accent, generous whitespace,
- * large radii, and refined frosted-glass surfaces.
+ * Sylo design system — typography-forward, information-dense.
+ * Warm grain canvas, deep purple accent, considered whitespace,
+ * refined surfaces. Authored, not generated.
  * Tokens only; never hardcode colors in components.
  */
 
@@ -19,7 +19,7 @@
   --radius-2xl: 16px;
   --radius-3xl: 20px;
   --font-sans: "Figtree", -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Onest", "Figtree", -apple-system, BlinkMacSystemFont, ui-sans-serif, sans-serif;
+  --font-display: "Onest", "Figtree", -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -54,43 +54,43 @@
 }
 
 /*
- * Product-Roadmap register: quiet off-white canvas, solid white cards,
- * one saturated accent (Sylo purple), thin neutral hairlines, 12px radii.
+ * Warm, authored palette. Warmer status tones (teal greens, earthy ambers).
+ * Subtle grain texture on canvas for physical feel.
  */
 :root {
   --radius: 12px;
   --background: #ffffff;
-  --canvas: #f8f8f5;
-  --foreground: #171717;
+  --canvas: #f7f6f3;
+  --foreground: #1a1a1a;
   --card: #ffffff;
-  --card-foreground: #171717;
+  --card-foreground: #1a1a1a;
   --popover: #ffffff;
-  --popover-foreground: #171717;
-  --primary: #3b1f6b;
-  --primary-foreground: #f8f8f5;
-  --secondary: #efeee8;
-  --secondary-foreground: #171717;
-  --muted: #f2f1ec;
-  --muted-foreground: #666666;
-  --accent: #efeee8;
-  --accent-foreground: #171717;
-  --destructive: #d13b57;
-  --destructive-foreground: #f8f8f5;
-  --border: #e5e4dd;
-  --input: #e5e4dd;
-  --ring: #3b1f6b;
-  --mint: #3b1f6b;
+  --popover-foreground: #1a1a1a;
+  --primary: #3d1f6e;
+  --primary-foreground: #f8f7f4;
+  --secondary: #edece6;
+  --secondary-foreground: #1a1a1a;
+  --muted: #f1f0eb;
+  --muted-foreground: #5c5c5c;
+  --accent: #edece6;
+  --accent-foreground: #1a1a1a;
+  --destructive: #c4344d;
+  --destructive-foreground: #f8f7f4;
+  --border: #e3e2db;
+  --input: #e3e2db;
+  --ring: #3d1f6e;
+  --mint: #3d1f6e;
   --mint-foreground: #ffffff;
-  --tag-gray: #f2f1ec;
-  --tag-gray-foreground: #666666;
-  --tag-blue: rgba(59, 31, 107, 0.09);
-  --tag-blue-foreground: #3b1f6b;
-  --tag-green: rgba(22, 163, 74, 0.12);
-  --tag-green-foreground: #15803d;
-  --tag-amber: rgba(217, 119, 6, 0.12);
-  --tag-amber-foreground: #b45309;
-  --shadow-card: 0 1px 2px rgba(23, 23, 23, 0.04);
-  --shadow-raise: 0 10px 24px -14px rgba(23, 23, 23, 0.22);
+  --tag-gray: #f1f0eb;
+  --tag-gray-foreground: #5c5c5c;
+  --tag-blue: rgba(61, 31, 110, 0.08);
+  --tag-blue-foreground: #3d1f6e;
+  --tag-green: rgba(13, 148, 110, 0.10);
+  --tag-green-foreground: #0d7357;
+  --tag-amber: rgba(194, 107, 3, 0.10);
+  --tag-amber-foreground: #a35d03;
+  --shadow-card: 0 1px 3px rgba(26, 26, 26, 0.03), 0 0 0 1px rgba(26, 26, 26, 0.02);
+  --shadow-raise: 0 8px 20px -10px rgba(26, 26, 26, 0.18);
 }
 
 @layer base {
@@ -111,6 +111,12 @@
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--canvas);
     text-rendering: optimizeLegibility;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    /* Subtle paper grain — physical feel, not flat digital */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
   }
 
   h1,
@@ -118,7 +124,13 @@
   h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
+  }
+
+  /* Tabular nums by default on any numeric context */
+  [data-metric],
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -139,7 +151,6 @@
   font-size: 0.75rem;
   line-height: 1.25rem;
   font-weight: 500;
-  /* Wrap instead of spilling past the card edge on long labels. */
   max-width: 100%;
   white-space: normal;
   overflow-wrap: break-word;
@@ -147,7 +158,7 @@
 }
 
 
-/* Primary content surface: solid white card on the quiet canvas. */
+/* Primary content surface: solid white card on the warm canvas. */
 @utility glass {
   background-color: var(--card);
   border: 1px solid var(--border);
@@ -175,8 +186,8 @@
   font-weight: 500;
   color: var(--color-muted-foreground);
   transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    background-color 150ms ease,
+    color 150ms ease;
 
   &:hover {
     background-color: var(--accent);
@@ -184,14 +195,15 @@
   }
 }
 
-/* Shared interaction pattern: hover, pressed, and keyboard-focus feedback. */
+/* Shared interaction pattern: hover, pressed, and keyboard-focus feedback.
+   All transitions standardized to 150ms for color, 200ms for transform. */
 @utility tap {
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    color 0.15s ease,
-    transform 0.1s ease;
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease,
+    transform 200ms ease-out;
   outline: none;
 
   &:active {
@@ -217,12 +229,13 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 
   &:hover {
-    background-color: var(--accent);
+    border-color: color-mix(in oklab, var(--color-primary) 18%, var(--border));
+    box-shadow: 0 2px 8px -2px rgba(61, 31, 110, 0.06);
   }
 }
 
@@ -231,8 +244,8 @@
   background-color: var(--muted);
   border: 1px solid transparent;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
+    background-color 150ms ease,
+    border-color 150ms ease;
 
   &:hover {
     border-color: var(--border);
@@ -268,15 +281,16 @@
 @utility drop-placeholder {
   border: 1px dashed color-mix(in oklab, var(--color-primary) 35%, var(--border));
   border-radius: 12px;
-  background-color: transparent;
+  background-color: color-mix(in oklab, var(--color-primary) 3%, transparent);
 }
 
 
-/* Staggered reveal animation for dashboard sections */
+/* Staggered reveal animation for dashboard sections.
+   Uses ONLY opacity + transform — no layout shift. */
 @keyframes fade-up-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -285,5 +299,19 @@
 }
 
 @utility animate-reveal {
-  animation: fade-up-in 0.4s ease-out both;
+  animation: fade-up-in 0.35s ease-out both;
+}
+
+/* Gentle breathing glow for the top-move card */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(0.65 0.2 260 / 0);
+  }
+  50% {
+    box-shadow: 0 0 8px 1px oklch(0.65 0.2 260 / 0.07);
+  }
+}
+
+@utility animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
 }

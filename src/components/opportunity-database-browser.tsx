@@ -23,13 +23,15 @@ import {
 } from "@/lib/opportunities-db";
 import { type TrackId } from "@/lib/wayfind-data";
 
-/** General categories shown as filter pills in the opportunity browser. */
+/** General categories shown as filter pills in the opportunity browser.
+ * Only categories whose tracks have actual opportunities in the database are included.
+ * This prevents showing empty filters that make the product feel incomplete. */
 const OPPORTUNITY_CATEGORIES: { id: string; label: string; trackIds: TrackId[] }[] = [
-  { id: "healthcare", label: "Healthcare", trackIds: ["physician-scientist", "nursing", "public-health"] },
-  { id: "business", label: "Business", trackIds: ["product-manager", "management-consulting", "marketing"] },
-  { id: "engineering", label: "Engineering", trackIds: ["software-engineer", "data-science", "cybersecurity"] },
-  { id: "finance", label: "Finance", trackIds: ["investment-banking", "private-equity", "financial-planning"] },
-  { id: "science", label: "Science", trackIds: ["research-phd", "biotech-research", "environmental-science"] },
+  { id: "healthcare", label: "Medicine", trackIds: ["physician-scientist"] },
+  { id: "business", label: "Business", trackIds: ["product-manager"] },
+  { id: "engineering", label: "Engineering", trackIds: ["software-engineer"] },
+  { id: "finance", label: "Finance", trackIds: ["investment-banking"] },
+  { id: "science", label: "Science", trackIds: ["research-phd"] },
 ];
 
 /** Map track IDs to general category labels for display. */
@@ -226,9 +228,12 @@ export function OpportunityDatabaseBrowser() {
     setSelectedTags([]);
   }, []);
 
+  const [redditError, setRedditError] = useState(false);
+
   const loadRedditPosts = useCallback(async () => {
     if (redditLoading) return;
     setRedditLoading(true);
+    setRedditError(false);
     try {
       const result = await searchRedditOpportunities({
         data: {
@@ -240,6 +245,8 @@ export function OpportunityDatabaseBrowser() {
       setShowReddit(true);
     } catch (err) {
       console.warn("[reddit] Failed to load posts:", err);
+      setRedditError(true);
+      setShowReddit(true);
     } finally {
       setRedditLoading(false);
     }
@@ -402,11 +409,11 @@ export function OpportunityDatabaseBrowser() {
           </p>
 
           {results.length === 0 ? (
-            <div className="rounded-2xl border border-dashed p-8 text-center">
-              <p className="text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-dashed border-foreground/15 bg-muted/40 p-8 text-center">
+              <p className="text-sm font-medium text-muted-foreground">
                 No opportunities match your current filters.
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1.5 text-xs text-muted-foreground">
                 Try broadening your search or removing some filters.
               </p>
             </div>
@@ -480,7 +487,9 @@ export function OpportunityDatabaseBrowser() {
 
           {showReddit && redditPosts.length === 0 && !redditLoading && (
             <p className="mt-3 text-xs text-muted-foreground">
-              No relevant posts found right now. Try a different search term.
+              {redditError
+                ? "Couldn't reach Reddit right now. Try again in a moment."
+                : "No relevant posts found right now. Try a different search term."}
             </p>
           )}
         </div>

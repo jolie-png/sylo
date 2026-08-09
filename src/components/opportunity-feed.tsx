@@ -8,13 +8,14 @@ import { cn } from "@/lib/utils";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
 import { type Opportunity, type TrackId } from "@/lib/wayfind-data";
 
-/** General categories shown as filter pills in the opportunity feed. */
+/** General categories shown as filter pills in the opportunity feed.
+ * Only tracks that have actual data in the database are included. */
 const OPPORTUNITY_CATEGORIES: { id: string; label: string; trackIds: TrackId[] }[] = [
-  { id: "healthcare", label: "Healthcare", trackIds: ["physician-scientist", "nursing", "public-health"] },
-  { id: "business", label: "Business", trackIds: ["product-manager", "management-consulting", "marketing"] },
-  { id: "engineering", label: "Engineering", trackIds: ["software-engineer", "data-science", "cybersecurity"] },
-  { id: "finance", label: "Finance", trackIds: ["investment-banking", "private-equity", "financial-planning"] },
-  { id: "science", label: "Science", trackIds: ["research-phd", "biotech-research", "environmental-science"] },
+  { id: "healthcare", label: "Healthcare", trackIds: ["physician-scientist"] },
+  { id: "business", label: "Business", trackIds: ["product-manager"] },
+  { id: "engineering", label: "Engineering", trackIds: ["software-engineer"] },
+  { id: "finance", label: "Finance", trackIds: ["investment-banking"] },
+  { id: "science", label: "Science", trackIds: ["research-phd"] },
 ];
 
 /**
@@ -30,7 +31,7 @@ export function OpportunityFeed() {
   const { pinnedIds, togglePinned, resolveOpportunity } = useWayfind();
 
   const [filter, setFilter] = useState<"all" | "pinned">("all");
-  const [trackFilter, setTrackFilter] = useState<string | null>(null);
+  const [trackFilters, setTrackFilters] = useState<string[]>([]);
   const [query, setQuery] = useState("");
 
   // Full dataset: all curated + external opportunities
@@ -38,9 +39,12 @@ export function OpportunityFeed() {
 
   // Apply filters
   const filtered = all.filter((op) => {
-    if (trackFilter) {
-      const cat = OPPORTUNITY_CATEGORIES.find((c) => c.id === trackFilter);
-      if (cat && !cat.trackIds.includes(op.track as TrackId)) return false;
+    if (trackFilters.length > 0) {
+      const matchesSomeCategory = trackFilters.some((tf) => {
+        const cat = OPPORTUNITY_CATEGORIES.find((c) => c.id === tf);
+        return cat && cat.trackIds.includes(op.track as TrackId);
+      });
+      if (!matchesSomeCategory) return false;
     }
     if (query) {
       const q = query.toLowerCase();
@@ -89,14 +93,14 @@ export function OpportunityFeed() {
         </div>
       </div>
 
-      {/* Track pills */}
+      {/* Track pills — multi-select */}
       <div className="mt-3 flex flex-wrap gap-1.5">
         <button
           type="button"
-          onClick={() => setTrackFilter(null)}
+          onClick={() => setTrackFilters([])}
           className={cn(
             "tap rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-            !trackFilter
+            trackFilters.length === 0
               ? "border-primary bg-primary/10 text-primary"
               : "border-transparent bg-muted text-muted-foreground hover:text-foreground",
           )}
@@ -107,10 +111,16 @@ export function OpportunityFeed() {
           <button
             key={cat.id}
             type="button"
-            onClick={() => setTrackFilter(trackFilter === cat.id ? null : cat.id)}
+            onClick={() =>
+              setTrackFilters((prev) =>
+                prev.includes(cat.id)
+                  ? prev.filter((id) => id !== cat.id)
+                  : [...prev, cat.id],
+              )
+            }
             className={cn(
               "tap rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-              trackFilter === cat.id
+              trackFilters.includes(cat.id)
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-transparent bg-muted text-muted-foreground hover:text-foreground",
             )}
@@ -195,10 +205,18 @@ export function OpportunityFeed() {
                   </p>
                 ) : null}
 
-                {/* Show leverage when pinned (same as existing OpportunityBrowser) */}
+                {/* Show leverage when pinned */}
                 {!isExternal && pinned && full ? (
                   <p className="mt-3 border-t pt-3 text-xs leading-relaxed text-muted-foreground">
                     {full.leverage}
+                  </p>
+                ) : null}
+
+                {/* Hint on first unpinned card only */}
+                {!pinned && full?.leverage &&
+                  shown.filter((o) => !pinnedIds.includes(o.id)).indexOf(op) === 0 ? (
+                  <p className="mt-3 border-t pt-3 text-[11px] text-muted-foreground/60">
+                    <Pin className="mr-1 inline h-3 w-3" />Pin to see why this matters
                   </p>
                 ) : null}
 

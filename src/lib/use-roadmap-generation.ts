@@ -79,6 +79,7 @@ const PHASES = [
   "Searching for real opportunities…",
   "Cross-checking sources…",
   "Sequencing your roadmap…",
+  "Almost there — assembling your path…",
 ];
 
 /**
@@ -95,8 +96,9 @@ export function useSearchProgressLabel(active: boolean) {
       return;
     }
     const timers = [
-      window.setTimeout(() => setPhase(1), 6000),
-      window.setTimeout(() => setPhase(2), 18000),
+      window.setTimeout(() => setPhase(1), 5000),
+      window.setTimeout(() => setPhase(2), 14000),
+      window.setTimeout(() => setPhase(3), 22000),
     ];
     return () => timers.forEach(window.clearTimeout);
   }, [active]);

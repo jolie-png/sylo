@@ -26,7 +26,7 @@ export function Workspace({ children, wide = false }: { children: ReactNode; wid
           <SyloMark className="h-5 w-5" animated />
           <span className="text-lg font-semibold tracking-tight">Sylo</span>
         </Link>
-        <nav className="flex flex-col gap-1">
+        <nav className="flex flex-col gap-0.5">
           {NAV.map((item) => (
             <Link
               key={item.to}
@@ -34,7 +34,7 @@ export function Workspace({ children, wide = false }: { children: ReactNode; wid
               className={cn(
                 "nav-item tap",
                 pathname === item.to &&
-                  "bg-secondary text-foreground",
+                  "bg-secondary text-foreground font-semibold",
               )}
             >
               <item.icon className="h-4 w-4" strokeWidth={1.75} />
@@ -53,11 +53,11 @@ export function Workspace({ children, wide = false }: { children: ReactNode; wid
         <MobileHeader pathname={pathname} />
         <div
           className={cn(
-            "mx-auto w-full px-4 pb-10 pt-6 sm:px-8 sm:pb-12 sm:pt-8 md:py-10 md:pt-12",
+            "mx-auto w-full px-4 pb-10 pt-6 sm:px-8 sm:pb-12 sm:pt-8 md:py-10 md:pt-10",
             wide ? "max-w-6xl" : "max-w-3xl",
           )}
         >
-          <div className="glass px-6 py-8 sm:px-10 sm:py-10">{children}</div>
+          <div className="glass px-6 py-7 sm:px-10 sm:py-9">{children}</div>
         </div>
       </main>
     </div>
@@ -112,14 +112,14 @@ export function PageHeader({
   meta?: string[];
 }) {
   return (
-    <header className="border-b pb-6">
+    <header className="pb-6">
       <div className="flex items-center gap-3.5">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground">
           {icon}
         </span>
         <div>
-          <h1 className="text-[28px] font-bold tracking-tight sm:text-[32px]">{title}</h1>
-          {subtitle ? <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p> : null}
+          <h1 className="text-[26px] font-bold tracking-tight sm:text-[30px]">{title}</h1>
+          {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
         </div>
       </div>
       {meta?.length ? (
@@ -226,7 +226,7 @@ export function FoundViaSearchBadge() {
 /** Confidence marker for curated/verified opportunities from Sylo's dataset. */
 export function CuratedBadge() {
   return (
-    <span className="tag border border-solid border-green-600/40 bg-green-500/[0.08] text-green-700 dark:text-green-400">
+    <span className="tag border border-solid border-green-600/40 bg-green-500/[0.08] text-green-700">
       ✓ Verified
     </span>
   );
@@ -236,7 +236,7 @@ export function CuratedBadge() {
 export function OwnGoalBadge() {
   return (
     <span className="tag border border-dashed border-foreground/25 bg-transparent text-muted-foreground">
-      Your own goal
+      Added by you
     </span>
   );
 }
@@ -248,7 +248,7 @@ export function NotionCheckbox({
   label,
 }: {
   checked: boolean;
-  onChange: () => void;
+  onChange: (e: React.MouseEvent) => void;
   label: string;
 }) {
   return (
@@ -259,8 +259,8 @@ export function NotionCheckbox({
       aria-label={label}
       onClick={onChange}
       className={cn(
-        "tap mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border",
-        checked ? "border-primary bg-primary" : "border-border bg-background hover:bg-secondary",
+        "tap mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border transition-colors duration-150",
+        checked ? "border-primary bg-primary" : "border-border bg-background hover:border-primary/40 hover:bg-primary/5",
       )}
     >
       {checked ? (

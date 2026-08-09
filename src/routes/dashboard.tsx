@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { ChevronRight, ChevronDown, Map, Plus, Pencil, Trash2, AlertCircle, RefreshCw, Loader2, GripVertical, MessageCircle } from "lucide-react";
+import { useEffect, useCallback, useRef, useState } from "react";
+import { ChevronRight, ChevronDown, Map, Plus, Pencil, Trash2, AlertCircle, RefreshCw, Loader2, GripVertical, MessageCircle, ArrowUp, ArrowDown, GitBranch } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -39,8 +39,10 @@ import { CascadePanel } from "@/components/cascade-panel";
 import { WavyConnector, StatusAccentBar } from "@/components/roadmap-connector";
 import { InlineNoteEditor } from "@/components/inline-note-editor";
 import { NoteIndicator } from "@/components/note-indicator";
+import { LinkifyText } from "@/components/linkify-text";
 import { DeadlinePill } from "@/components/deadline-badges";
-import { SUCCESS_STORIES } from "@/lib/success-stories";
+import { useConfettiBurst } from "@/components/confetti-burst";
+import { LinkExtractor } from "@/components/link-extractor";
 
 
 
@@ -74,10 +76,13 @@ function Dashboard() {
     addCustomStep,
     updateCustomStep,
     removeCustomStep,
+    promoteCustomStep,
     resolveOpportunity,
     browsableOpportunities,
     liveOpportunities,
     reorderSteps,
+    removeStep,
+    demoteStep,
     stepNotes,
     setStepNote,
     stepReasoningOverrides,
@@ -87,6 +92,7 @@ function Dashboard() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
+  const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [targetDate, setTargetDate] = useState("");
@@ -95,6 +101,24 @@ function Dashboard() {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+
+  const { burst, ConfettiContainer } = useConfettiBurst();
+
+  const handleToggleComplete = useCallback((opportunityId: string, e?: React.MouseEvent) => {
+    // Only burst when completing (not un-completing)
+    const step = roadmap?.steps.find((s) => s.opportunityId === opportunityId);
+    if (step && step.status !== "complete") {
+      // Fire confetti from the click position (checkbox location)
+      if (e) {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        burst({ x, y });
+      } else {
+        burst({ x: 50, y: 30 });
+      }
+    }
+    toggleComplete(opportunityId);
+  }, [roadmap, toggleComplete, burst]);
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -139,6 +163,7 @@ function Dashboard() {
 
   return (
     <Workspace wide>
+      {ConfettiContainer}
       <PageHeader
         icon={<Map className="h-5 w-5" />}
         title="Your Roadmap"
@@ -149,8 +174,8 @@ function Dashboard() {
       <p className="animate-reveal mt-6 text-sm leading-relaxed text-muted-foreground">{roadmap.summary}</p>
 
       {roadmap.gapAnalysis ? (
-        <section className="animate-reveal mt-6 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.05] to-transparent p-5 sm:p-6" style={{ animationDelay: "100ms" }}>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-primary/80">Where you stand</h2>
+        <section className="animate-reveal mt-6 rounded-2xl border border-primary/12 bg-primary/[0.04] p-5 sm:p-6" style={{ animationDelay: "100ms" }}>
+          <h2 className="text-[11px] font-semibold uppercase tracking-widest text-primary/70">Where you stand</h2>
           
           <div className="mt-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">What you&apos;ve got</p>
@@ -221,8 +246,8 @@ function Dashboard() {
             </div>
             <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
               {curatedCount > 0
-                ? "Verified steps come from Sylo\u2019s curated dataset. Search results were looked up live and cross-checked where possible."
-                : "Steps were searched live for your goal and school, then checked against a second source where one existed."}
+                ? "Curated steps come from Sylo\u2019s verified database. Live results were searched in real time and cross-checked before appearing here."
+                : "Searched live for your goal and school, then cross-checked each result before showing it to you."}
             </p>
           </div>
         );
@@ -250,7 +275,7 @@ function Dashboard() {
 
 
       {topOp?.gapLabel ? (
-        <div className="animate-reveal mt-6 overflow-hidden rounded-2xl border-2 border-amber-500/35 bg-gradient-to-br from-amber-500/[0.14] to-amber-500/[0.04] p-6 shadow-sm shadow-amber-500/10" style={{ animationDelay: "200ms" }}>
+        <div className="animate-reveal mt-6 overflow-hidden rounded-2xl border-2 border-amber-500/30 bg-amber-500/[0.06] p-6" style={{ animationDelay: "200ms" }}>
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/20 text-amber-700">
               <AlertCircle className="h-3.5 w-3.5" />
@@ -267,15 +292,17 @@ function Dashboard() {
 
 
       {topOp ? (
-        <div className="animate-reveal mt-6 rounded-2xl border border-primary/10 bg-primary/5 p-5" style={{ animationDelay: "300ms" }}>
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">
+        <div className="animate-reveal mt-8" style={{ animationDelay: "300ms" }}>
+        <div className="animate-pulse-glow rounded-2xl border border-primary/20 bg-primary/[0.03] p-4 sm:p-6">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-primary/70">
             Your highest-leverage next move
           </p>
-          <p className="mt-2 text-[15px] font-semibold tracking-tight">{topOp.name}</p>
-          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{top.reasoning}</p>
+          <p className="mt-3 text-[20px] font-bold leading-tight tracking-tight sm:text-[26px]">{topOp.name}</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{top.reasoning}</p>
           <CascadePanel upstream={topOp.upstream} unlocks={topOp.unlocks} window={topOp.window} />
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+          <div className="mt-4 flex flex-wrap items-center gap-2">
             <Tag tone="amber">{topOp.timeframe}</Tag>
+            <DeadlinePill deadline={topOp.deadline} recurring={false} />
             <Link
               to="/opportunity-details"
               search={{ id: topOp.id }}
@@ -285,11 +312,12 @@ function Dashboard() {
             </Link>
           </div>
         </div>
+        </div>
       ) : null}
 
 
       {!noDataset ? (
-      <h2 className="animate-reveal mt-12 text-lg font-semibold tracking-tight" style={{ animationDelay: "400ms" }}>
+      <h2 className="animate-reveal mt-10 text-lg font-semibold tracking-tight" style={{ animationDelay: "400ms" }}>
         Here&apos;s your roadmap
       </h2>
       ) : null}
@@ -308,8 +336,10 @@ function Dashboard() {
                 step={step}
                 index={i}
                 resolveOpportunity={resolveOpportunity}
-                toggleComplete={toggleComplete}
+                toggleComplete={handleToggleComplete}
                 setStatus={setStatus}
+                removeStep={removeStep}
+                demoteStep={demoteStep}
                 stepNotes={stepNotes}
                 stepReasoningOverrides={stepReasoningOverrides}
                 editingStepId={editingStepId}
@@ -332,16 +362,12 @@ function Dashboard() {
         </button>
       )}
 
-      <section className="mt-12 rounded-3xl border border-primary/15 bg-gradient-to-br from-primary/[0.07] to-transparent p-5 sm:p-7">
+      <section className="mt-10 rounded-2xl border border-primary/12 bg-primary/[0.04] p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/10 pb-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-primary/70">
-              Your collection
-            </p>
-            <h2 className="mt-1 text-lg font-semibold tracking-tight">Your own goals</h2>
+            <h2 className="text-lg font-semibold tracking-tight">Your additions</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              The part of this board you wrote. Sylo doesn&apos;t have verified data on these, so it
-              won&apos;t add deadlines or contacts.
+              Steps you added yourself — things you found, heard about, or want to track.
             </p>
           </div>
 
@@ -350,72 +376,101 @@ function Dashboard() {
             onClick={() => setShowForm((v) => !v)}
             className="tap tap-surface inline-flex items-center gap-1.5 rounded-full border border-dashed border-foreground/25 px-3 py-1.5 text-sm font-medium"
           >
-            <Plus className="h-4 w-4" /> Add your own step
+            <Plus className="h-4 w-4" /> Add a step
           </button>
         </div>
 
         {showForm ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!title.trim()) return;
-              addCustomStep({ title: title.trim(), note, targetDate });
-              setTitle("");
-              setNote("");
-              setTargetDate("");
-              setShowForm(false);
-            }}
-            className="mt-4 space-y-3 rounded-2xl border border-dashed border-foreground/25 bg-muted/60 p-4"
-          >
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Step title (required)"
-              aria-label="Step title"
-              className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+          <div className="mt-4 space-y-4">
+            {/* Link extractor */}
+            <LinkExtractor
+              onExtracted={(details) => {
+                const noteLines = [details.description];
+                if (details.requirements.length > 0) noteLines.push(`Requirements: ${details.requirements.join(", ")}`);
+                if (details.contact) noteLines.push(`Contact: ${details.contact}`);
+                addCustomStep({
+                  title: details.name,
+                  note: noteLines.join("\n"),
+                  targetDate: details.deadline || undefined,
+                });
+                setShowForm(false);
+              }}
+              onFallback={(failedUrl) => {
+                setNote(`Link: ${failedUrl}`);
+                setTitle("");
+              }}
             />
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Note (optional)"
-              aria-label="Note"
-              rows={2}
-              className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
-            />
-            <AcademicTermSelector
-              value={targetDate}
-              currentYear={profile.year}
-              onChange={setTargetDate}
-            />
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                className="tap rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground"
-              >
-                Add step
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="tap tap-surface rounded-full border px-4 py-1.5 text-sm font-medium"
-              >
-                Cancel
-              </button>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">or add manually</span>
+              <div className="h-px flex-1 bg-border" />
             </div>
-          </form>
+
+            {/* Manual form */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!title.trim()) return;
+                addCustomStep({ title: title.trim(), note, targetDate });
+                setTitle("");
+                setNote("");
+                setTargetDate("");
+                setShowForm(false);
+              }}
+              className="space-y-3 rounded-2xl border border-dashed border-foreground/25 bg-muted/60 p-4"
+            >
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Step title (required)"
+                aria-label="Step title"
+                className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+              />
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Note (optional)"
+                aria-label="Note"
+                rows={2}
+                className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+              />
+              <AcademicTermSelector
+                value={targetDate}
+                currentYear={profile.year}
+                onChange={setTargetDate}
+              />
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="tap rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground"
+                >
+                  Add step
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="tap tap-surface rounded-full border px-4 py-1.5 text-sm font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         ) : null}
 
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {customSteps.length === 0 ? (
             <li className="text-sm text-muted-foreground">
-              Nothing of your own on the board yet — add a step to get started.
+              Nothing here yet — add a step to get started.
             </li>
           ) : null}
           {customSteps.map((s) => (
             <li
               key={s.id}
               className={cn(
-                "rounded-2xl border border-primary/20 bg-card p-4 shadow-sm transition-colors duration-300",
+                "rounded-2xl border border-primary/20 bg-card p-4 shadow-sm transition-colors duration-200",
                 s.status === "complete" && "bg-primary/[0.09] ring-1 ring-inset ring-primary/15",
               )}
             >
@@ -470,7 +525,6 @@ function Dashboard() {
                         >
                           {s.title}
                         </span>
-                        <OwnGoalBadge />
                         <StatusTag status={s.status} onChange={(st) => updateCustomStep(s.id, { status: st })} />
                         {s.targetDate ? (
                           <span className="text-xs text-muted-foreground">{formatTargetDate(s.targetDate)}</span>
@@ -479,12 +533,41 @@ function Dashboard() {
                           <NoteIndicator note={s.note} />
                         ) : null}
                       </div>
+                      {s.note && expandedNotes[s.id] ? (
+                        <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                          <LinkifyText text={s.note} />
+                        </p>
+                      ) : null}
+                      {s.note ? (
+                        <button
+                          type="button"
+                          onClick={() => setExpandedNotes((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
+                          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                        >
+                          {expandedNotes[s.id] ? (
+                            <ChevronDown className="h-3.5 w-3.5" />
+                          ) : (
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          )}
+                          {expandedNotes[s.id] ? "Hide note" : "View note"}
+                        </button>
+                      ) : null}
                     </div>
                     <div className="flex shrink-0 gap-1">
                       <button
                         type="button"
+                        onClick={() => promoteCustomStep(s.id)}
+                        aria-label={`Move ${s.title} to roadmap`}
+                        title="Move to roadmap"
+                        className="tap tap-surface rounded-lg border p-1.5 text-muted-foreground hover:text-primary"
+                      >
+                        <ArrowUp className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => setEditingId(s.id)}
                         aria-label={`Edit ${s.title}`}
+                        title="Edit"
                         className="tap tap-surface rounded-lg border p-1.5 text-muted-foreground"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -493,6 +576,7 @@ function Dashboard() {
                         type="button"
                         onClick={() => removeCustomStep(s.id)}
                         aria-label={`Delete ${s.title}`}
+                        title="Delete"
                         className="tap tap-surface rounded-lg border p-1.5 text-muted-foreground"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -506,7 +590,7 @@ function Dashboard() {
         </ul>
       </section>
 
-      <section className="mt-12">
+      <section className="mt-10">
         <h2 className="text-lg font-semibold tracking-tight">The Long View</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           What to expect over the next two to three years, beside what&apos;s actually open now.
@@ -525,8 +609,8 @@ function Dashboard() {
                 : "md:grid-cols-1";
           return (
         <div className={cn("mt-5 grid gap-5", gridCols)}>
-          <div className="rounded-2xl border border-primary/15 bg-primary/5 p-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">This term</p>
+          <div className="rounded-2xl border border-primary/12 bg-primary/[0.04] p-5">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-primary/70">This term</p>
             <p className="mt-1 text-[13px] text-muted-foreground">Verified openings at your school.</p>
             <ul className="mt-4 space-y-3.5">
               {termOps.length ? (
@@ -634,56 +718,21 @@ function Dashboard() {
       */}
 
       <section className="mt-10 border-t pt-5">
-        <h2 className="text-sm font-semibold tracking-tight">More opportunities available to you</h2>
-        <div className="mt-3 space-y-2">
-          {browsableOpportunities(profile.trackId)
-            .slice(0, 3)
-            .map((op) => (
-              <Link
-                key={op.id}
-                to="/opportunity-details"
-                search={{ id: op.id }}
-                className="tap flex items-center justify-between rounded-xl border bg-card p-3 text-sm hover:border-primary/30"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium tracking-tight truncate">{op.name}</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{op.category} · {op.timeframe}</p>
-                </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-              </Link>
-            ))}
-        </div>
         <Link
           to="/opportunity-details"
           search={{ id: undefined }}
-          className="tap mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+          className="tap inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
-          See all opportunities <ChevronRight className="h-3.5 w-3.5" />
+          See more opportunities available to you <ChevronRight className="h-3.5 w-3.5" />
         </Link>
       </section>
 
       <section className="mt-8 border-t pt-5">
-        <h2 className="text-sm font-semibold tracking-tight">See the roadmaps that led others to success</h2>
-        <div className="mt-3 space-y-2">
-          {SUCCESS_STORIES.slice(0, 2).map((story) => (
-            <Link
-              key={story.id}
-              to="/paths"
-              className="tap flex items-center justify-between rounded-xl border bg-card p-3 text-sm hover:border-primary/30"
-            >
-              <div className="min-w-0">
-                <p className="font-medium tracking-tight">{story.name} · {story.school}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{story.outcome} · {story.steps.length} steps</p>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-            </Link>
-          ))}
-        </div>
         <Link
           to="/paths"
-          className="tap mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+          className="tap inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
-          See all success maps <ChevronRight className="h-3.5 w-3.5" />
+          See the roadmaps that led others to success <ChevronRight className="h-3.5 w-3.5" />
         </Link>
       </section>
     </Workspace>
@@ -696,6 +745,8 @@ function SortableStep({
   resolveOpportunity,
   toggleComplete,
   setStatus,
+  removeStep,
+  demoteStep,
   stepNotes,
   stepReasoningOverrides,
   editingStepId,
@@ -705,8 +756,10 @@ function SortableStep({
   step: any;
   index: number;
   resolveOpportunity: (id: string) => any;
-  toggleComplete: (id: string) => void;
+  toggleComplete: (id: string, e?: React.MouseEvent) => void;
   setStatus: (id: string, s: any) => void;
+  removeStep: (id: string) => void;
+  demoteStep: (id: string) => void;
   stepNotes: Record<string, string>;
   stepReasoningOverrides: Record<string, string>;
   editingStepId: string | null;
@@ -725,8 +778,8 @@ function SortableStep({
   return (
     <li
       ref={setNodeRef}
-      style={style}
-      className={cn("transition-opacity", isDragging && "opacity-50 z-50")}
+      style={{ ...style, animationDelay: `${500 + index * 80}ms` }}
+      className={cn("animate-reveal transition-opacity duration-200", isDragging && "opacity-50 z-50")}
     >
       {index > 0 ? (
         <div className="flex justify-start pl-7" aria-hidden="true">
@@ -745,13 +798,14 @@ function SortableStep({
           {...attributes}
           {...listeners}
           aria-label={`Reorder step ${index + 1}`}
+          title="Drag to reorder"
         >
           <GripVertical className="h-3 w-3 text-muted-foreground/50" aria-hidden="true" />
           <span className="text-sm tabular-nums text-muted-foreground">{index + 1}</span>
         </span>
         <NotionCheckbox
           checked={done}
-          onChange={() => toggleComplete(step.opportunityId)}
+          onChange={(e) => toggleComplete(step.opportunityId, e)}
           label={`Mark ${op.name} complete`}
         />
         <div className="min-w-0 flex-1">
@@ -780,9 +834,28 @@ function SortableStep({
               type="button"
               onClick={() => setEditingStepId(step.id)}
               aria-label={`Edit note for ${op.name}`}
+              title="Edit"
               className="tap tap-surface shrink-0 rounded-lg border p-1.5 text-muted-foreground"
             >
               <Pencil className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => demoteStep(step.opportunityId)}
+              aria-label={`Move ${op.name} to additions`}
+              title="Move to additions"
+              className="tap tap-surface hidden shrink-0 rounded-lg border p-1.5 text-muted-foreground hover:text-primary sm:block"
+            >
+              <ArrowDown className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => removeStep(step.opportunityId)}
+              aria-label={`Remove ${op.name} from roadmap`}
+              title="Remove from roadmap"
+              className="tap tap-surface hidden shrink-0 rounded-lg border p-1.5 text-muted-foreground sm:block"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
           {editingStepId === step.id ? (
@@ -813,14 +886,74 @@ function SortableStep({
               ) : null}
             </>
           )}
-          {op.id !== topOpId && op.unlocks?.length ? (
-            <p className="mt-1 text-[13px] text-muted-foreground/80">
-              → Unlocks {op.unlocks[0]}
-            </p>
+          {op.id !== topOpId && (op.upstream || op.unlocks?.length) ? (
+            <DependencyChain upstream={op.upstream} unlocks={op.unlocks} window={op.window} />
           ) : null}
         </div>
       </div>
     </li>
+  );
+}
+
+/**
+ * Compact dependency chain shown on every step (except hero which uses CascadePanel).
+ * Makes the sequencing engine visible: what this step requires, what it enables.
+ */
+function DependencyChain({
+  upstream,
+  unlocks,
+  window: windowText,
+}: {
+  upstream?: string;
+  unlocks?: string[];
+  window?: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (!upstream && !unlocks?.length) return null;
+
+  return (
+    <div className="mt-2 rounded-lg border border-primary/10 bg-primary/[0.03] px-3 py-2">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="tap flex w-full items-center gap-2 text-left"
+      >
+        <GitBranch className="h-3 w-3 shrink-0 text-primary/60" aria-hidden="true" />
+        <span className="flex-1 text-[12px] font-medium text-primary/80">
+          {unlocks?.length
+            ? `Opens doors to ${unlocks.length} opportunity${unlocks.length > 1 ? " pathways" : " pathway"}`
+            : "Context"}
+        </span>
+        {expanded ? (
+          <ChevronDown className="h-3 w-3 text-primary/50" />
+        ) : (
+          <ChevronRight className="h-3 w-3 text-primary/50" />
+        )}
+      </button>
+      {expanded ? (
+        <div className="mt-2 space-y-1.5 border-t border-primary/8 pt-2">
+          {upstream ? (
+            <div className="flex items-start gap-2">
+              <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 w-16 shrink-0">Builds on</span>
+              <p className="text-[12px] leading-relaxed text-muted-foreground">{upstream}</p>
+            </div>
+          ) : null}
+          {unlocks?.length ? (
+            <div className="flex items-start gap-2">
+              <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 w-16 shrink-0">Opens</span>
+              <p className="text-[12px] leading-relaxed text-foreground/80">{unlocks.join(" · ")}</p>
+            </div>
+          ) : null}
+          {windowText ? (
+            <div className="flex items-start gap-2">
+              <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 w-16 shrink-0">Timing</span>
+              <p className="text-[12px] leading-relaxed text-amber-700 dark:text-amber-400">{windowText}</p>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -837,8 +970,8 @@ function CollapsibleNote({ note }: { note: string }) {
         {open ? "Hide note" : "View note"}
       </button>
       {open ? (
-        <p className="mt-1.5 rounded-lg bg-muted/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground whitespace-pre-wrap">
-          {note}
+        <p className="mt-1.5 rounded-lg bg-muted/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground whitespace-pre-wrap break-words">
+          <LinkifyText text={note} />
         </p>
       ) : null}
     </div>
@@ -968,7 +1101,7 @@ function ProgressTileButton({
             go();
           }}
           className={cn(
-            "tap h-8 w-8 rounded-[9px] outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary/40",
+            "tap h-8 w-8 rounded-[9px] outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/40",
             canOpen && "cursor-pointer hover:scale-105",
             tile.done
               ? "bg-primary/80 shadow-sm shadow-primary/25"
@@ -989,7 +1122,7 @@ function ProgressTileButton({
         {tile.own ? (
           <>
             <p className="text-[11px] font-semibold uppercase tracking-wide text-primary/80">
-              Your own goal
+              Added by you
             </p>
             <p className="mt-1.5 text-sm font-semibold tracking-tight">{tile.label}</p>
             <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
@@ -1098,13 +1231,12 @@ function NoDatasetState({ profile, track }: { profile: NonNullable<ReturnType<ty
       {failed ? (
         <>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Sylo searched for &ldquo;{profile.goalText}&rdquo; opportunities at {profile.school} but
-            didn&apos;t find verified results{attempts > 1 ? ` (tried ${attempts} times)` : ""}.
-            This can happen when the search APIs are slow, rate-limited, or when results don&apos;t
-            pass verification.
+            Sylo searched for &ldquo;{profile.goalText}&rdquo; at {profile.school} and only shows
+            results it can verify. Nothing passed the bar this time{attempts > 1 ? ` (${attempts} attempts)` : ""}
+            &mdash; try again or add your own steps below.
           </p>
           <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-            You can try again, or add your own steps below and Sylo will track them.
+            You can try again, or add steps yourself and Sylo will track them.
           </p>
         </>
       ) : (

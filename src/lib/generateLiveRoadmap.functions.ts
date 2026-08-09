@@ -245,7 +245,7 @@ function buildSystemPrompt() {
     "4. Prefer programs specific to the student's school, year, and major.",
     "5. If search results don't have enough real opportunities, return found=false.",
     "6. Return 3-6 opportunities if available, ordered by leverage.",
-    "7. If student context is provided (skills, experience, prior work), include a 'gapAnalysis' object in your JSON response with: strengths (2-3 strings), gaps (array of {gap, why, action}), bottomLine (string). Omit if no student context.",
+    "7. ALWAYS include a 'gapAnalysis' object in your JSON response with: strengths (2-3 strings about what the student's year/major/school gives them), gaps (array of {gap, why, action} — 2-3 gaps between where they are and their goal), bottomLine (one sentence on their single biggest focus). Base this on their year, major, and goal even if no resume context is provided.",
     "8. In the reasoning field for each opportunity, reference the student's specific gaps — explain why THIS opportunity matters given what they're missing.",
     "",
     "reasoning: 1-2 sentences, plain second person.",
@@ -253,12 +253,18 @@ function buildSystemPrompt() {
     "deadline: ISO YYYY-MM-DD if found, otherwise empty string.",
     "category: exactly one of " + CATEGORIES.join(", ") + ".",
     "",
-    "Chain reasoning fields (gapLabel, upstream, unlocks, window) ONLY on the first opportunity.",
+    "Chain reasoning fields: gapLabel ONLY on the first opportunity. upstream, unlocks, and window on EVERY opportunity.",
+    "",
+    "DEPENDENCY CHAIN RULES (upstream/unlocks/window):",
+    "- upstream: What this step builds on. Use ONLY facts from the search results or obvious academic prerequisites (e.g. 'Completed intro CS course'). If nothing is required, write 'None — open to all eligible students'.",
+    "- unlocks: 1-3 things this step makes possible. Only include outcomes that are logically true (e.g. a research position unlocks a faculty rec letter). Never invent program names not in the search results.",
+    "- window: The timing constraint if a deadline exists. Copy from the deadline/timeframe info. If no hard deadline, write 'Rolling' or omit.",
+    "- NEVER invent program names, deadlines, or prerequisites that aren't stated in the search results or obvious from the opportunity type.",
     "",
     "Reply with ONE JSON object matching:",
     JSON.stringify({
       found: true, summary: "string",
-      opportunities: [{ name: "string", category: "Research", deadline: "", timeframe: "string", requirements: ["string"], contact: "", link: "https://...", timeline: "string", leverage: "string", reasoning: "string", sources: [{ title: "string", url: "https://..." }], gapLabel: "optional", upstream: "optional", unlocks: ["optional"], window: "optional" }],
+      opportunities: [{ name: "string", category: "Research", deadline: "", timeframe: "string", requirements: ["string"], contact: "", link: "https://...", timeline: "string", leverage: "string", reasoning: "string", sources: [{ title: "string", url: "https://..." }], gapLabel: "optional — first opportunity only", upstream: "string — what this builds on", unlocks: ["string — what this opens"], window: "string — timing constraint" }],
       alternates: [{ title: "string", detail: "string" }],
       gapAnalysis: { strengths: ["string"], gaps: [{ gap: "string", why: "string", action: "string" }], bottomLine: "string" },
     }, null, 0),
@@ -294,7 +300,8 @@ function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
     "",
     "Extract real opportunities from these results. Only include things the search results actually describe.",
     "Use the student's background to rank results by relevance — prioritize opportunities that fit their current skill level and fill gaps in their experience.",
-    "If the student provided background context above, also include a gapAnalysis object identifying their strengths, specific gaps, and single most important focus area.",
+    "For EVERY opportunity, include upstream (what it builds on), unlocks (what it opens — only logical outcomes, never invented program names), and window (timing). If no prerequisite exists, set upstream to 'None — open to all eligible students'.",
+    "ALWAYS include a gapAnalysis object — use the student's year, major, school, and goal to identify strengths and gaps even without a resume.",
     "Return strict JSON.",
   ].join("\n");
 }
@@ -358,7 +365,7 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     if (sources.length === 0) continue;
 
     const isHero = opportunities.length === 0;
-    const unlocks = isHero ? (raw.unlocks ?? []).map((u) => trim(u, 90)).filter(Boolean).slice(0, 4) : [];
+    const unlocks = (raw.unlocks ?? []).map((u) => trim(u, 90)).filter(Boolean).slice(0, 4);
     seenNames.add(nameKey);
     const id = slug(name, opportunities.length);
 
@@ -371,9 +378,9 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
       timeline: trim(raw.timeline, 240), leverage: trim(raw.leverage, 280),
       courseCode: raw.courseCode ? trim(raw.courseCode, 20) : undefined,
       gapLabel: isHero && raw.gapLabel ? trim(raw.gapLabel, 120) : undefined,
-      upstream: isHero && raw.upstream ? trim(raw.upstream, 200) : undefined,
+      upstream: raw.upstream ? trim(raw.upstream, 200) : undefined,
       unlocks: unlocks.length ? unlocks : undefined,
-      window: isHero && raw.window ? trim(raw.window, 240) : undefined,
+      window: raw.window ? trim(raw.window, 240) : undefined,
       origin: "live", sources, singleSourced: sources.length < 2,
     });
     steps.push({ opportunityId: id, reasoning: trim(raw.reasoning, 280) || trim(raw.leverage, 280) });
@@ -462,7 +469,7 @@ function fallbackFromSearchResults(
   if (opportunities.length === 0) return null;
 
   return {
-    summary: `You're a ${data.year} ${data.major} major at ${data.school}. Sylo searched for "${goal}" and found these leads. Open each link to verify details — dates and eligibility may have changed.`,
+    summary: `You're a ${data.year} ${data.major} major at ${data.school}. Sylo searched for "${goal}" and found these leads. Every link goes to the original source — tap through for the latest details.`,
     topOpportunityId: opportunities[0].id,
     steps,
     alternates: [],

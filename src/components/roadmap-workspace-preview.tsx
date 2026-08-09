@@ -1,4 +1,4 @@
-import { Map, AlertCircle, ChevronRight, GripVertical, Lightbulb } from "lucide-react";
+import { Map, AlertCircle, ChevronRight, ChevronDown, GripVertical, Lightbulb, StickyNote } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { TRACKS, PERSONAS } from "@/lib/wayfind-data";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
@@ -18,6 +18,7 @@ type MockStep = {
   status: "complete" | "in-progress" | "not-started";
   reasoning?: string;
   gapLabel?: string;
+  hasNote?: boolean;
 };
 
 const PREVIEW_OPS = OPPORTUNITIES.filter((o) => o.track === "physician-scientist")
@@ -36,10 +37,12 @@ const STEPS: MockStep[] = PREVIEW_OPS.map((o, i) => ({
   status: i === 0 ? "in-progress" : i === PREVIEW_OPS.length - 1 ? "complete" : "not-started",
   reasoning: o.leverage,
   gapLabel: i === 0 ? (o as any).gapLabel : undefined,
+  hasNote: i === 0 || i === 3, // show note indicator on first and fourth steps
 }));
 
 const topOp = PREVIEW_OPS[0]; // the in-progress one is the "highest leverage next move"
-const completed = STEPS.filter((s) => s.status === "complete").length;
+const completed = STEPS.filter((s) => s.status === "complete").length + 1; // +1 for custom step "Shadow Dr. Nguyen"
+const totalSteps = STEPS.length + 2; // +2 custom steps
 
 const STATUS_BAR: Record<MockStep["status"], string> = {
   complete: "bg-tag-green-foreground/70",
@@ -59,15 +62,15 @@ function MiniWavyConnector() {
       aria-hidden="true"
       viewBox="0 0 24 32"
       preserveAspectRatio="none"
-      className="h-7 w-5 text-primary/30"
+      className="h-7 w-5 text-primary/40"
     >
       <path
         d="M12 0 C 4 8, 20 18, 12 32"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.8"
         strokeLinecap="round"
-        strokeDasharray="2 5"
+        strokeDasharray="2.5 4.5"
       />
     </svg>
   );
@@ -75,7 +78,7 @@ function MiniWavyConnector() {
 
 export function RoadmapWorkspacePreview() {
   return (
-    <div className="overflow-hidden rounded-xl border bg-card shadow-[var(--shadow-card)]">
+    <div className="overflow-hidden rounded-xl border bg-card shadow-[0_4px_24px_-6px_rgba(26,26,26,0.1),0_0_0_1px_rgba(26,26,26,0.03)]">
       <div className="flex min-h-[460px]">
         {/* Left sidebar — navigation */}
         <aside className="hidden w-52 shrink-0 flex-col border-r bg-card py-4 lg:flex">
@@ -134,7 +137,7 @@ export function RoadmapWorkspacePreview() {
           {/* Scrollable content area */}
           <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5">
             {/* Gap alert banner */}
-            <div className="overflow-hidden rounded-xl border-2 border-amber-500/35 bg-gradient-to-br from-amber-500/[0.12] to-amber-500/[0.04] p-3">
+            <div className="overflow-hidden rounded-xl border-2 border-amber-500/30 bg-amber-500/[0.06] p-3">
               <div className="flex items-center gap-2">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/20 text-amber-700">
                   <AlertCircle className="h-3 w-3" />
@@ -174,7 +177,7 @@ export function RoadmapWorkspacePreview() {
               Here&apos;s your roadmap
             </h3>
             <p className="mt-0.5 text-[10px] text-muted-foreground">
-              {completed}/{STEPS.length} steps complete
+              {completed}/{totalSteps} steps complete
             </p>
 
             {/* Vertical step list */}
@@ -224,6 +227,9 @@ export function RoadmapWorkspacePreview() {
                         <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-medium ${STATUS_TAG[step.status].cls}`}>
                           {STATUS_TAG[step.status].label}
                         </span>
+                        {step.hasNote && step.status !== "complete" ? (
+                          <span className="text-amber-500"><StickyNote className="h-3 w-3" /></span>
+                        ) : null}
                       </div>
                       <p className="mt-0.5 text-[10px] text-muted-foreground">{step.timeframe}</p>
                       {step.reasoning && step.status !== "complete" && (
@@ -232,11 +238,63 @@ export function RoadmapWorkspacePreview() {
                           <span className="line-clamp-1">{step.reasoning}</span>
                         </p>
                       )}
+                      {/* Show expanded note on first step */}
+                      {i === 0 && (
+                        <div className="mt-1.5">
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-primary/80">
+                            <ChevronDown className="h-2.5 w-2.5" /> Hide note
+                          </span>
+                          <p className="mt-1 rounded-md bg-muted/80 px-2 py-1.5 text-[10px] leading-relaxed text-muted-foreground">
+                            Takes ~20 students per cohort. App asks for a personal statement about health disparities — start drafting now.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </li>
               ))}
             </ol>
+
+            {/* Custom steps section — "Added by you" */}
+            <div className="mt-4 rounded-xl border border-dashed border-foreground/20 bg-muted/30 p-3">
+              <div className="flex items-start gap-2.5">
+                <span className="mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-[4px] border border-border bg-background" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[12px] font-semibold tracking-tight">
+                      Email Dr. Bhatt about BISEP lab rotation
+                    </span>
+                    <span className="rounded-md border border-dashed border-foreground/25 bg-transparent px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+                      Added by you
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">10/1/2026</span>
+                  </div>
+                  <span className="mt-1.5 inline-flex items-center gap-0.5 text-[10px] font-medium text-muted-foreground">
+                    <ChevronRight className="h-2.5 w-2.5" /> View note
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 rounded-xl border border-dashed border-foreground/20 bg-primary/[0.04] p-3">
+              <div className="flex items-start gap-2.5">
+                <span className="mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-[4px] border border-primary bg-primary">
+                  <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 text-primary-foreground" aria-hidden="true">
+                    <path d="M2.5 6.3 4.7 8.5 9.5 3.7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[12px] font-semibold tracking-tight text-muted-foreground line-through">
+                      Shadow Dr. Nguyen at UCLA Health (40hr)
+                    </span>
+                    <span className="rounded-md border border-dashed border-foreground/25 bg-transparent px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+                      Added by you
+                    </span>
+                    <span className="text-amber-500"><StickyNote className="h-3 w-3" /></span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -274,14 +332,14 @@ export function RoadmapWorkspacePreview() {
           <div className="mt-auto pt-4">
             <div className="flex items-baseline gap-1.5">
               <span className="text-lg font-bold tabular-nums text-foreground">
-                {completed}<span className="text-muted-foreground/50">/{STEPS.length}</span>
+                {completed}<span className="text-muted-foreground/50">/{totalSteps}</span>
               </span>
               <span className="text-[10px] text-muted-foreground">steps done</span>
             </div>
             <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
               <div
                 className="h-full rounded-full bg-primary transition-all"
-                style={{ width: `${(completed / STEPS.length) * 100}%` }}
+                style={{ width: `${(completed / totalSteps) * 100}%` }}
               />
             </div>
           </div>

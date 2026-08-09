@@ -5,6 +5,7 @@ export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 /** Fields extracted from a resume by Claude. All optional — empty means Claude couldn't find it. */
 export type ParsedResumeData = {
+  name?: string;
   experience?: string;
   skills?: string;
   priorWork?: string;

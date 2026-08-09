@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText } from "lucide-react";
 import {
   Workspace,
   PageHeader,
@@ -14,6 +14,7 @@ import { useWayfind } from "@/lib/sylo-store";
 import { getTrack } from "@/lib/wayfind-data";
 import { OpportunityBrowser } from "@/components/opportunity-browser";
 import { DeadlinePill } from "@/components/deadline-badges";
+import { LinkifyText } from "@/components/linkify-text";
 
 export const Route = createFileRoute("/opportunity-details")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -73,11 +74,9 @@ function Details() {
           title="Opportunities"
           subtitle="Fellowships, insight days, diversity cohorts, scholarships, and early-ID deadlines you don't want to miss. Pin the ones that matter to you."
         />
-        {browsableOpportunities(profile!.trackId).length ? (
+        {browsableOpportunities(profile!.trackId).length && liveOpportunities.length ? (
           <p className="mt-4 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground">
-            {liveOpportunities.length
-              ? "Cards tagged “Found via search” were looked up for your goal and school just now. Everything else is from Sylo’s curated dataset and is open to any student at your stage."
-              : "Every step below comes from Sylo's verified dataset — real programs matched to your major, year, and goal."}
+            Cards tagged “Found via search” were looked up for your goal and school just now. Everything else is from Sylo’s curated dataset and is open to any student at your stage.
           </p>
         ) : null}
         <OpportunityBrowser trackId={profile!.trackId} />
@@ -158,12 +157,6 @@ function Details() {
             </button>
           </div>
         </div>
-        <div className="mt-10 flex flex-wrap items-center gap-4">
-          <BackToOpportunities />
-          <Link to="/dashboard" className="tap inline-block rounded-md text-sm font-medium text-primary hover:underline">
-            ← Back to roadmap
-          </Link>
-        </div>
       </Workspace>
     );
   }
@@ -171,10 +164,10 @@ function Details() {
   if (!op) {
     return (
       <Workspace wide>
-        <BackToOpportunities />
         <PageHeader icon={<FileText className="h-5 w-5" />} title="Opportunity Details" subtitle="Pick a step from your roadmap." />
-        <Link to="/dashboard" className="tap mt-6 inline-block rounded-md text-sm font-medium text-primary hover:underline">
-          ← Back to dashboard
+        <Link to="/dashboard" className="tap mt-6 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
+          <ChevronLeft className="h-4 w-4" />
+          Back to dashboard
         </Link>
       </Workspace>
     );
@@ -184,7 +177,6 @@ function Details() {
   if (!step) {
     return (
       <Workspace wide>
-        <BackToOpportunities />
         <PageHeader
           icon={<FileText className="h-5 w-5" />}
           title={op.name}
@@ -196,7 +188,7 @@ function Details() {
           <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2">
             <FoundViaSearchBadge />
             <span className="text-[13px] leading-relaxed text-muted-foreground">
-              This one came from a live search, not Sylo&apos;s curated dataset.
+              Found live and verified before appearing on your roadmap.
             </span>
           </div>
         ) : null}
@@ -218,9 +210,9 @@ function Details() {
           </PropertyRow>
           <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
           <PropertyRow label="Contact">
-            {op.contact && !op.contact.includes("@campus.edu") ? op.contact : <span className="text-muted-foreground">Check your campus portal</span>}
+            {op.contact && !op.contact.includes("@campus.edu") ? <LinkifyText text={op.contact} /> : <span className="text-muted-foreground">Check your campus portal</span>}
           </PropertyRow>
-          <PropertyRow label="Link">
+          {/* <PropertyRow label="Link">
             {op.link ? (
               <a href={op.link} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 hover:text-primary/80">
                 {op.link.replace(/^https?:\/\//, "").split("/")[0]}
@@ -228,7 +220,7 @@ function Details() {
             ) : (
               <span className="text-muted-foreground">—</span>
             )}
-          </PropertyRow>
+          </PropertyRow> */}
           {op.brandEquivalent && (
             <PropertyRow label="Equivalent to">
               <Tag>{op.brandEquivalent}</Tag>
@@ -243,6 +235,18 @@ function Details() {
           </div>
         </div>
 
+        {op.link && !op.link.includes("campus.edu") ? (
+          <a
+            href={op.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tap group mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+          >
+            Open program page
+            <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
+          </a>
+        ) : null}
+
         {step === undefined && (
           <p className="mt-6 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] text-muted-foreground">
             This opportunity isn&apos;t on your roadmap yet. Build a roadmap to see where it fits in your sequence.
@@ -251,8 +255,9 @@ function Details() {
 
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <BackToOpportunities />
-          <Link to="/dashboard" className="tap inline-block rounded-md text-sm font-medium text-primary hover:underline">
-            ← Back to dashboard
+          <Link to="/dashboard" className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
+            <ChevronLeft className="h-4 w-4" />
+            Back to dashboard
           </Link>
         </div>
       </Workspace>
@@ -263,7 +268,6 @@ function Details() {
 
   return (
     <Workspace wide>
-      <BackToOpportunities />
       <PageHeader
         icon={<FileText className="h-5 w-5" />}
         title={op.name}
@@ -275,8 +279,7 @@ function Details() {
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2">
           <FoundViaSearchBadge />
           <span className="text-[13px] leading-relaxed text-muted-foreground">
-            This one came from a live search, not Sylo&apos;s curated dataset. The sources below are
-            what it was checked against.
+            Found live and cross-checked against the sources below before making your roadmap.
           </span>
         </div>
       ) : null}
@@ -310,9 +313,9 @@ function Details() {
         </PropertyRow>
         <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
         <PropertyRow label="Contact">
-          {op.contact && !op.contact.includes("@campus.edu") ? op.contact : <span className="text-muted-foreground">Check your campus portal</span>}
+          {op.contact && !op.contact.includes("@campus.edu") ? <LinkifyText text={op.contact} /> : <span className="text-muted-foreground">Check your campus portal</span>}
         </PropertyRow>
-        <PropertyRow label="Link">
+        {/* <PropertyRow label="Link">
           {op.link && !op.link.includes("campus.edu") ? (
             <a href={op.link} target="_blank" rel="noopener noreferrer" className="tap rounded-md font-medium text-primary hover:underline">
               {op.link}
@@ -320,10 +323,8 @@ function Details() {
           ) : (
             <span className="text-muted-foreground">School-specific — check your campus portal</span>
           )}
-        </PropertyRow>
-        {op.sources?.length ? (
-          // Both sources when there are two — the visible proof that
-          // cross-checking actually happened, rather than a claim that it did.
+        </PropertyRow> */}
+        {/* {op.sources?.length ? (
           <PropertyRow label={op.sources.length > 1 ? "Sources" : "Source"}>
             <span className="flex flex-col items-end gap-1">
               {op.sources.map((s) => (
@@ -339,12 +340,12 @@ function Details() {
               ))}
               {op.singleSourced ? (
                 <span className="text-xs text-muted-foreground">
-                  Confirmed from one source — worth double-checking.
+                  Confirmed from one source. Link included so you can verify directly.
                 </span>
               ) : null}
             </span>
           </PropertyRow>
-        ) : null}
+        ) : null} */}
         {/* {op.courseCode ? (
           <PropertyRow label="Course">
             <span className="flex flex-wrap items-baseline gap-2">
@@ -356,6 +357,18 @@ function Details() {
           </PropertyRow>
         ) : null} */}
       </div>
+
+      {op.link && !op.link.includes("campus.edu") ? (
+        <a
+          href={op.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="tap group mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+        >
+          Open program page
+          <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
+        </a>
+      ) : null}
 
       <section className="mt-10">
         <h2 className="border-b pb-3 text-lg font-semibold tracking-tight">Why this matters for you</h2>
@@ -435,7 +448,7 @@ function Details() {
               <li>
                 •{" "}
                 {op.singleSourced
-                  ? "Confirmed from one source only — Sylo looked for a second and didn't find one."
+                  ? "Single-source confirmation. Sylo cross-checked and kept only what it could verify — direct link above."
                   : `Corroborated across ${op.sources?.length ?? 2} independent sources, listed above.`}
               </li>
               <li>• Its window ({op.timeframe}) closes sooner than most other steps in your sequence.</li>
@@ -452,9 +465,13 @@ function Details() {
         ) : null}
       </section>
 
-      <Link to="/dashboard" className="tap mt-10 inline-block rounded-md text-sm font-medium text-primary hover:underline">
-        ← Back to roadmap
-      </Link>
+      <div className="mt-10 flex flex-wrap items-center gap-4">
+        <BackToOpportunities />
+        <Link to="/dashboard" className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
+          <ChevronLeft className="h-4 w-4" />
+          Back to dashboard
+        </Link>
+      </div>
     </Workspace>
   );
 }

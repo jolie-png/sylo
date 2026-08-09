@@ -4,11 +4,21 @@ import { Pin, PinOff, SlidersHorizontal, Search } from "lucide-react";
 import { Tag, FoundViaSearchBadge } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
-import { TRACKS, type Opportunity } from "@/lib/wayfind-data";
+import { type Opportunity, type TrackId } from "@/lib/wayfind-data";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 const CATEGORIES = ["Research", "Internship", "Fellowship", "Club", "Funding", "Advising", "Course"];
+
+/** General track groupings — only tracks with data in the database. */
+const TRACK_GROUPS: { id: string; label: string; trackIds: TrackId[] }[] = [
+  { id: "healthcare", label: "Medicine", trackIds: ["physician-scientist"] },
+  { id: "business", label: "Business", trackIds: ["product-manager"] },
+  { id: "engineering", label: "Engineering", trackIds: ["software-engineer"] },
+  { id: "finance", label: "Finance", trackIds: ["investment-banking"] },
+  { id: "public-affairs", label: "Law", trackIds: ["public-affairs"] },
+  { id: "design", label: "Design", trackIds: ["design"] },
+];
 
 /**
  * Browsable grid of opportunities with Pinterest-style pinning.
@@ -20,8 +30,8 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
   const navigate = useNavigate();
   const { pinnedIds, togglePinned, resolveOpportunity, browsableOpportunities } = useWayfind();
   const [view, setView] = useState<"track" | "all" | "pinned">("track");
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  const [trackFilter, setTrackFilter] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [trackFilter, setTrackFilter] = useState<string[]>([]);
   const [query, setQuery] = useState("");
 
   const trackOpportunities = browsableOpportunities(trackId);
@@ -42,8 +52,14 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
 
   // Apply category + track + search filters
   const shown = pool.filter((op) => {
-    if (view === "all" && categoryFilter && op.category !== categoryFilter) return false;
-    if (view === "all" && trackFilter && op.track !== trackFilter) return false;
+    if (view === "all" && categoryFilter.length > 0 && !categoryFilter.includes(op.category)) return false;
+    if (view === "all" && trackFilter.length > 0) {
+      const expandedTrackIds = trackFilter.flatMap((tf) => {
+        const group = TRACK_GROUPS.find((g) => g.id === tf);
+        return group ? group.trackIds : [];
+      });
+      if (!expandedTrackIds.includes(op.track as TrackId)) return false;
+    }
     if (query) {
       const q = query.toLowerCase();
       const searchable = `${op.name} ${op.category} ${op.leverage ?? ""} ${op.timeframe ?? ""}`.toLowerCase();
@@ -108,15 +124,15 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
       {/* Filter row — shown when viewing all */}
       {view === "all" && (
         <div className="mt-3 space-y-2">
-          {/* Category filter */}
+          {/* Category filter — multi-select */}
           <div className="flex flex-wrap items-center gap-1.5">
             <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
             <button
               type="button"
-              onClick={() => setCategoryFilter(null)}
+              onClick={() => setCategoryFilter([])}
               className={cn(
                 "tap rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
-                !categoryFilter
+                categoryFilter.length === 0
                   ? "bg-primary/10 text-primary"
                   : "bg-muted text-muted-foreground hover:text-foreground",
               )}
@@ -127,10 +143,14 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
               <button
                 key={cat}
                 type="button"
-                onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
+                onClick={() =>
+                  setCategoryFilter((prev) =>
+                    prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+                  )
+                }
                 className={cn(
                   "tap rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
-                  categoryFilter === cat
+                  categoryFilter.includes(cat)
                     ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground hover:text-foreground",
                 )}
@@ -139,34 +159,38 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
               </button>
             ))}
           </div>
-          {/* Track filter */}
+          {/* Track filter — general categories, multi-select */}
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="w-3.5" />
             <button
               type="button"
-              onClick={() => setTrackFilter(null)}
+              onClick={() => setTrackFilter([])}
               className={cn(
                 "tap rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
-                !trackFilter
+                trackFilter.length === 0
                   ? "bg-primary/10 text-primary"
                   : "bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
               All Tracks
             </button>
-            {TRACKS.filter((t) => t.id !== "something-else").map((t) => (
+            {TRACK_GROUPS.map((g) => (
               <button
-                key={t.id}
+                key={g.id}
                 type="button"
-                onClick={() => setTrackFilter(trackFilter === t.id ? null : t.id)}
+                onClick={() =>
+                  setTrackFilter((prev) =>
+                    prev.includes(g.id) ? prev.filter((id) => id !== g.id) : [...prev, g.id],
+                  )
+                }
                 className={cn(
                   "tap rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
-                  trackFilter === t.id
+                  trackFilter.includes(g.id)
                     ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground hover:text-foreground",
                 )}
               >
-                {t.label}
+                {g.label}
               </button>
             ))}
           </div>
@@ -203,7 +227,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
             const full = resolveOpportunity(op.id) ?? op;
             const isExternal = op.id.startsWith("pipe-");
             const trackLabel = view !== "track"
-              ? TRACKS.find((t) => t.id === op.track)?.label
+              ? TRACK_GROUPS.find((g) => g.trackIds.includes(op.track as TrackId))?.label
               : null;
 
             return (
@@ -225,6 +249,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                   <button
                     type="button"
                     aria-label={pinned ? `Unpin ${op.name}` : `Pin ${op.name}`}
+                    title={pinned ? "Unpin" : "Pin"}
                     aria-pressed={pinned}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -265,6 +290,14 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                 {!isExternal && pinned && full ? (
                   <p className="mt-3 border-t pt-3 text-xs leading-relaxed text-muted-foreground">
                     {full.leverage}
+                  </p>
+                ) : null}
+
+                {/* Hint on first unpinned card only */}
+                {!isExternal && !pinned && full?.leverage &&
+                  shown.filter((o) => !pinnedIds.includes(o.id) && !o.id.startsWith("pipe-")).indexOf(op) === 0 ? (
+                  <p className="mt-3 border-t pt-3 text-[11px] text-muted-foreground/60">
+                    <Pin className="mr-1 inline h-3 w-3" />Pin to see why this matters
                   </p>
                 ) : null}
 

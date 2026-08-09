@@ -116,10 +116,16 @@ type State = {
   addCustomStep: (input: { title: string; note?: string; targetDate?: string }) => void;
   updateCustomStep: (id: string, patch: Partial<Omit<CustomStep, "id">>) => void;
   removeCustomStep: (id: string) => void;
+  /** Promote a custom step into the main roadmap list. */
+  promoteCustomStep: (id: string) => void;
   /** Student curation only. Never touches roadmap.steps or the ranked next move. */
   togglePinned: (id: string) => void;
   /** Reorder roadmap steps by moving a step from one index to another. */
   reorderSteps: (fromIndex: number, toIndex: number) => void;
+  /** Remove a roadmap step by its opportunityId. */
+  removeStep: (opportunityId: string) => void;
+  /** Move a roadmap step back to "Your additions" as a custom step. */
+  demoteStep: (opportunityId: string) => void;
   /** Set or remove a User_Note for a Sylo_Step. Null/empty removes the note. */
   setStepNote: (opportunityId: string, note: string | null) => void;
   /** Set or remove a reasoning override for a Sylo_Step. Null/empty removes it. */
@@ -296,6 +302,11 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   const setRoadmap = useCallback((r: Roadmap | null, live?: Opportunity[]) => {
     setRoadmapState(r);
     setLiveOpportunities(live ?? []);
+    // Clear user additions when generating a fresh roadmap (not demo — demo sets its own)
+    setCustomSteps([]);
+    setStepNotes({});
+    setStepReasoningOverrides({});
+    setPinnedIds([]);
   }, []);
 
   const resolveOpportunity = useCallback(
@@ -371,8 +382,54 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     setRoadmapState(personaRoadmap(persona));
     setLiveOpportunities([]);
     // Reset user-specific state so no data leaks between demos
-    setCustomSteps([]);
-    setStepNotes({});
+    setCustomSteps(
+      persona.id === "maya"
+        ? [
+            {
+              id: "custom-demo-maya-1",
+              title: "Ask Prof. Joyner if his lab needs a spring undergrad RA",
+              note: "He teaches CS 1332 and runs the EdTech research group. Two girls from WiCS said he's super approachable and usually takes sophomores. Office hours are Tuesdays 3–4pm in CoC 217.",
+              targetDate: "2026-09-08",
+              status: "not-started" as StepStatus,
+            },
+            {
+              id: "custom-demo-maya-2",
+              title: "Finish HackGT project + push to GitHub",
+              note: "Need a polished repo before Google STEP opens. README, screenshots, deployed link. The recruiter at the career fair said they actually look at your GitHub.\n\nLink: https://hack.gt",
+              targetDate: "2026-10-20",
+              status: "in-progress" as StepStatus,
+            },
+          ]
+        : [
+            {
+              id: "custom-demo-alex-1",
+              title: "Email Dr. Bhatt about BISEP lab rotation",
+              note: "She replied to a cold email from someone on Reddit — keep it short, mention your bio lab sequence grade and what specifically interests you about her work on neural crest cells.",
+              targetDate: "2026-10-01",
+              status: "not-started" as StepStatus,
+            },
+            {
+              id: "custom-demo-alex-2",
+              title: "Shadow Dr. Nguyen at UCLA Health (40hr minimum)",
+              note: "Need 40 clinical hours before BISEP app asks about patient exposure. Dr. Nguyen takes pre-meds Thursdays 7am–12pm in the GI clinic. Sign up through the volunteer portal, not email.\n\nLink: https://www.uclahealth.org/volunteer",
+              targetDate: "2026-11-15",
+              status: "in-progress" as StepStatus,
+            },
+          ],
+    );
+    setStepNotes(
+      persona.id === "maya"
+        ? {
+            "op-gt-createx-learn": "Talked to a senior who did this — she said it completely changed how she thinks about side projects. You don't need a team going in, they match you. Apply early, cohort fills by week 2 of fall.",
+            "op-gt-coop": "Co-op means I'd be off campus for a full semester (spring or summer). Need to plan housing + talk to advisor about how this shifts my graduation timeline.\n\nLink: https://career.gatech.edu/cooperative-education",
+            "op-gt-urop-pura": "This is $1,500 for one semester of research. Can combine with UROC if I find a CS prof. Deadline is usually early October — check OUE website after Labor Day.",
+          }
+        : {
+            "op-ucla-bisep": "Takes ~20 students per cohort. The app asks for a personal statement about health disparities — start drafting now. Acceptances come out in April, so apply by October and don't stress until spring.\n\nLink: https://www.reddit.com/r/GradSchool/comments/toeas8/average_time_to_hear_about_the_status_of_a/",
+            "op-ucla-urfp": "Dr. Ramirez's lab is doing exactly what I want (immunology + computational modeling). She told someone at office hours she prefers students who email before the app opens. Mention LS 7C grade + Python experience.",
+            "op-ucla-hhmi-pathways": "$3,000 stipend + they pair you with an MD-PhD mentor for the full year. Only 15 slots — GPA cutoff was 3.5 last year but they weight research hours heavily. The advisor said having a faculty rec from your current lab is basically required.",
+          },
+    );
     setStepReasoningOverrides({});
     // Pre-pin a few opportunities so the demo feels lived-in
     setPinnedIds(
@@ -406,6 +463,55 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     setCustomSteps((prev) => prev.filter((s) => s.id !== id));
   }, []);
 
+  /** Move a custom step into the main roadmap as a ranked step. */
+  const promoteCustomStep = useCallback((id: string) => {
+    const step = customSteps.find((s) => s.id === id);
+    if (!step || !profile || !roadmap) return;
+
+    // Create a synthetic Opportunity so resolveOpportunity can find it
+    const syntheticOp: Opportunity = {
+      id,
+      name: step.title,
+      track: profile.trackId as any,
+      category: "Course", // neutral default
+      access: "direct",
+      school: profile.school ?? "any",
+      deadline: step.targetDate ?? "",
+      timeframe: step.targetDate ?? "Flexible",
+      requirements: [],
+      contact: "",
+      link: "",
+      timeline: "",
+      leverage: step.note || "You promoted this step from your own additions.",
+      origin: "seed",
+    };
+
+    // Store it in liveOpportunities so resolveOpportunity finds it
+    setLiveOpportunities((prev) => [...prev, syntheticOp]);
+
+    // Create a roadmap Step
+    const newStep: Step = {
+      id: `promoted-${id}`,
+      opportunityId: id,
+      reasoning: step.note || "You added this to your roadmap.",
+      status: step.status,
+    };
+
+    // If the step has a note, store it in stepNotes
+    if (step.note) {
+      setStepNotes((prev) => ({ ...prev, [id]: step.note! }));
+    }
+
+    // Append to roadmap
+    setRoadmapState((prev) => {
+      if (!prev) return prev;
+      return { ...prev, steps: [...prev.steps, newStep] };
+    });
+
+    // Remove from custom steps
+    setCustomSteps((prev) => prev.filter((s) => s.id !== id));
+  }, [customSteps, profile, roadmap]);
+
   const togglePinned = useCallback((id: string) => {
     setPinnedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }, []);
@@ -420,6 +526,61 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       return { ...prev, steps };
     });
   }, []);
+
+  const removeStep = useCallback((opportunityId: string) => {
+    setRoadmapState((prev) => {
+      if (!prev) return prev;
+      return { ...prev, steps: prev.steps.filter((s) => s.opportunityId !== opportunityId) };
+    });
+    // Clean up any associated notes/overrides
+    setStepNotes((prev) => {
+      const { [opportunityId]: _, ...rest } = prev;
+      return rest;
+    });
+    setStepReasoningOverrides((prev) => {
+      const { [opportunityId]: _, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
+  /** Move a roadmap step back to "Your additions" as a custom step. */
+  const demoteStep = useCallback((opportunityId: string) => {
+    if (!roadmap) return;
+    const step = roadmap.steps.find((s) => s.opportunityId === opportunityId);
+    if (!step) return;
+
+    // Try to resolve the opportunity name
+    const op = liveOpportunities.find((o) => o.id === opportunityId) ?? getOpportunity(opportunityId) ?? getOpportunityById(opportunityId);
+    const title = op?.name ?? step.reasoning.slice(0, 60);
+    const existingNote = stepNotes[opportunityId];
+
+    // Create a custom step from it
+    const customStep: CustomStep = {
+      id: opportunityId,
+      title,
+      note: existingNote || undefined,
+      targetDate: op?.deadline || undefined,
+      status: step.status,
+    };
+
+    setCustomSteps((prev) => [...prev, customStep]);
+
+    // Remove from roadmap
+    setRoadmapState((prev) => {
+      if (!prev) return prev;
+      return { ...prev, steps: prev.steps.filter((s) => s.opportunityId !== opportunityId) };
+    });
+
+    // Clean up notes/overrides
+    setStepNotes((prev) => {
+      const { [opportunityId]: _, ...rest } = prev;
+      return rest;
+    });
+    setStepReasoningOverrides((prev) => {
+      const { [opportunityId]: _, ...rest } = prev;
+      return rest;
+    });
+  }, [roadmap, liveOpportunities, stepNotes]);
 
   const setStepNote = useCallback((opportunityId: string, note: string | null) => {
     setStepNotes((prev) => {
@@ -466,8 +627,11 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       addCustomStep,
       updateCustomStep,
       removeCustomStep,
+      promoteCustomStep,
       togglePinned,
       reorderSteps,
+      removeStep,
+      demoteStep,
       setStepNote,
       setStepReasoning,
     }),
@@ -491,8 +655,11 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       addCustomStep,
       updateCustomStep,
       removeCustomStep,
+      promoteCustomStep,
       togglePinned,
       reorderSteps,
+      removeStep,
+      demoteStep,
       setStepNote,
       setStepReasoning,
     ],
@@ -517,6 +684,7 @@ export function mergeResumeData(
 ): Profile {
   return {
     ...existing,
+    name: parsed.name?.trim() || existing.name,
     experience: parsed.experience?.trim() || existing.experience,
     skills: parsed.skills?.trim() || existing.skills,
     priorWork: parsed.priorWork?.trim() || existing.priorWork,

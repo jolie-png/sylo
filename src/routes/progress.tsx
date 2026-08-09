@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { StatusAccentBar, StatusDot } from "@/components/roadmap-connector";
+import { LinkifyText } from "@/components/linkify-text";
 import {
   Workspace,
   PageHeader,
@@ -122,26 +123,91 @@ function Progress() {
         <span className="pb-1 text-sm text-muted-foreground">steps complete</span>
       </div>
 
-      <div className="mt-6 inline-flex gap-1 rounded-full border bg-card p-1">
-        {(["board", "list", "long view"] as const).map((v) => (
-          <button
-            key={v}
-            type="button"
-            onClick={() => setView(v)}
-            className={cn(
-              "tap rounded-full px-4 py-1.5 text-sm font-medium capitalize",
-              view === v
-                ? "bg-secondary text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {v}
-          </button>
-        ))}
-      </div>
+      {/* Progress bar + nav row */}
+      <div className="mt-3 space-y-4">
+        {/* Visual progress timeline (moved from dashboard) */}
+        {roadmap.steps.length > 0 && (
+          <div className="mt-1">
+            <div className="flex items-center gap-1">
+              {roadmap.steps.map((step, i) => {
+                const isComplete = step.status === "complete";
+                const isInProgress = step.status === "in-progress";
+                const isTop = step.opportunityId === roadmap.topOpportunityId;
+                return (
+                  <div key={step.id ?? i} className="group relative flex flex-1 flex-col items-center">
+                    <div className="flex w-full items-center">
+                      {i > 0 && (
+                        <div
+                          className={cn(
+                            "h-[3px] flex-1 rounded-full transition-colors",
+                            isComplete ? "bg-green-500/60" : "bg-border",
+                          )}
+                        />
+                      )}
+                      <div
+                        className={cn(
+                          "relative z-10 h-3 w-3 shrink-0 rounded-full border-2 transition-all",
+                          isComplete && "border-green-500 bg-green-500",
+                          isInProgress && "border-primary bg-primary/30",
+                          !isComplete && !isInProgress && "border-muted-foreground/30 bg-background",
+                          isTop && !isComplete && "border-primary ring-2 ring-primary/20",
+                        )}
+                      >
+                        {isComplete && (
+                          <span className="absolute inset-0 flex items-center justify-center text-[7px] font-bold text-white">✓</span>
+                        )}
+                      </div>
+                      {i < roadmap.steps.length - 1 && (
+                        <div
+                          className={cn(
+                            "h-[3px] flex-1 rounded-full transition-colors",
+                            roadmap.steps[i + 1]?.status === "complete" ? "bg-green-500/60" : "bg-border",
+                          )}
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-2 flex items-center justify-between text-[10px] text-muted-foreground">
+              <span>{done} of {total} complete</span>
+              {done > 0 && (
+                <span className="font-medium text-green-600 dark:text-green-400">
+                  {Math.round((done / total) * 100)}%
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
-      {/* Add step button + form */}
-      <div className="mt-4 flex items-center gap-3">
+        {/* Old simple progress bar — kept for future use
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-primary/10">
+          <div
+            className="h-full rounded-full bg-primary transition-all duration-500"
+            style={{ width: total > 0 ? `${(done / total) * 100}%` : "0%" }}
+          />
+        </div>
+        */}
+
+        <div className="flex items-center gap-3">
+        <div className="inline-flex gap-1 rounded-full border bg-card p-1">
+          {(["board", "list", "long view"] as const).map((v) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setView(v)}
+              className={cn(
+                "tap rounded-full px-4 py-1.5 text-sm font-medium capitalize",
+                view === v
+                  ? "bg-secondary text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           onClick={() => setShowAddForm((v) => !v)}
@@ -149,6 +215,7 @@ function Progress() {
         >
           <Plus className="h-4 w-4" /> Add a step
         </button>
+        </div>
       </div>
 
       {showAddForm && (
@@ -333,8 +400,8 @@ function Progress() {
                           </button>
                         </div>
                         {expanded ? (
-                          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                            {s.reasoning}
+                          <p className="mt-2 break-all text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                            <LinkifyText text={s.reasoning} />
                           </p>
                         ) : null}
                         <div className="mt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2 text-[11px] text-muted-foreground">
@@ -366,7 +433,7 @@ function Progress() {
                           setDrag(null);
                           setOverCol(null);
                         }}
-                        title="Your own goal — drag to another column"
+                        title="Added by you — drag to another column"
                         className={cn(
                           "relative cursor-grab rounded-xl border border-dashed border-foreground/25 bg-card px-3 py-3 pl-4 transition-colors duration-150 hover:bg-accent active:cursor-grabbing",
                           drag?.id === s.id && "drag-lift drop-placeholder",
@@ -415,6 +482,7 @@ function Progress() {
                                   type="button"
                                   onClick={() => setEditingId(s.id)}
                                   aria-label={`Edit ${s.title}`}
+                                  title="Edit"
                                   className="tap rounded-md p-1 text-muted-foreground hover:text-foreground"
                                 >
                                   <Pencil className="h-3 w-3" />
@@ -423,6 +491,7 @@ function Progress() {
                                   type="button"
                                   onClick={() => removeCustomStep(s.id)}
                                   aria-label={`Delete ${s.title}`}
+                                  title="Delete"
                                   className="tap rounded-md p-1 text-muted-foreground hover:text-destructive"
                                 >
                                   <Trash2 className="h-3 w-3" />
@@ -465,8 +534,8 @@ function Progress() {
                               </button>
                             </div>
                             {expanded && s.note ? (
-                              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                                {s.note}
+                              <p className="mt-2 break-all text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                                <LinkifyText text={s.note} />
                               </p>
                             ) : null}
                             <div className="mt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2 text-[11px] text-muted-foreground">

@@ -46,27 +46,16 @@ function AboutPage() {
             students who actually find these programs? Someone told them directly. A mentor, a parent
             in the industry, an older friend who&apos;d already been through it.
           </p>
-          <p className="font-medium text-foreground">
-            The path exists. The programs exist. Most students just never see the map.
-          </p>
-        </div>
-      </section>
-
-      {/* The gap */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">The real gap.</h2>
-        <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>
             Career platforms tell students what&apos;s out there. Academic systems tell students what&apos;s
             required. Career centers say &ldquo;go network&rdquo; and &ldquo;build your brand.&rdquo; Nobody
-            connects the three into a concrete sequence of steps for one specific student at one specific
-            school — and that&apos;s the real gap. Not a missing database. Not a missing motivation. A missing
-            connection.
+            connects the three into a concrete sequence for one student at one school. And higher education
+            runs on a chain reaction — miss one early step and you break the eligibility chain for the
+            fellowship, the lab, the internship that depended on it. Your timeline doesn&apos;t slip by a
+            semester. It slips by a year.
           </p>
-          <p>
-            Higher education runs on a chain reaction. Miss one early step, and you don&apos;t just fall behind
-            — you break the eligibility chain for the fellowship, the lab placement, the internship that
-            depended on it. Your timeline doesn&apos;t slip by a semester. It slips by a year.
+          <p className="font-medium text-foreground">
+            The path exists. The programs exist. Most students just never see the map.
           </p>
         </div>
       </section>
@@ -106,6 +95,11 @@ function AboutPage() {
             their real major, year, and school. Not a list to scroll. Not &ldquo;network more.&rdquo; One
             step, one deadline, one reason why it matters right now.
           </p>
+          <p>
+            Under the hood: 125+ verified pipeline programs — fellowships, insight days, diversity cohorts,
+            research funding — filtered to what&apos;s open to that student right now, sequenced by leverage
+            and deadline, with direct links to the actual application page.
+          </p>
           <p className="font-medium text-foreground">
             It&apos;s the kind of clarity that used to require knowing the right person — delivered to every
             student, at every school, the moment they pick a destination.
@@ -118,9 +112,21 @@ function AboutPage() {
         <h2 className="text-lg font-semibold tracking-tight">What makes it different.</h2>
         <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>
+            Handshake, Ripplematch, and LinkedIn serve students who are ready to apply. Sylo serves
+            students a year before that — when the pipeline programs, insight days, and research
+            fellowships that feed into recruiting are still open. Those platforms are the last step.
+            Sylo is steps one through five.
+          </p>
+          <p>
             Not a resume optimizer — that assumes you already know what to put on it. Not an internship
             board — that assumes you already know what to search for. Not ChatGPT — that answers questions
             you already know to ask, with no idea what your school actually offers or what depends on what.
+          </p>
+          <p>
+            And the checklist you see after? That&apos;s the output format, not the product. The hard part
+            isn&apos;t checking boxes — it&apos;s knowing which boxes should exist. A student can&apos;t add
+            &ldquo;apply to the Goldman Sachs Possibilities Summit by October 15&rdquo; to a to-do list if
+            they&apos;ve never heard of it. Sylo computes the route. The checklist is just how it shows you.
           </p>
           <p>
             Sylo reasons over a student&apos;s real progress, real school, and real opportunities — the same
@@ -156,16 +162,10 @@ function AboutPage() {
       <section className="mt-8 rounded-2xl border bg-card p-5 sm:p-6">
         <div className="flex items-center gap-3">
           <SyloMark className="h-6 w-6" animated />
-          <h2 className="text-lg font-semibold tracking-tight">The invisible advisor.</h2>
+          <p className="text-lg font-semibold tracking-tight">
+            Sylo gives that map to every student, from the moment they pick a destination.
+          </p>
         </div>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Every connected student already has someone — a parent in the industry, an older sibling who went
-          through recruiting, a mentor who says &ldquo;apply to this specific thing by this specific
-          date.&rdquo; That&apos;s not networking. That&apos;s having the map.
-        </p>
-        <p className="mt-3 text-sm font-medium leading-relaxed text-foreground">
-          Sylo gives that map to every student, from the moment they pick a destination.
-        </p>
       </section>
 
       {/* CTA */}

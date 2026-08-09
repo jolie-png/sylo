@@ -4,6 +4,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import { LinkifyText } from "@/components/linkify-text";
 
 type NoteIndicatorProps = {
   note: string;
@@ -20,6 +21,7 @@ export function NoteIndicator({ note }: NoteIndicatorProps) {
         <button
           type="button"
           aria-label="View note"
+          title="View note"
           className="inline-flex items-center justify-center rounded p-0.5 text-amber-500 hover:text-amber-600 transition-colors"
         >
           <StickyNote className="h-3.5 w-3.5" />
@@ -29,7 +31,9 @@ export function NoteIndicator({ note }: NoteIndicatorProps) {
         <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Note
         </p>
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">{note}</p>
+        <p className="text-sm leading-relaxed whitespace-pre-wrap break-all">
+          <LinkifyText text={note} />
+        </p>
       </PopoverContent>
     </Popover>
   );

@@ -12,6 +12,7 @@ const Input = z.object({
 });
 
 const ProfileFieldsSchema = z.object({
+  name: z.string().optional().default(""),
   experience: z.string().optional().default(""),
   skills: z.string().optional().default(""),
   priorWork: z.string().optional().default(""),
@@ -27,6 +28,7 @@ export type ParseResumeResult = ParsedResumeData | { error: true; message: strin
 
 const RESUME_SYSTEM_PROMPT = `You are a resume parser. Given the text content of a student's resume, extract and return a JSON object with these fields:
 
+- name: The student's full name (usually at the top of the resume)
 - experience: A brief summary of their background, projects, and relevant experience (1-3 sentences)
 - skills: Comma-separated list of technical skills, tools, and languages they know
 - priorWork: Prior internships, jobs, or research positions (brief, comma-separated or short descriptions)
@@ -34,13 +36,14 @@ const RESUME_SYSTEM_PROMPT = `You are a resume parser. Given the text content of
 - alreadyDone: What they've already accomplished toward career goals (courses, applications, projects)
 
 Rules:
-1. Return ONLY a JSON object with these 5 keys. No markdown, no explanation.
+1. Return ONLY a JSON object with these 6 keys. No markdown, no explanation.
 2. If a field has no relevant information in the resume, use an empty string "".
 3. Keep each field concise — summarize rather than copy verbatim.
 4. Use natural, conversational language (this fills a student profile).
+5. The name field should be the person's first and last name as written on the resume.
 
 Example output:
-{"experience":"Built a full-stack React app for a class project, contributed to an open-source CLI tool","skills":"Python, JavaScript, React, SQL, Git, Figma","priorWork":"Software intern at Acme Corp (Summer 2024), campus IT help desk","clubs":"ACM chapter, hackathon team","alreadyDone":"Applied to Google STEP, completed Coursera ML specialization"}`;
+{"name":"Jordan Chen","experience":"Built a full-stack React app for a class project, contributed to an open-source CLI tool","skills":"Python, JavaScript, React, SQL, Git, Figma","priorWork":"Software intern at Acme Corp (Summer 2024), campus IT help desk","clubs":"ACM chapter, hackathon team","alreadyDone":"Applied to Google STEP, completed Coursera ML specialization"}`;
 
 // --- Text extraction --------------------------------------------------------
 
@@ -107,7 +110,7 @@ export const parseResume = createServerFn({ method: "POST" })
     // 4. Send to Claude for structured parsing
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
     if (!anthropicKey) {
-      return { error: true, message: "Resume parsing is temporarily unavailable." };
+      return { error: true, message: "Resume parsing isn't available in this demo. Fill in the fields below manually instead." };
     }
 
     try {

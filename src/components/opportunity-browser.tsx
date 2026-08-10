@@ -286,28 +286,22 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                   </p>
                 ) : null}
 
-                {/* Show leverage when pinned */}
-                {!isExternal && pinned && full ? (
+                {/* Show leverage on all cards */}
+                {!isExternal && full?.leverage ? (
                   <p className="mt-3 border-t pt-3 text-xs leading-relaxed text-muted-foreground">
                     {full.leverage}
                   </p>
                 ) : null}
 
-                {/* Hint on first unpinned card only */}
-                {!isExternal && !pinned && full?.leverage &&
-                  shown.filter((o) => !pinnedIds.includes(o.id) && !o.id.startsWith("pipe-")).indexOf(op) === 0 ? (
-                  <p className="mt-3 border-t pt-3 text-[11px] text-muted-foreground/60">
-                    <Pin className="mr-1 inline h-3 w-3" />Pin to see why this matters
-                  </p>
-                ) : null}
-
-                {pinned && view === "pinned" && full ? (
+                {!isExternal && full ? (
                   <div className="mt-3 space-y-2">
-                    <div className="flex flex-wrap gap-1.5 [&>*]:max-w-full [&>*]:whitespace-normal [&>*]:break-words">
-                      {full.requirements.map((r) => (
-                        <Tag key={r}>{r}</Tag>
-                      ))}
-                    </div>
+                    {full.requirements.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 [&>*]:max-w-full [&>*]:whitespace-normal [&>*]:break-words">
+                        {full.requirements.map((r) => (
+                          <Tag key={r}>{r}</Tag>
+                        ))}
+                      </div>
+                    )}
                     <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                       Timeframe · <span className="normal-case">{full.timeframe}</span>
                     </p>

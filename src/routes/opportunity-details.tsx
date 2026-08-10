@@ -75,11 +75,6 @@ function Details() {
           title="Opportunities"
           subtitle="Fellowships, insight days, diversity cohorts, scholarships, and early-ID deadlines you don't want to miss. Pin the ones that matter to you."
         />
-        {browsableOpportunities(profile!.trackId).length && liveOpportunities.length ? (
-          <p className="mt-4 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground">
-            Cards tagged “Found via search” were looked up for your goal and school just now. Everything else is from Sylo’s curated dataset and is open to any student at your stage.
-          </p>
-        ) : null}
         <OpportunityBrowser trackId={profile!.trackId} />
       </Workspace>
     );

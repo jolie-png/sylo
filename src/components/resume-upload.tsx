@@ -145,6 +145,13 @@ export function ResumeUpload({ onParsed, onStatusChange, disabled }: ResumeUploa
         <div className="flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-primary/30 bg-accent/30 px-6 py-8 text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="text-sm font-medium text-foreground">Uploading resume&hellip;</span>
+          <button
+            type="button"
+            onClick={() => { reset(); onStatusChange?.(false); }}
+            className="mt-1 text-xs font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+          >
+            Cancel
+          </button>
         </div>
       )}
 
@@ -153,6 +160,13 @@ export function ResumeUpload({ onParsed, onStatusChange, disabled }: ResumeUploa
         <div className="flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-primary/30 bg-accent/30 px-6 py-8 text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="text-sm font-medium text-foreground">Analyzing your resume&hellip;</span>
+          <button
+            type="button"
+            onClick={() => { reset(); onStatusChange?.(false); }}
+            className="mt-1 text-xs font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+          >
+            Cancel
+          </button>
         </div>
       )}
 

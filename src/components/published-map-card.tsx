@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronRight, Lightbulb, SkipForward, MessageCircle, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryStyle, getCategoryLabel, type PublishedMap } from "@/lib/published-maps";
+import { ProgramLinkedText } from "@/components/program-linker";
 
 /**
  * Displays a single published success map as an expandable card
@@ -91,11 +92,11 @@ export function PublishedMapCard({
                     </span>
                   </div>
                   <p className="mt-1 text-sm leading-relaxed text-foreground/90">
-                    {step.action}
+                    <ProgramLinkedText text={step.action} />
                   </p>
                   {step.unlocked && (
                     <p className="mt-1.5 text-[12px] leading-relaxed text-primary/80">
-                      → {step.unlocked}
+                      → <ProgramLinkedText text={step.unlocked} />
                     </p>
                   )}
                 </div>
@@ -112,7 +113,7 @@ export function PublishedMapCard({
               </p>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-foreground/85">
-              {map.turningPoint}
+              <ProgramLinkedText text={map.turningPoint} />
             </p>
           </div>
 

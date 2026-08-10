@@ -579,6 +579,9 @@ function Dashboard() {
                         {s.targetDate ? (
                           <span className="text-xs text-muted-foreground">{formatTargetDate(s.targetDate)}</span>
                         ) : null}
+                        {s.targetDate ? (
+                          <CalendarButton name={s.title} deadline={s.targetDate} description={s.note || ""} compact />
+                        ) : null}
                         {s.note ? (
                           <NoteIndicator note={s.note} />
                         ) : null}

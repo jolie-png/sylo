@@ -29,6 +29,8 @@ import { type StepStatus } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
 import { LinkExtractor } from "@/components/link-extractor";
 import { AcademicTermSelector } from "@/components/academic-term-selector";
+import { InlineNoteEditor } from "@/components/inline-note-editor";
+import { NoteIndicator } from "@/components/note-indicator";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({
@@ -84,7 +86,10 @@ function Progress() {
     addCustomStep,
     updateCustomStep,
     removeCustomStep,
+    removeStep,
     resolveOpportunity,
+    stepNotes,
+    stepReasoningOverrides,
   } = useWayfind();
   const navigate = useNavigate();
   const [view, setView] = useState<"board" | "list" | "long view">("board");
@@ -105,6 +110,7 @@ function Progress() {
     try { return sessionStorage.getItem("sylo:progress:draft:date") ?? ""; } catch { return ""; }
   });
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingStepId, setEditingStepId] = useState<string | null>(null);
 
   // Persist draft state across navigation
   useEffect(() => {
@@ -444,8 +450,31 @@ function Progress() {
                           >
                             Advance
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingStepId(editingStepId === s.id ? null : s.id)}
+                            aria-label={`Edit note for ${op.name}`}
+                            title="Edit note"
+                            className="tap rounded-md p-1 text-muted-foreground hover:text-foreground"
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </button>
+                          {stepNotes[s.opportunityId] ? (
+                            <NoteIndicator note={stepNotes[s.opportunityId]} />
+                          ) : null}
                         </div>
-                        {expanded ? (
+                        {editingStepId === s.id ? (
+                          <div className="mt-2">
+                            <InlineNoteEditor
+                              opportunityId={s.opportunityId}
+                              existingNote={stepNotes[s.opportunityId]}
+                              existingReasoningOverride={stepReasoningOverrides[s.opportunityId]}
+                              reasoning={s.reasoning}
+                              onClose={() => setEditingStepId(null)}
+                            />
+                          </div>
+                        ) : null}
+                        {expanded && editingStepId !== s.id ? (
                           <p className="mt-2 break-all text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
                             <LinkifyText text={s.reasoning} />
                           </p>

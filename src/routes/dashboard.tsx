@@ -396,20 +396,6 @@ function Dashboard() {
         </SortableContext>
       </DndContext>
 
-      {!noDataset && (
-        <button
-          type="button"
-          onClick={() => {
-            const query = profile?.goalText?.trim() || track?.label || "";
-            window.dispatchEvent(new CustomEvent("open-ask-sylo", { detail: { query: query ? `${query} at ${profile?.school}` : "" } }));
-          }}
-          className="tap mt-4 inline-flex items-center gap-2 rounded-full border border-primary/25 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5"
-        >
-          <MessageCircle className="h-4 w-4" />
-          Ask Sylo for more opportunities
-        </button>
-      )}
-
       <section className="mt-10 rounded-2xl border border-primary/12 bg-primary/[0.04] p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/10 pb-3">
           <div>

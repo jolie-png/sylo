@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { OpportunityFeed } from "@/components/opportunity-feed";
+import { useWayfind } from "@/lib/sylo-store";
 
 export const Route = createFileRoute("/opportunities")({
   head: () => ({
@@ -24,6 +25,10 @@ export const Route = createFileRoute("/opportunities")({
 });
 
 function OpportunitiesPage() {
+  const { profile } = useWayfind();
+  const trackLabel = profile?.goalText?.trim() || profile?.trackId || "";
+  const school = profile?.school || "";
+
   return (
     <div className="min-h-screen bg-canvas">
       {/* Header */}
@@ -61,6 +66,18 @@ function OpportunitiesPage() {
             deadlines you don't want to miss. Pin the ones that matter to you.
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            const query = trackLabel && school ? `${trackLabel} at ${school}` : "";
+            window.dispatchEvent(new CustomEvent("open-ask-sylo", { detail: { query } }));
+          }}
+          className="tap mb-6 inline-flex items-center gap-2 rounded-full border border-primary/25 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5"
+        >
+          <MessageCircle className="h-4 w-4" />
+          Ask Sylo for more opportunities
+        </button>
 
         <OpportunityFeed />
       </main>

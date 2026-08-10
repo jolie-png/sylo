@@ -145,8 +145,8 @@ export function AskSylo() {
       setOpen(true);
       const query = (e as CustomEvent).detail?.query;
       if (query) {
-        // Small delay so the panel renders before sending
-        setTimeout(() => handleSend(query), 100);
+        // Pre-fill the input so user can review/edit before sending
+        setInput(query);
       }
     };
     window.addEventListener("open-ask-sylo", handler);

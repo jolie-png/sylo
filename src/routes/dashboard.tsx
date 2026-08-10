@@ -529,11 +529,16 @@ function Dashboard() {
                   <div className="flex items-start gap-3">
                     <NotionCheckbox
                       checked={s.status === "complete"}
-                      onChange={() =>
+                      onChange={(e) => {
+                        if (s.status !== "complete") {
+                          const x = e ? (e.clientX / window.innerWidth) * 100 : 50;
+                          const y = e ? (e.clientY / window.innerHeight) * 100 : 30;
+                          burst({ x, y });
+                        }
                         updateCustomStep(s.id, {
                           status: s.status === "complete" ? "not-started" : "complete",
-                        })
-                      }
+                        });
+                      }}
                       label={`Mark ${s.title} complete`}
                     />
                     <div className="min-w-0 flex-1">

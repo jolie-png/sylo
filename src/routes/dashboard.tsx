@@ -42,6 +42,7 @@ import { InlineNoteEditor } from "@/components/inline-note-editor";
 import { NoteIndicator } from "@/components/note-indicator";
 import { LinkifyText } from "@/components/linkify-text";
 import { DeadlinePill } from "@/components/deadline-badges";
+import { CalendarButton } from "@/components/calendar-button";
 import { useConfettiBurst } from "@/components/confetti-burst";
 import { LinkExtractor } from "@/components/link-extractor";
 
@@ -324,6 +325,7 @@ function Dashboard() {
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Tag tone="amber">{topOp.timeframe}</Tag>
             <DeadlinePill deadline={topOp.deadline} recurring={false} />
+            <CalendarButton name={topOp.name} deadline={topOp.deadline} description={topOp.leverage} url={topOp.link} compact />
             <Link
               to="/opportunity-details"
               search={{ id: topOp.id }}

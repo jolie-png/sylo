@@ -208,6 +208,7 @@ function Details() {
           <PropertyRow label="Deadline">
             <Tag tone="amber">{op.timeframe}</Tag>
             <DeadlinePill deadline={op.deadline} />
+            <CalendarButton name={op.name} deadline={op.deadline} description={op.leverage} url={op.link} compact />
           </PropertyRow>
           <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
           <PropertyRow label="Contact">
@@ -311,6 +312,7 @@ function Details() {
         <PropertyRow label="Deadline">
           <Tag tone="amber">{op.timeframe}</Tag>
           <DeadlinePill deadline={op.deadline} />
+          <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={op.link} compact />
         </PropertyRow>
         <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
         <PropertyRow label="Contact">

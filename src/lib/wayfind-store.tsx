@@ -48,6 +48,8 @@ export type Step = {
   opportunityId: string;
   reasoning: string;
   status: StepStatus;
+  /** ISO timestamp of when status was last changed. Used for progress decay nudges. */
+  statusChangedAt?: string;
 };
 
 export type Roadmap = {
@@ -327,7 +329,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       prev
         ? {
             ...prev,
-            steps: prev.steps.map((s) => (s.opportunityId === opportunityId ? { ...s, status } : s)),
+            steps: prev.steps.map((s) => (s.opportunityId === opportunityId ? { ...s, status, statusChangedAt: new Date().toISOString() } : s)),
           }
         : prev,
     );
@@ -340,7 +342,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
             ...prev,
             steps: prev.steps.map((s) =>
               s.opportunityId === opportunityId
-                ? { ...s, status: s.status === "complete" ? "not-started" : "complete" }
+                ? { ...s, status: s.status === "complete" ? "not-started" : "complete", statusChangedAt: new Date().toISOString() }
                 : s,
             ),
           }

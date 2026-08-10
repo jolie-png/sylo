@@ -32,12 +32,14 @@ export function ResumeUpload({ onParsed, onStatusChange, onRemove, disabled }: R
   const [errorMessage, setErrorMessage] = useState("");
   const [fileName, setFileName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const cancelledRef = useRef(false);
 
   const callParseResume = useServerFn(parseResume);
 
   const handleFileSelected = useCallback(
     async (file: File) => {
       setErrorMessage("");
+      cancelledRef.current = false;
 
       // 1. Validate
       const validation = validateResumeFile(file);
@@ -67,6 +69,9 @@ export function ResumeUpload({ onParsed, onStatusChange, onRemove, disabled }: R
         const result = await callParseResume({
           data: { fileBase64: base64, filename: file.name },
         });
+
+        // If cancelled while processing, ignore the result
+        if (cancelledRef.current) return;
 
         // 4. Handle result
         if (result && "error" in result && result.error) {
@@ -103,6 +108,7 @@ export function ResumeUpload({ onParsed, onStatusChange, onRemove, disabled }: R
   );
 
   const reset = useCallback(() => {
+    cancelledRef.current = true;
     setStatus("idle");
     setErrorMessage("");
     setFileName("");

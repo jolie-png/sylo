@@ -381,7 +381,19 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
         ? "Attended two career fairs, applied to Google STEP (haven't heard back yet)"
         : "Shadowed a physician for 40 hours, applied to two research labs (waitlisted)",
     });
-    setRoadmapState(personaRoadmap(persona));
+    const demoRoadmap = personaRoadmap(persona);
+    // For instant demos: simulate stale in-progress steps so the nudge is visible
+    const staleDate = new Date();
+    staleDate.setDate(staleDate.getDate() - 21); // 3 weeks ago
+    let staleCount = 0;
+    demoRoadmap.steps = demoRoadmap.steps.map((s) => {
+      if (staleCount < 2 && s.status === "not-started") {
+        staleCount++;
+        return { ...s, status: "in-progress" as StepStatus, statusChangedAt: staleDate.toISOString() };
+      }
+      return s;
+    });
+    setRoadmapState(demoRoadmap);
     setLiveOpportunities([]);
     // Reset user-specific state so no data leaks between demos
     setCustomSteps(

@@ -43,6 +43,7 @@ import { NoteIndicator } from "@/components/note-indicator";
 import { LinkifyText } from "@/components/linkify-text";
 import { DeadlinePill } from "@/components/deadline-badges";
 import { CalendarButton } from "@/components/calendar-button";
+import { ProgressNudge } from "@/components/progress-nudge";
 import { useConfettiBurst } from "@/components/confetti-burst";
 import { LinkExtractor } from "@/components/link-extractor";
 
@@ -339,6 +340,14 @@ function Dashboard() {
       ) : null}
 
 
+      {!noDataset && roadmap && (
+        <ProgressNudge
+          steps={roadmap.steps}
+          resolveOpportunity={resolveOpportunity}
+          onMarkComplete={(id) => setStatus(id, "complete")}
+        />
+      )}
+
       {!noDataset ? (
       <h2 className="animate-reveal mt-10 text-lg font-semibold tracking-tight" style={{ animationDelay: "400ms" }}>
         Here&apos;s your roadmap
@@ -361,9 +370,6 @@ function Dashboard() {
                 resolveOpportunity={resolveOpportunity}
                 toggleComplete={handleToggleComplete}
                 setStatus={(id, s) => {
-                  if (s === "complete" && step.status !== "complete") {
-                    burst({ x: 50, y: 30 });
-                  }
                   setStatus(id, s);
                 }}
                 removeStep={removeStep}

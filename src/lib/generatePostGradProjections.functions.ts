@@ -106,6 +106,12 @@ function buildSystemPrompt() {
     "- Write in direct second person. No filler, no hedging, no 'consider doing X' — just 'Do X.'",
     "- The overall arc should tell a coherent story: here's where you are → here's Year 1 → here's Years 2-3, and each builds on the last.",
     "",
+    "CAUSALITY FRAMING:",
+    "- 'lookOutFor' should use the pattern: 'People who reach [next-level role] by Year 2-3 typically [did X in Year 1]. Given your [specific background], the risk is [specific pitfall].'",
+    "- Each action should frame as: 'This builds the [specific signal] that [target outcome] requires.' Not just 'do X' but 'do X because it creates Y which is what Z screens for.'",
+    "- 'doneWhen' should describe a concrete trajectory milestone: 'You have [specific evidence] that proves you can [thing the next level requires].'",
+    "- Think about the 100 people who made this transition successfully. What did they all do in Year 1? What separated the ones who got promoted in Year 2-3 from the ones who plateaued?",
+    "",
     "Return ONLY a JSON object matching this schema:",
     JSON.stringify({
       projections: [

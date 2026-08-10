@@ -203,13 +203,14 @@ async function buildCuratedRoadmap(
       const gapResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 1200,
-        system: `You produce a personalized gap analysis for a student. Return ONLY a JSON object:
+        system: `You produce a personalized gap analysis for a student using CAUSALITY reasoning. Return ONLY a JSON object:
 {"strengths":["string","string"],"gaps":[{"gap":"string","why":"string","action":"string"}],"bottomLine":"string"}
 
 Rules:
-- strengths: 2-3 strings. NAME specific companies, skills, or experiences from their profile. Not "Strong technical background" — instead "Two Amazon SDE internships give you production-scale engineering judgment."
-- gaps: 2-3 items. Identify what's ACTUALLY missing. If they have SDE experience but want PM, the gap is "product judgment beyond engineering execution."
-- bottomLine: One specific sentence of mentor-level advice.
+- strengths: 2-3 strings. NAME specific companies, skills, or experiences from their profile. Frame as trajectory components they already have: "Two Amazon SDE internships give you the production-scale credibility that PM hiring managers look for."
+- gaps: 2-3 items. Frame as MISSING trajectory components: "People who land [goal] can typically point to [X]. You can't yet." The 'why' explains causality: why this specific gap blocks them. The 'action' gives the one move that fills it.
+- bottomLine: One sentence using the pattern: "You have [X] and [Y] — the fastest path to [goal] is filling [specific gap] because [causal reason]."
+- Think like an advisor who's seen 100 students make this exact transition. What did the ones who succeeded all have in common? What's this student missing from that pattern?
 - Never invent URLs or program names.`,
         messages: [{
           role: "user",
@@ -261,7 +262,16 @@ Rules:
       const reasoningResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 1000,
-        system: `Given a student profile and a list of programs, return ONLY a JSON object where each key is a program name and each value is 1 sentence explaining why THIS student specifically should do it. Reference their actual experience by name. Example: {"Google APM":"Your Amazon SDE internships prove technical depth — APM lets you translate that into product ownership at Google scale."}`,
+        system: `Given a student profile and a list of programs, return ONLY a JSON object where each key is a program name and each value is 1-2 sentences using CAUSALITY reasoning: explain what trajectory component this step provides and how it connects to their goal.
+
+Format: "People who landed [goal] typically had [X]. Your [specific experience] gives you [Y], but you're missing [Z]. This program fills [Z] because [reason]."
+
+Example: {"Meta RPM":"Students who land APM roles typically had: shipped product + PM externship + user research evidence. Your Amazon internships cover the shipped product signal — RPM fills the PM externship gap and gives you cross-portfolio rotation that Google APM interviewers specifically value."}
+
+Rules:
+- Reference their actual companies, skills, and clubs by name.
+- Frame as trajectory gap-filling, not generic value statements.
+- Each value should answer: "What does this step add to the trajectory pattern that the student is missing?"`,
         messages: [{
           role: "user",
           content: `${contextParts.join("\n")}\n\nPrograms: ${opListShort}\n\nReturn JSON.`,
@@ -376,6 +386,14 @@ function buildSystemPrompt() {
     "- In gapAnalysis.gaps, identify what's ACTUALLY missing given their specific background — don't repeat generic advice that ignores their resume.",
     "- The bottomLine should reference their specific situation, not a one-size-fits-all statement.",
     "- NEVER write generic reasoning like 'This is great for CS students' or 'Good for aspiring PMs'. Always connect to THIS student's specific data.",
+    "",
+    "CAUSALITY REASONING (make every recommendation a mini trajectory proof):",
+    "- For each opportunity's 'reasoning' field, use this mental model: 'People who reached [goal] typically had [X + Y + Z]. You already have [X] (via [specific experience]). This step fills [Y].'",
+    "- Example: 'Students who landed Google APM typically had: a shipped product with real users (you have this via your Amazon internal tools work) + a PM externship or case competition (this is your gap). Meta RPM fills the externship signal.'",
+    "- The 'leverage' field should explain what this step UNLOCKS in the trajectory — not just what it is. Frame it as: 'This gives you [credential/signal] that [target outcome] specifically screens for.'",
+    "- In gapAnalysis, frame gaps as missing trajectory components: 'People who land [goal] can point to [X]. You can't yet — this is the gap.'",
+    "- Connect each opportunity to the SPECIFIC gap it closes. If an opportunity doesn't close a named gap, it's lower priority.",
+    "- Think like a career advisor who's seen 100 students make this transition: what did the ones who succeeded have in common? What's this student missing from that pattern?",
     "",
     "DEADLINE RULES:",
     "- deadline MUST be a full ISO date: YYYY-MM-DD. The year is REQUIRED.",

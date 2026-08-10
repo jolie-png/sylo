@@ -166,16 +166,68 @@ function queryCuratedOpportunities(data: z.infer<typeof Input>): OpportunityReco
   });
 }
 
-/** Build a LiveRoadmap from curated DB results alone. */
-function buildCuratedRoadmap(
+/** Build a LiveRoadmap from curated DB results alone, with optional AI gap analysis. */
+async function buildCuratedRoadmap(
   curatedRecords: OpportunityRecord[],
   data: z.infer<typeof Input>,
-): LiveRoadmap {
+  anthropicKey?: string,
+): Promise<LiveRoadmap> {
   const opportunities = curatedRecords.map(curatedRecordToOpportunity);
   const steps = opportunities.map((op) => ({
     opportunityId: op.id,
     reasoning: op.leverage || `Curated opportunity for ${data.year} students at ${data.school}.`,
   }));
+
+  // Attempt a lightweight Claude call for gap analysis
+  let gapAnalysis: LiveRoadmap["gapAnalysis"] | undefined;
+  if (anthropicKey) {
+    try {
+      const client = createAnthropicClient(anthropicKey);
+      const track = TRACKS.find((t) => t.id === data.trackId);
+      const destination = data.goalText?.trim() || track?.label || "their goal";
+      const opNames = opportunities.slice(0, 5).map((o) => o.name).join(", ");
+
+      const contextParts = [
+        `Student: ${data.year} ${data.major} major at ${data.school}, heading toward ${destination}.`,
+      ];
+      if (data.experience) contextParts.push(`Experience: ${data.experience}`);
+      if (data.skills) contextParts.push(`Skills: ${data.skills}`);
+      if (data.priorWork) contextParts.push(`Prior work: ${data.priorWork}`);
+      if (data.clubs) contextParts.push(`Clubs: ${data.clubs}`);
+
+      const gapResponse = await client.messages.create({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 500,
+        system: "You produce a gap analysis for a student. Return ONLY a JSON object with: strengths (2-3 strings), gaps (array of {gap, why, action} — 2-3 items), bottomLine (one sentence). Base on the student profile and the opportunities available to them. Never invent URLs or program names not mentioned.",
+        messages: [{
+          role: "user",
+          content: `${contextParts.join("\n")}\n\nOpportunities on their roadmap: ${opNames}\n\nReturn JSON gap analysis.`,
+        }],
+      });
+
+      const gapText = gapResponse.content
+        .filter((b) => b.type === "text")
+        .map((b) => (b as { type: "text"; text: string }).text)
+        .join("");
+      const gapJson = gapText.match(/\{[\s\S]*\}/);
+      if (gapJson) {
+        const parsed = JSON.parse(gapJson[0]);
+        if (parsed.strengths && parsed.gaps && parsed.bottomLine) {
+          gapAnalysis = {
+            strengths: parsed.strengths.map((s: string) => s.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200)),
+            gaps: parsed.gaps.map((g: any) => ({
+              gap: g.gap?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 120) || "",
+              why: g.why?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200) || "",
+              action: g.action?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200) || "",
+            })),
+            bottomLine: parsed.bottomLine.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 300),
+          };
+        }
+      }
+    } catch {
+      // Gap analysis is optional — don't fail the whole roadmap
+    }
+  }
 
   return {
     summary: `Based on ${data.school}'s verified pipeline for ${data.year} ${data.major} students — these are curated, deadline-checked opportunities.`,
@@ -183,6 +235,7 @@ function buildCuratedRoadmap(
     steps,
     alternates: [],
     opportunities,
+    gapAnalysis,
   };
 }
 
@@ -541,7 +594,7 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
       // If we have enough curated results, use them directly (no API calls needed)
       if (curatedResults.length >= CURATED_THRESHOLD) {
         console.error("[LIVE-ROADMAP] sufficient curated results, skipping live search");
-        const result = buildCuratedRoadmap(curatedResults, data);
+        const result = await buildCuratedRoadmap(curatedResults, data, anthropicKey);
         writeCache(cacheKey, result);
         return result;
       }
@@ -550,7 +603,7 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
       if (!serperKey) {
         // No Serper key but we have some curated results — return what we have
         if (curatedResults.length > 0) {
-          const result = buildCuratedRoadmap(curatedResults, data);
+          const result = await buildCuratedRoadmap(curatedResults, data, anthropicKey);
           writeCache(cacheKey, result);
           return result;
         }
@@ -633,7 +686,7 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
         }
       } else if (!result && curatedResults.length > 0) {
         // Live search totally failed but we have some curated data
-        result = buildCuratedRoadmap(curatedResults, data);
+        result = await buildCuratedRoadmap(curatedResults, data, anthropicKey);
       }
 
       if (result) {

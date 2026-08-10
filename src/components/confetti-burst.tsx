@@ -14,6 +14,10 @@ export function useConfettiBurst() {
     const colors = ["#22c55e", "#3b82f6", "#f59e0b", "#ec4899", "#8b5cf6"];
     const particleCount = 18;
 
+    // Convert percentage to pixels relative to viewport
+    const originX = origin ? (origin.x / 100) * window.innerWidth : window.innerWidth / 2;
+    const originY = origin ? (origin.y / 100) * window.innerHeight : window.innerHeight / 2;
+
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement("div");
       const color = colors[i % colors.length];
@@ -27,8 +31,8 @@ export function useConfettiBurst() {
 
       Object.assign(particle.style, {
         position: "absolute",
-        left: `${origin?.x ?? 50}%`,
-        top: `${origin?.y ?? 50}%`,
+        left: `${originX}px`,
+        top: `${originY}px`,
         width: `${size}px`,
         height: `${size}px`,
         borderRadius: Math.random() > 0.5 ? "50%" : "1px",

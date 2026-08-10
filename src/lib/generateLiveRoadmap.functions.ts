@@ -182,6 +182,7 @@ async function buildCuratedRoadmap(
   let gapAnalysis: LiveRoadmap["gapAnalysis"] | undefined;
   if (anthropicKey) {
     try {
+      console.error("[LIVE-ROADMAP] gap analysis: calling Claude with key:", anthropicKey.slice(0, 10) + "...");
       const client = createAnthropicClient(anthropicKey);
       const track = TRACKS.find((t) => t.id === data.trackId);
       const destination = data.goalText?.trim() || track?.label || "their goal";
@@ -211,7 +212,11 @@ async function buildCuratedRoadmap(
         .join("");
       const gapJson = gapText.match(/\{[\s\S]*\}/);
       if (gapJson) {
-        const parsed = JSON.parse(gapJson[0]);
+        // Clean common JSON issues from Claude: trailing commas, unescaped newlines
+        const cleanedJson = gapJson[0]
+          .replace(/,\s*([}\]])/g, "$1")  // Remove trailing commas
+          .replace(/[\r\n]+/g, " ");       // Collapse newlines in strings
+        const parsed = JSON.parse(cleanedJson);
         if (parsed.strengths && parsed.gaps && parsed.bottomLine) {
           gapAnalysis = {
             strengths: parsed.strengths.map((s: string) => s.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200)),
@@ -224,8 +229,8 @@ async function buildCuratedRoadmap(
           };
         }
       }
-    } catch {
-      // Gap analysis is optional — don't fail the whole roadmap
+    } catch (gapErr) {
+      console.error("[LIVE-ROADMAP] gap analysis failed:", gapErr);
     }
   }
 
@@ -593,8 +598,9 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
 
       // If we have enough curated results, use them directly (no API calls needed)
       if (curatedResults.length >= CURATED_THRESHOLD) {
-        console.error("[LIVE-ROADMAP] sufficient curated results, skipping live search");
+        console.error("[LIVE-ROADMAP] sufficient curated results, skipping live search. Generating gap analysis...");
         const result = await buildCuratedRoadmap(curatedResults, data, anthropicKey);
+        console.error("[LIVE-ROADMAP] curated roadmap built. gapAnalysis:", result.gapAnalysis ? "YES" : "NO");
         writeCache(cacheKey, result);
         return result;
       }
@@ -645,6 +651,9 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
           const json = extractJson(text);
           if (json) {
             const parsed = LiveResponseSchema.safeParse(json);
+            if (!parsed.success) {
+              console.error("[LIVE-ROADMAP] Zod validation failed:", JSON.stringify(parsed.error.issues.slice(0, 3)));
+            }
             if (parsed.success && parsed.data.found) {
               // Pass known Serper URLs so clean() can reject hallucinated links
               const knownUrls = new Set(rawResults.map((r) => r.link));
@@ -653,7 +662,7 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
               console.error("[LIVE-ROADMAP]", parsed.success ? "found:false" : "schema error");
             }
           } else {
-            console.error("[LIVE-ROADMAP] couldn't parse JSON from Haiku");
+            console.error("[LIVE-ROADMAP] couldn't parse JSON from Haiku. First 500 chars:", text.slice(0, 500));
           }
         } catch (llmErr) {
           console.error("[LIVE-ROADMAP] LLM failed, falling back to raw results:", llmErr instanceof Error ? llmErr.message : llmErr);

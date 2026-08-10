@@ -295,7 +295,7 @@ Rules:
               const personalReasoning = reasonParsed[op.name] 
                 || Object.values(reasonParsed).find((_, i) => Object.keys(reasonParsed)[i]?.toLowerCase().includes(op.name.slice(0, 20).toLowerCase()));
               if (personalReasoning && typeof personalReasoning === "string") {
-                step.reasoning = cleanText(personalReasoning.replace(/https?:\/\/[^\s)]+/g, ""), 280);
+                step.reasoning = cleanText(personalReasoning.replace(/https?:\/\/[^\s)]+/g, ""), 400);
               }
             }
           }
@@ -557,7 +557,7 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
       window: raw.window ? trim(raw.window, 240) : undefined,
       origin: "live", sources, singleSourced: sources.length < 2,
     });
-    steps.push({ opportunityId: id, reasoning: trim(raw.reasoning, 280) || trim(raw.leverage, 280) });
+    steps.push({ opportunityId: id, reasoning: trim(raw.reasoning, 400) || trim(raw.leverage, 400) });
   }
 
   if (opportunities.length === 0) return null;

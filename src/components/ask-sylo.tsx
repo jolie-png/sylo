@@ -97,33 +97,43 @@ export function AskSylo() {
 
       let response: Message;
 
-      if (results.length > 0) {
-        // Local results found — free, no AI cost
-        response = {
-          id: loadingMsg.id,
-          role: "sylo",
-          content: `Found ${results.length} programs in Sylo's database:`,
-          results,
-        };
-      } else {
-        // No local results — fall back to web search via Serper
-        try {
-          const webData = await askSyloWebSearch({ data: { query } });
-          if (webData.results.length > 0) {
-            response = {
-              id: loadingMsg.id,
-              role: "sylo",
-              content: `Nothing in Sylo's curated database, but I found these online:`,
-              webResults: webData.results,
-            };
-          } else {
-            response = {
-              id: loadingMsg.id,
-              role: "sylo",
-              content: `No programs matched "${query}" in Sylo's database. Try specific names like "Goldman Sachs", "CodePath", "NSF REU", or categories like "scholarship", "fellowship", "insight day".`,
-            };
-          }
-        } catch {
+      // Always do web search to find NEW opportunities beyond what's already shown
+      try {
+        const webData = await askSyloWebSearch({ data: { query } });
+        if (webData.results.length > 0) {
+          response = {
+            id: loadingMsg.id,
+            role: "sylo",
+            content: results.length > 0
+              ? `Found ${results.length} in Sylo's database, plus ${webData.results.length} more online:`
+              : `Found ${webData.results.length} opportunities online:`,
+            results: results.length > 0 ? results : undefined,
+            webResults: webData.results,
+          };
+        } else if (results.length > 0) {
+          response = {
+            id: loadingMsg.id,
+            role: "sylo",
+            content: `Found ${results.length} programs in Sylo's database:`,
+            results,
+          };
+        } else {
+          response = {
+            id: loadingMsg.id,
+            role: "sylo",
+            content: `No programs matched "${query}". Try specific names like "Goldman Sachs", "CodePath", "NSF REU", or categories like "scholarship", "fellowship", "insight day".`,
+          };
+        }
+      } catch {
+        // Web search failed — fall back to curated only
+        if (results.length > 0) {
+          response = {
+            id: loadingMsg.id,
+            role: "sylo",
+            content: `Found ${results.length} programs in Sylo's database:`,
+            results,
+          };
+        } else {
           response = {
             id: loadingMsg.id,
             role: "sylo",

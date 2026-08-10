@@ -118,7 +118,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
           className="tap inline-flex items-center gap-1.5 rounded-full border border-primary/25 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/5"
         >
           <MessageCircle className="h-3.5 w-3.5" />
-          Ask Sylo
+          Ask Sylo for more opportunities
         </button>
       </div>
 

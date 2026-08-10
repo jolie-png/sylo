@@ -268,43 +268,27 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                 </div>
 
                 <div className="mt-2.5 flex flex-wrap items-center gap-1.5 [&>*]:max-w-full [&>*]:whitespace-normal [&>*]:break-words">
-                  <Tag>{op.category}</Tag>
+                  <Tag tone="blue">{op.category}</Tag>
                   <Tag tone="amber">{op.timeframe}</Tag>
-                  {trackLabel && <Tag>{trackLabel}</Tag>}
-                  {isExternal && (
-                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-800">
-                      Curated
-                    </span>
-                  )}
+                  {trackLabel && <Tag tone="green">{trackLabel}</Tag>}
                   {op.origin === "live" ? <FoundViaSearchBadge /> : null}
                 </div>
 
                 {/* Always show leverage for external pipeline programs */}
-                {isExternal && full ? (
+                {/* Leverage + details — shown on all cards */}
+                {full?.leverage ? (
                   <p className="mt-3 border-t pt-3 text-xs leading-relaxed text-muted-foreground">
                     {full.leverage}
                   </p>
                 ) : null}
 
-                {/* Show leverage on all cards */}
-                {!isExternal && full?.leverage ? (
-                  <p className="mt-3 border-t pt-3 text-xs leading-relaxed text-muted-foreground">
-                    {full.leverage}
-                  </p>
-                ) : null}
-
-                {!isExternal && full ? (
+                {full && full.requirements.length > 0 ? (
                   <div className="mt-3 space-y-2">
-                    {full.requirements.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 [&>*]:max-w-full [&>*]:whitespace-normal [&>*]:break-words">
-                        {full.requirements.map((r) => (
-                          <Tag key={r}>{r}</Tag>
-                        ))}
-                      </div>
-                    )}
-                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                      Timeframe · <span className="normal-case">{full.timeframe}</span>
-                    </p>
+                    <div className="flex flex-wrap gap-1.5 [&>*]:max-w-full [&>*]:whitespace-normal [&>*]:break-words">
+                      {full.requirements.map((r) => (
+                        <Tag key={r}>{r}</Tag>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
               </div>

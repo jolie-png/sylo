@@ -399,7 +399,10 @@ function Dashboard() {
       {!noDataset && (
         <button
           type="button"
-          onClick={() => window.dispatchEvent(new Event("open-ask-sylo"))}
+          onClick={() => {
+            const query = profile?.goalText?.trim() || track?.label || "";
+            window.dispatchEvent(new CustomEvent("open-ask-sylo", { detail: { query: query ? `${query} at ${profile?.school}` : "" } }));
+          }}
           className="tap mt-4 inline-flex items-center gap-2 rounded-full border border-primary/25 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5"
         >
           <MessageCircle className="h-4 w-4" />

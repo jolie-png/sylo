@@ -178,15 +178,15 @@ async function buildCuratedRoadmap(
     reasoning: op.leverage || `Curated opportunity for ${data.year} students at ${data.school}.`,
   }));
 
-  // Attempt a lightweight Claude call for gap analysis
+  // Attempt a lightweight Claude call for gap analysis + personalized reasoning
   let gapAnalysis: LiveRoadmap["gapAnalysis"] | undefined;
   if (anthropicKey) {
     try {
-      console.error("[LIVE-ROADMAP] gap analysis: calling Claude with key:", anthropicKey.slice(0, 10) + "...");
+      console.error("[LIVE-ROADMAP] gap analysis + personalization: calling Claude...");
       const client = createAnthropicClient(anthropicKey);
       const track = TRACKS.find((t) => t.id === data.trackId);
       const destination = data.goalText?.trim() || track?.label || "their goal";
-      const opNames = opportunities.slice(0, 5).map((o) => o.name).join(", ");
+      const opList = opportunities.slice(0, 10).map((o, i) => `${i + 1}. ${o.name} — ${o.leverage.slice(0, 80)}`).join("\n");
 
       const contextParts = [
         `Student: ${data.year} ${data.major} major at ${data.school}, heading toward ${destination}.`,
@@ -195,14 +195,23 @@ async function buildCuratedRoadmap(
       if (data.skills) contextParts.push(`Skills: ${data.skills}`);
       if (data.priorWork) contextParts.push(`Prior work: ${data.priorWork}`);
       if (data.clubs) contextParts.push(`Clubs: ${data.clubs}`);
+      if (data.alreadyDone) contextParts.push(`Already done: ${data.alreadyDone}`);
 
       const gapResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 500,
-        system: "You produce a gap analysis for a student. Return ONLY a JSON object with: strengths (2-3 strings), gaps (array of {gap, why, action} — 2-3 items), bottomLine (one sentence). Base on the student profile and the opportunities available to them. Never invent URLs or program names not mentioned.",
+        max_tokens: 1500,
+        system: `You analyze a student's fit for their roadmap. Return ONLY a JSON object with:
+1. "gapAnalysis": { "strengths": [2-3 strings], "gaps": [{"gap": "string", "why": "string", "action": "string"} x 2-3], "bottomLine": "one sentence" }
+2. "reasoning": { "opportunityName": "1-2 sentence personalized explanation of why THIS opportunity matters for THIS student given their specific background" } — one entry per opportunity listed below.
+
+Rules:
+- Reference the student's actual experience, skills, and gaps in each reasoning. Don't be generic.
+- If the student has prior work at a company, explain how the opportunity builds on or complements that.
+- Each reasoning should answer: "Why should THIS specific student do THIS specific thing next?"
+- Never invent URLs. Never mention programs not listed below.`,
         messages: [{
           role: "user",
-          content: `${contextParts.join("\n")}\n\nOpportunities on their roadmap: ${opNames}\n\nReturn JSON gap analysis.`,
+          content: `${contextParts.join("\n")}\n\nOpportunities on their roadmap:\n${opList}\n\nReturn JSON with gapAnalysis and reasoning for each opportunity.`,
         }],
       });
 
@@ -212,25 +221,36 @@ async function buildCuratedRoadmap(
         .join("");
       const gapJson = gapText.match(/\{[\s\S]*\}/);
       if (gapJson) {
-        // Clean common JSON issues from Claude: trailing commas, unescaped newlines
         const cleanedJson = gapJson[0]
-          .replace(/,\s*([}\]])/g, "$1")  // Remove trailing commas
-          .replace(/[\r\n]+/g, " ");       // Collapse newlines in strings
+          .replace(/,\s*([}\]])/g, "$1")
+          .replace(/[\r\n]+/g, " ");
         const parsed = JSON.parse(cleanedJson);
-        if (parsed.strengths && parsed.gaps && parsed.bottomLine) {
+        if (parsed.gapAnalysis?.strengths && parsed.gapAnalysis?.gaps && parsed.gapAnalysis?.bottomLine) {
           gapAnalysis = {
-            strengths: parsed.strengths.map((s: string) => s.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200)),
-            gaps: parsed.gaps.map((g: any) => ({
+            strengths: parsed.gapAnalysis.strengths.map((s: string) => s.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200)),
+            gaps: parsed.gapAnalysis.gaps.map((g: any) => ({
               gap: g.gap?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 120) || "",
               why: g.why?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200) || "",
               action: g.action?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200) || "",
             })),
-            bottomLine: parsed.bottomLine.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 300),
+            bottomLine: parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 300),
           };
+        }
+        // Apply personalized reasoning to steps
+        if (parsed.reasoning && typeof parsed.reasoning === "object") {
+          for (const step of steps) {
+            const op = opportunities.find((o) => o.id === step.opportunityId);
+            if (op) {
+              const personalReasoning = parsed.reasoning[op.name];
+              if (personalReasoning && typeof personalReasoning === "string") {
+                step.reasoning = personalReasoning.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 280);
+              }
+            }
+          }
         }
       }
     } catch (gapErr) {
-      console.error("[LIVE-ROADMAP] gap analysis failed:", gapErr);
+      console.error("[LIVE-ROADMAP] gap analysis + personalization failed:", gapErr);
     }
   }
 

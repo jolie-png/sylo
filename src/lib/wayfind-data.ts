@@ -960,9 +960,11 @@ export function heroOpportunityForTrack(track: string) {
 // anything specific must live in OPPORTUNITIES instead.
 // ---------------------------------------------------------------------------
 
+export type MilestoneYear = "Sophomore" | "Junior" | "Senior" | "Year 1" | "Years 2–3";
+
 export type Milestone = {
   track: TrackId;
-  year: "Sophomore" | "Junior" | "Senior";
+  year: MilestoneYear;
   /** Short phrase — the general goal for this year. */
   focus: string;
   /** One sentence — a broad pattern worth watching for. */

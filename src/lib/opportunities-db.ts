@@ -128,9 +128,14 @@ for (const raw of rawRecords as unknown[]) {
 const seedRecords = SEED_OPPORTUNITIES.map(seedToRecord);
 const idSet = new Set<string>();
 const ALL_RECORDS: OpportunityRecord[] = [];
+const nameSet = new Set<string>();
 
 for (const rec of [...seedRecords, ...externalRecords]) {
   if (!idSet.has(rec.id)) {
+    // Deduplicate by name within the same track (catches duplicate entries with different IDs)
+    const nameKey = `${rec.track}:${rec.name.toLowerCase()}`;
+    if (nameSet.has(nameKey)) continue;
+    nameSet.add(nameKey);
     idSet.add(rec.id);
     ALL_RECORDS.push(rec);
   }

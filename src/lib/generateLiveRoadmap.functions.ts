@@ -302,7 +302,7 @@ function buildSystemPrompt() {
     "3. The 'sources' array must contain URLs from the search results that mention this opportunity.",
     "4. Prefer programs specific to the student's school, year, and major.",
     "5. If search results don't have enough real opportunities, return found=false.",
-    "6. Return 3-6 opportunities if available, ordered by leverage.",
+    "6. Return 3-6 opportunities if available, ordered by leverage. NEVER return the same program twice — even if it appears in multiple search results, include it only once.",
     "7. ALWAYS include a 'gapAnalysis' object in your JSON response with: strengths (2-3 strings about what the student's year/major/school gives them), gaps (array of {gap, why, action} — 2-3 gaps between where they are and their goal), bottomLine (one sentence on their single biggest focus). Base this on their year, major, and goal even if no resume context is provided.",
     "8. In the reasoning field for each opportunity, reference the student's specific gaps — explain why THIS opportunity matters given what they're missing.",
     "",

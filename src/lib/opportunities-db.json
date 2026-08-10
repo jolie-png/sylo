@@ -1021,43 +1021,6 @@
     "source": "Julian048/CS-Programs-Fellowships-Insights"
   },
   {
-    "id": "pipe-kleiner-perkins",
-    "name": "Kleiner Perkins Fellows Program",
-    "track": "product-manager",
-    "category": "Fellowship",
-    "access": "direct",
-    "school": "any",
-    "deadline": "2026-11-15",
-    "timeframe": "Window: Nov (matches for following summer)",
-    "requirements": [
-      "Any year",
-      "Engineering, Design, or Product interest"
-    ],
-    "contact": "https://fellows.kleinerperkins.com",
-    "link": "https://fellows.kleinerperkins.com/",
-    "timeline": "Summer internship at a KP portfolio company (Figma, Rippling, etc.) + mentorship + annual summit.",
-    "leverage": "Get placed at a top startup through a VC network rather than cold-applying. The KP Fellows alumni network is a career-long asset.",
-    "tags": [
-      "fellowship",
-      "startups",
-      "VC",
-      "deadline-critical",
-      "PM",
-      "engineering",
-      "design"
-    ],
-    "yearRelevance": [
-      "Sophomore",
-      "Junior",
-      "Senior"
-    ],
-    "region": "National",
-    "confidence": "curated",
-    "lastVerified": "2026-07-01",
-    "recurring": true,
-    "source": "Julian048/CS-Programs-Fellowships-Insights"
-  },
-  {
     "id": "pipe-deloitte-discovery",
     "name": "Deloitte Discovery Internship",
     "track": "investment-banking",

@@ -126,7 +126,7 @@ export function PublishedMapCard({
               </p>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-foreground/75">
-              {map.wouldSkip}
+              <ProgramLinkedText text={map.wouldSkip} />
             </p>
           </div>
 
@@ -139,7 +139,7 @@ export function PublishedMapCard({
               </p>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-foreground/75">
-              {map.advice}
+              <ProgramLinkedText text={map.advice} />
             </p>
           </div>
 

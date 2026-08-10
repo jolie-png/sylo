@@ -32,6 +32,7 @@ import { LinkExtractor } from "@/components/link-extractor";
 import { AcademicTermSelector } from "@/components/academic-term-selector";
 import { InlineNoteEditor } from "@/components/inline-note-editor";
 import { NoteIndicator } from "@/components/note-indicator";
+import { CalendarButton } from "@/components/calendar-button";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({
@@ -521,6 +522,7 @@ function Progress() {
                               {due.text}
                             </span>
                           ) : null}
+                          <CalendarButton name={op.name} deadline={op.deadline} description={s.reasoning} url={op.link} compact />
                         </div>
                       </div>
                     );
@@ -655,6 +657,7 @@ function Progress() {
                                   {due.text}
                                 </span>
                               ) : null}
+                              <CalendarButton name={s.title} deadline={s.targetDate || ""} description={s.note || ""} compact />
                             </div>
                           </>
                         )}

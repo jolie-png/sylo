@@ -75,7 +75,7 @@ function PathsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-lg font-semibold tracking-tight">Community paths</h2>
+              <h2 className="text-lg font-semibold tracking-tight">Community success maps</h2>
             </div>
 
             {/* Search filter */}
@@ -89,7 +89,7 @@ function PathsPage() {
             />
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            Paths shared by students who completed their roadmap. Reviewed before publishing.
+            Roadmaps shared by students who completed their journey. Reviewed before publishing.
           </p>
 
           <div className="mt-5 space-y-4">
@@ -117,7 +117,7 @@ function PathsPage() {
         ) : (
           <>
             <p className="text-sm text-muted-foreground">
-              Have a path that worked? Share it so others can see what you did.
+              Have a roadmap that worked? Share it so others can see what you did.
             </p>
             <button
               type="button"
@@ -125,7 +125,7 @@ function PathsPage() {
               className="tap group mt-3 inline-flex items-center justify-between gap-4 rounded-full border border-primary/30 bg-primary/5 px-6 py-3 text-sm font-semibold text-primary hover:bg-primary/10"
             >
               <PenLine className="h-4 w-4" />
-              <span>Share my path</span>
+              <span>Share my roadmap</span>
             </button>
           </>
         )}

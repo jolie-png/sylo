@@ -16,6 +16,7 @@ type FormStep = {
 type FormState = {
   author: string;
   anonymous: boolean;
+  linkedin: string;
   school: string;
   major: string;
   startYear: string;
@@ -40,6 +41,7 @@ function createInitialState(prefill?: { school?: string; major?: string; track?:
   return {
     author: "",
     anonymous: true,
+    linkedin: "",
     school: prefill?.school ?? "",
     major: prefill?.major ?? "",
     startYear: "",
@@ -122,6 +124,7 @@ export function SuccessMapForm({
       turningPoint: form.turningPoint.trim(),
       wouldSkip: form.wouldSkip.trim(),
       advice: form.advice.trim(),
+      ...(form.linkedin.trim() ? { linkedin: form.linkedin.trim() } : {}),
     });
   };
 
@@ -204,7 +207,7 @@ export function SuccessMapForm({
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold tracking-tight">Share your path</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Share your roadmap</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Help future students see what actually worked. We'll review before publishing.
         </p>
@@ -421,6 +424,18 @@ export function SuccessMapForm({
             />
           </Field>
         )}
+
+        <Field label="LinkedIn profile (optional)">
+          <input
+            value={form.linkedin}
+            onChange={(e) => update("linkedin", e.target.value)}
+            placeholder="https://linkedin.com/in/yourname"
+            className=""
+          />
+          <p className="mt-1 text-[11px] text-muted-foreground/70">
+            Displayed publicly so others can connect with you. Leave blank to skip.
+          </p>
+        </Field>
       </fieldset>
 
       {/* Actions */}

@@ -930,6 +930,7 @@ function SortableStep({
               </Link>
               <span className="text-xs text-muted-foreground">{op.timeframe}</span>
               <DeadlinePill deadline={op.deadline} recurring={false} />
+              <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={op.link} compact />
               <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
               {op.origin === "live" ? <FoundViaSearchBadge /> : null}
               {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}

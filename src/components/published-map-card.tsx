@@ -147,6 +147,17 @@ export function PublishedMapCard({
               This is a composite example based on real experiences. Not a single individual.
             </p>
           )}
+
+          {map.linkedin && !map.isExample && (
+            <a
+              href={map.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary hover:underline"
+            >
+              Connect on LinkedIn →
+            </a>
+          )}
         </div>
       )}
     </div>

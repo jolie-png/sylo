@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { searchOpportunities, type OpportunityRecord } from "@/lib/opportunities-db";
 import { useWayfind } from "@/lib/sylo-store";
 import { askSyloWebSearch, type WebSearchResult } from "@/lib/ask-sylo.functions";
+import type { Opportunity } from "@/lib/wayfind-data";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -44,7 +45,7 @@ const SUGGESTIONS = [
 
 export function AskSylo() {
   const [open, setOpen] = useState(false);
-  const { addCustomStep } = useWayfind();
+  const { togglePinned, pinnedIds, addLiveOpportunity, profile } = useWayfind();
 
   // Draggable position (bottom-right anchor)
   const [pos, setPos] = useState({ right: 24, bottom: 24 });
@@ -60,7 +61,7 @@ export function AskSylo() {
       id: "welcome",
       role: "sylo",
       content:
-        "Ask me about programs, deadlines, or pipelines. I'll search Sylo's curated database of fellowships, insight days, scholarships, and early-ID programs. Found something good? Add it to your roadmap.",
+        "Ask me about programs, deadlines, or fellowships. I'll search Sylo's curated database of fellowships, insight days, scholarships, and early-ID programs. Found something good? Pin it to keep it on your radar.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -82,6 +83,21 @@ export function AskSylo() {
         role: "user",
         content: query,
       };
+
+      // Check if the query is about programs, opportunities, deadlines, or career-adjacent topics
+      const relevantKeywords = /program|fellowship|scholarship|internship|deadline|apply|application|opportunity|fund|grant|research|club|course|cert|mentor|conference|cohort|pipeline|recruit|hire|career|job|role|position|company|firm|bank|lab|residency|camp|summit|immersion|competition|hackathon|workshop|network/i;
+      const greetingsAndFiller = /^(hi|hello|hey|sup|yo|thanks|thank you|ok|okay|cool|nice|wow|lol|haha|what's up|whats up|how are you|help|test)$/i;
+      const isRelevant = (relevantKeywords.test(query) || query.split(" ").length <= 3) && !greetingsAndFiller.test(query);
+
+      if (!isRelevant) {
+        const reminderMsg: Message = {
+          id: `sylo-${Date.now()}`,
+          role: "sylo",
+          content: "I can help you find programs, fellowships, scholarships, and deadlines. Try searching for something like \"PM internships\", \"AI safety fellowship\", or \"Goldman Sachs sophomore program.\"",
+        };
+        setMessages((prev) => [...prev, userMsg, reminderMsg]);
+        return;
+      }
 
       const loadingMsg: Message = {
         id: `sylo-${Date.now()}`,
@@ -165,14 +181,12 @@ export function AskSylo() {
 
   const handleAddToRoadmap = useCallback(
     (op: OpportunityRecord) => {
-      addCustomStep({
-        title: op.name,
-        note: `${op.leverage}\n\nDeadline: ${op.timeframe}\nLink: ${op.link}`,
-        targetDate: op.deadline || undefined,
-      });
+      if (!pinnedIds.includes(op.id)) {
+        togglePinned(op.id);
+      }
       setAddedIds((prev) => new Set([...prev, op.id]));
     },
-    [addCustomStep],
+    [togglePinned, pinnedIds],
   );
 
   return (
@@ -263,7 +277,7 @@ export function AskSylo() {
               <div>
                 <p className="text-sm font-semibold tracking-tight">Ask Sylo</p>
                 <p className="text-[10px] text-muted-foreground">
-                  Search programs · Add to roadmap
+                  Search programs · Pin to your list
                 </p>
               </div>
             </div>
@@ -351,10 +365,10 @@ export function AskSylo() {
                                           )}
                                         >
                                           {added ? (
-                                            "Added ✓"
+                                            "Pinned ✓"
                                           ) : (
                                             <>
-                                              <Plus className="h-2.5 w-2.5" /> Add
+                                              <Plus className="h-2.5 w-2.5" /> Pin
                                             </>
                                           )}
                                         </button>
@@ -396,10 +410,32 @@ export function AskSylo() {
                                       <button
                                         type="button"
                                         onClick={() => {
-                                          addCustomStep({
-                                            title: wr.title,
-                                            note: `${wr.snippet}\n\nLink: ${wr.link}`,
-                                          });
+                                          const id = `web-${wr.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40)}-${Date.now()}`;
+                                          // Strip the last sentence if it ends with ellipsis (incomplete from search)
+                                          const rawSnippet = wr.snippet || "";
+                                          const sentences = rawSnippet.split(/(?<=[.!?])\s+/);
+                                          const cleanSentences = sentences.filter((s) => !s.match(/\.{2,}\s*$|…\s*$/));
+                                          const snippet = cleanSentences.join(" ").trim() || rawSnippet.replace(/\.{2,}$|…$/, "").trim();
+                                          const liveOp: Opportunity = {
+                                            id,
+                                            name: wr.title.trim(),
+                                            track: (profile?.trackId ?? "software-engineer") as any,
+                                            category: "Fellowship",
+                                            access: "direct",
+                                            school: profile?.school ?? "any",
+                                            deadline: "",
+                                            timeframe: "Check link for current dates",
+                                            requirements: [],
+                                            contact: "",
+                                            link: wr.link,
+                                            timeline: snippet,
+                                            leverage: snippet,
+                                            origin: "live",
+                                            sources: [{ title: wr.source || new URL(wr.link).hostname, url: wr.link }],
+                                            singleSourced: true,
+                                          };
+                                          addLiveOpportunity(liveOp);
+                                          togglePinned(id);
                                           setAddedIds((prev) => new Set([...prev, `web-${i}`]));
                                         }}
                                         disabled={addedIds.has(`web-${i}`)}
@@ -410,14 +446,14 @@ export function AskSylo() {
                                             : "bg-primary/10 text-primary hover:bg-primary/20",
                                         )}
                                       >
-                                        {addedIds.has(`web-${i}`) ? "Added ✓" : <><Plus className="h-2.5 w-2.5" /> Add</>}
+                                        {addedIds.has(`web-${i}`) ? "Pinned ✓" : <><Plus className="h-2.5 w-2.5" /> Pin</>}
                                       </button>
                                     </div>
                                   </div>
                                 </div>
                               ))}
                               <p className="text-[9px] text-muted-foreground text-center pt-1">
-                                Results via web search · May need verification
+                                Results via web search
                               </p>
                             </div>
                           )}

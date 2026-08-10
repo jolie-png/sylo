@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { generatePostGradProjections, type PostGradProjection } from "./generatePostGradProjections.functions";
-import { postGradMilestonesForTrack, type Milestone } from "./wayfind-data";
+import { postGradMilestonesForTrack, gradMilestonesForTrack, isGradStudent, type Milestone } from "./wayfind-data";
 import type { Profile } from "./wayfind-store";
 
 const STORAGE_KEY = "sylo:postgrad-projections:v1";
@@ -37,8 +37,10 @@ function saveStored(data: StoredProjections) {
 /**
  * Converts static Milestone data into the PostGradProjection shape for seamless fallback.
  */
-function staticFallback(trackId: string): PostGradProjection[] {
-  const milestones = postGradMilestonesForTrack(trackId);
+function staticFallback(trackId: string, year: string): PostGradProjection[] {
+  const milestones = isGradStudent(year)
+    ? gradMilestonesForTrack(trackId)
+    : postGradMilestonesForTrack(trackId);
   return milestones.map((m: Milestone) => ({
     year: m.year,
     focus: m.focus,
@@ -98,7 +100,7 @@ export function usePostGradProjections(profile: Profile | null): PostGradState {
     }
 
     // Use static fallback immediately
-    const fallback = staticFallback(profile.trackId);
+    const fallback = staticFallback(profile.trackId, profile.year);
     setProjections(fallback);
     setIsLive(false);
   }, [profile?.trackId, profile?.major, profile?.year, profile?.school]);

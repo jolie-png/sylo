@@ -17,7 +17,7 @@ import {
   type Persona,
   type StepStatus,
 } from "./wayfind-data";
-import { getOpportunityById } from "./opportunities-db";
+import { getOpportunityById, getOpportunityByName, searchOpportunities } from "./opportunities-db";
 import type { GeneratedRoadmap } from "./roadmap.functions";
 
 export type Profile = {
@@ -41,6 +41,14 @@ export type Profile = {
   clubs?: string;
   /** What the student has already tried or done toward this goal. */
   alreadyDone?: string;
+  /**
+   * Whether the student has self-identified as eligible for diversity/identity-based programs.
+   * When true, programs tagged `diversity-cohort` are included in recommendations.
+   * When false or undefined, they are excluded to avoid assuming demographics.
+   */
+  diversitySelfId?: boolean;
+  /** Student's gender (optional). Used to surface gender-specific programs like Women in Finance. */
+  gender?: string;
 };
 
 export type Step = {
@@ -130,6 +138,8 @@ type State = {
   demoteStep: (opportunityId: string) => void;
   /** Add an existing opportunity to the roadmap as a new step. */
   addOpportunityToRoadmap: (opportunityId: string) => void;
+  /** Register a live opportunity so resolveOpportunity can find it. Returns its id. */
+  addLiveOpportunity: (op: Opportunity) => void;
   /** Set or remove a User_Note for a Sylo_Step. Null/empty removes the note. */
   setStepNote: (opportunityId: string, note: string | null) => void;
   /** Set or remove a reasoning override for a Sylo_Step. Null/empty removes it. */
@@ -224,15 +234,42 @@ export function personaRoadmap(persona: Persona): Roadmap {
       title: b.name,
       detail: `${b.sponsor} — ${b.note}. Not available at ${persona.school}, so Sylo routed you to the local equivalent instead.`,
     })),
-    steps: pool.map((o, i) => ({
-      id: o.id,
-      opportunityId: o.id,
-      reasoning: o.leverage,
-      // Demo feel: top step is "in-progress" (the current focus), the last
-      // rolling-deadline step is "complete" (low-barrier thing already done).
-      status: (i === 0 ? "in-progress" : i === pool.length - 1 ? "complete" : "not-started") as StepStatus,
-    })),
+    steps: pool.map((o, i) => {
+      // Personalized reasoning for instant demos — mimics what the AI prompt generates
+      const demoReasoning = getDemoReasoning(persona.id, o.id) || o.leverage;
+      return {
+        id: o.id,
+        opportunityId: o.id,
+        reasoning: demoReasoning,
+        // Demo feel: top step is "in-progress" (the current focus), the last
+        // rolling-deadline step is "complete" (low-barrier thing already done).
+        status: (i === 0 ? "in-progress" : i === pool.length - 1 ? "complete" : "not-started") as StepStatus,
+      };
+    }),
   };
+}
+
+/** Pre-written personalized reasoning for instant demo steps (PATTERN + FIT + EDGE format). */
+function getDemoReasoning(personaId: string, opportunityId: string): string | null {
+  const reasonings: Record<string, Record<string, string>> = {
+    maya: {
+      "op-gt-urop-pura": "Freshmen who land Google STEP typically show one thing beyond coursework: a funded research or project experience that proves self-direction. Your Python skills and CS 1301 background are the floor — PURA lets you build above it with faculty supervision and a stipend. In your STEP application, frame the PURA project as 'I identified a problem and built a solution independently' rather than 'I did research for credit.'",
+      "op-gt-createx-learn": "STEP and Explore interviewers ask 'Tell me about something you built.' CREATE-X gives you that answer with a deployed prototype, team experience, and a demo video — exactly the artifacts freshman-year programs screen for. Your IT help desk work shows you can support users; CREATE-X lets you show you can build for them instead.",
+      "op-gt-createx-launch": "Sophomore internship applications open August of your freshman year. Students who get interviews typically have one shipped product with real users. CREATE-X Launch takes your Startup Lab prototype and pushes it to actual customers — giving you metrics and a user story before recruiting season starts. Lead with the user count in your resume bullet.",
+      "op-gt-coop": "GT's co-op gives you 3 alternating semesters of real engineering work — more depth than a single summer internship. Students who co-op often get return offers or strong referrals for FAANG. Your Women in CS network has co-op alumni who can connect you to hiring managers directly. Ask in the WiCS Slack for co-op company recommendations.",
+      "op-gt-uroc": "UROC pairs you with a CS faculty mentor for a semester of real research. Sophomore programs (STEP, Explore, Capital One Summit) weigh faculty recommendations heavily — UROC gives you a recommender who's watched you solve problems for 15 weeks. Your hackathon club involvement shows teamwork; UROC shows you can also work independently on hard problems.",
+      "op-gt-grip": "GTRI projects are industry-grade applied research — security, robotics, or data systems work that reads like professional experience on a resume. This matters because companies evaluating freshmen and sophomores can't distinguish 'school project' from 'real work' unless the context makes it obvious. GTRI context does that immediately.",
+    },
+    alex: {
+      "op-ucla-urfp": "MD/PhD committees look for sustained research commitment starting sophomore year. Your intro bio lab sequence gives you the benchwork vocabulary; URFP gives you a named PI, a funded project, and the start of the 2+ years of continuous research that top programs require. In your fellowship application, reference specific techniques from your lab coursework to show you're ready to contribute day one.",
+      "op-ucla-bisep": "BISEP places you in a molecular biology lab for the summer with structured mentorship — exactly the 'independent research experience' that MSTP applications ask about. Your campus health clinic volunteering shows clinical interest, but BISEP proves you can do the science side too. Programs like Johns Hopkins MD/PhD weigh early research starts heavily — this is that start.",
+      "op-ucla-premed-summer": "Clinical hours matter, but structured clinical programs matter more — they show intentionality rather than just proximity to patients. Your 40 hours of shadowing established interest; PMSS gives you 8 weeks of supervised clinical exposure with a named supervisor who can write you a letter. That letter carries more weight than 100 unstructured shadow hours.",
+      "op-ucla-hhmi-pathways": "HHMI Pathways provides multi-year mentorship and resources specifically for students from disadvantaged backgrounds pursuing research careers. Your pre-med society involvement shows community engagement; Pathways gives you a faculty advocate who stays with you through the PhD application process. Apply early — only ~20 students per cohort.",
+      "op-ucla-mcdb-research": "Getting into a specific faculty member's lab through direct outreach is how most successful MD/PhD applicants build their research narrative. Your bio lab coursework taught you techniques; now you need a PI who knows your name and can write 'independently designed an experiment' in their letter. Email 3 MCDB faculty whose recent papers you've read — specificity in your email is what gets responses.",
+    },
+  };
+
+  return reasonings[personaId]?.[opportunityId] ?? null;
 }
 
 export function WayfindProvider({ children }: { children: ReactNode }) {
@@ -316,7 +353,24 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   const resolveOpportunity = useCallback(
     (id: string): Opportunity | undefined => {
       const fromLive = liveOpportunities.find((o) => o.id === id);
-      if (fromLive) return fromLive;
+      if (fromLive) {
+        // If the live entry matches a curated DB record by name, prefer the curated data
+        const curated = getOpportunityByName(fromLive.name);
+        if (curated && curated.requirements?.length) {
+          return {
+            ...fromLive,
+            category: curated.category as any,
+            requirements: curated.requirements,
+            link: curated.link || fromLive.link,
+            contact: curated.contact || fromLive.contact,
+            timeline: curated.timeline || fromLive.timeline,
+            timeframe: curated.timeframe || fromLive.timeframe,
+            deadline: curated.deadline || fromLive.deadline,
+            leverage: curated.leverage || fromLive.leverage,
+          } as Opportunity;
+        }
+        return fromLive;
+      }
       const fromSeed = getOpportunity(id);
       if (fromSeed) return fromSeed;
       const fromDb = getOpportunityById(id);
@@ -335,8 +389,33 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   );
 
   const browsableOpportunities = useCallback(
-    (trackId: string) => [...liveOpportunities, ...opportunitiesForTrack(trackId)],
-    [liveOpportunities],
+    (trackId: string) => {
+      // Use the curated DB search which applies yearRelevance, diversity/women tag filtering
+      const diversityExclude = profile?.diversitySelfId ? undefined : ["diversity-cohort"];
+      const dbResults = searchOpportunities({
+        track: trackId as any,
+        year: profile?.year,
+        excludeTags: diversityExclude,
+        limit: 50,
+      });
+      // Convert DB records to Opportunity shape and merge with live opportunities
+      const dbOpportunities = dbResults.map((rec) => ({
+        ...rec,
+        origin: rec.origin ?? ("seed" as const),
+        sources: rec.sources ?? [],
+        singleSourced: rec.singleSourced ?? false,
+      })) as unknown as Opportunity[];
+
+      const all = [...liveOpportunities, ...dbOpportunities];
+      // Deduplicate by id
+      const seen = new Set<string>();
+      return all.filter((o) => {
+        if (seen.has(o.id)) return false;
+        seen.add(o.id);
+        return true;
+      });
+    },
+    [liveOpportunities, profile?.diversitySelfId, profile?.year],
   );
 
   const setStatus = useCallback((opportunityId: string, status: StepStatus) => {
@@ -526,10 +605,8 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       status: step.status,
     };
 
-    // If the step has a note, store it in stepNotes
-    if (step.note) {
-      setStepNotes((prev) => ({ ...prev, [id]: step.note! }));
-    }
+    // Don't copy note to stepNotes — it's already shown as the reasoning.
+    // stepNotes is for user-written annotations separate from the reasoning.
 
     // Append to roadmap
     setRoadmapState((prev) => {
@@ -588,6 +665,14 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       };
 
       return { ...prev, steps: [...prev.steps, newStep] };
+    });
+  }, []);
+
+  /** Register a live opportunity so resolveOpportunity and the UI can find it. */
+  const addLiveOpportunity = useCallback((op: Opportunity) => {
+    setLiveOpportunities((prev) => {
+      if (prev.some((o) => o.id === op.id)) return prev;
+      return [...prev, op];
     });
   }, []);
 
@@ -681,6 +766,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       removeStep,
       demoteStep,
       addOpportunityToRoadmap,
+      addLiveOpportunity,
       setStepNote,
       setStepReasoning,
     }),
@@ -710,6 +796,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       removeStep,
       demoteStep,
       addOpportunityToRoadmap,
+      addLiveOpportunity,
       setStepNote,
       setStepReasoning,
     ],
@@ -735,6 +822,8 @@ export function mergeResumeData(
   return {
     ...existing,
     name: parsed.name?.trim() || existing.name,
+    school: parsed.school?.trim() || existing.school,
+    year: parsed.year?.trim() || existing.year,
     experience: parsed.experience?.trim() || existing.experience,
     skills: parsed.skills?.trim() || existing.skills,
     priorWork: parsed.priorWork?.trim() || existing.priorWork,

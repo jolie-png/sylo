@@ -41,7 +41,7 @@ function PathsPage() {
     return (
       <Workspace wide>
         <SuccessMapForm
-          prefill={profile ? { school: profile.school, major: profile.major, track: profile.trackId } : undefined}
+          prefill={profile ? { school: profile.school, major: profile.major, track: profile.trackId, year: profile.year } : undefined}
           onSubmit={handleSubmit}
           onCancel={() => setShowForm(false)}
         />

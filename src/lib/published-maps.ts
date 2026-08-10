@@ -144,8 +144,8 @@ export const PUBLISHED_MAPS: PublishedMap[] = [
     school: "University of Florida",
     major: "Computer Science",
     startYear: "Sophomore",
-    outcome: "Software Engineer at Microsoft",
-    timeline: "Sophomore fall → Senior winter",
+    outcome: "SWE Intern at Microsoft (return offer accepted)",
+    timeline: "Sophomore fall → Junior summer",
     steps: [
       {
         timing: "Sophomore fall",
@@ -187,12 +187,7 @@ export const PUBLISHED_MAPS: PublishedMap[] = [
         timing: "Junior summer",
         action: "Interned at Microsoft on the Azure DevOps team. Shipped a feature that reduced CI/CD pipeline setup time by 30%. Asked my manager for honest feedback every 2 weeks.",
         category: "internship",
-        unlocked: "Got a return offer in August. My skip-level manager specifically said the biweekly feedback requests showed maturity.",
-      },
-      {
-        timing: "Senior fall",
-        action: "Accepted the full-time return offer. Spent senior year mentoring underclassmen in the SWE chapter and doing mock interviews for them before GHC season.",
-        category: "other",
+        unlocked: "Got a return offer in August. My skip-level manager specifically said the biweekly feedback requests showed maturity. Starting full-time after graduation.",
       },
     ],
     turningPoint: "Grace Hopper. I almost didn't go because I thought it was 'just a conference.' It's not — it's a career fair where companies hand out interviews because they've already decided they want to hire from that pool. I got my Microsoft pipeline from a 5-minute conversation at a booth. No cold application, no online assessment, no waiting 3 months for a response. If you're eligible for GHC, SHPE, or any similar conference with a career fair, go. It compresses months of recruiting into 48 hours.",
@@ -272,8 +267,8 @@ export const PUBLISHED_MAPS: PublishedMap[] = [
     school: "University of Maryland",
     major: "Computer Science",
     startYear: "Sophomore",
-    outcome: "Software Engineer at Uber",
-    timeline: "Sophomore spring → Senior fall",
+    outcome: "SWE Intern at Uber (return offer accepted)",
+    timeline: "Sophomore fall → Junior summer",
     steps: [
       {
         timing: "Sophomore fall",
@@ -309,12 +304,7 @@ export const PUBLISHED_MAPS: PublishedMap[] = [
         timing: "Junior summer",
         action: "Uber SWE Intern on the Marketplace Pricing team. Worked on surge pricing algorithms. Shipped a model improvement that reduced price estimation errors by 12% in my test market.",
         category: "internship",
-        unlocked: "The 12% improvement got presented at the team all-hands by my manager. That visibility across the org made the return offer decision easy for them.",
-      },
-      {
-        timing: "Senior fall",
-        action: "Accepted Uber's full-time new-grad SWE offer — return from internship. Negotiated comp using data from levels.fyi and the fact that I had a competing offer from my Career Prep network.",
-        category: "application",
+        unlocked: "The 12% improvement got presented at the team all-hands by my manager. That visibility across the org made the return offer decision easy for them. Got the offer before the internship ended.",
       },
     ],
     turningPoint: "The fact that Uber Career Prep literally gives you an interview for the internship at the end. That's not a metaphor — you complete the 6-month fellowship, and then they give you the opportunity to interview for an internship or full-time role at Uber. You don't apply through the website. You don't wait for a recruiter to find your resume. You finish the program and they say 'okay, here's your interview.' I went from zero Big Tech connections to interviewing at Uber because I did a fellowship. That's the whole game.",
@@ -330,8 +320,8 @@ export const PUBLISHED_MAPS: PublishedMap[] = [
     school: "Georgia Institute of Technology",
     major: "Computer Science",
     startYear: "Sophomore",
-    outcome: "Software Engineer at JP Morgan Chase",
-    timeline: "Sophomore spring → Junior summer",
+    outcome: "SWE Intern at JP Morgan Chase (return offer in hand)",
+    timeline: "Sophomore fall → Junior summer",
     steps: [
       {
         timing: "Sophomore fall",
@@ -367,12 +357,7 @@ export const PUBLISHED_MAPS: PublishedMap[] = [
         timing: "Junior summer",
         action: "JP Morgan SWE Intern — 10 weeks on a payments infrastructure team. Built a transaction monitoring service. Got strong performance reviews and a return offer with a pre-placement guarantee.",
         category: "internship",
-        unlocked: "Full-time offer came before the internship even ended. Manager said my Code for Good performance was what originally flagged me as a strong candidate.",
-      },
-      {
-        timing: "Junior fall",
-        action: "Accepted the full-time SWE offer. Used senior year to help run GT's hackathon club and prep underclassmen for Code for Good applications.",
-        category: "other",
+        unlocked: "Return offer came before the internship even ended. Manager said my Code for Good performance was what originally flagged me as a strong candidate.",
       },
     ],
     turningPoint: "Code for Good replaced the entire traditional interview process. No phone screen, no behavioral round, no LeetCode gauntlet. You pass one online assessment, show up to the hackathon, build something real for 24 hours, and they decide based on that. I got my JP Morgan internship from a hackathon — not from grinding 500 LeetCode problems. The hackathon tests what the job actually requires: building software with a team under time pressure.",

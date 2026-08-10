@@ -37,14 +37,14 @@ const INITIAL_STEP: () => FormStep = () => ({
   unlocked: "",
 });
 
-function createInitialState(prefill?: { school?: string; major?: string; track?: string }): FormState {
+function createInitialState(prefill?: { school?: string; major?: string; track?: string; year?: string }): FormState {
   return {
     author: "",
     anonymous: true,
     linkedin: "",
     school: prefill?.school ?? "",
     major: prefill?.major ?? "",
-    startYear: "",
+    startYear: prefill?.year ?? "",
     track: prefill?.track ?? "",
     outcome: "",
     timeline: "",
@@ -64,7 +64,7 @@ export function SuccessMapForm({
   onSubmit,
   onCancel,
 }: {
-  prefill?: { school?: string; major?: string; track?: string };
+  prefill?: { school?: string; major?: string; track?: string; year?: string };
   onSubmit: (map: Omit<PublishedMap, "id" | "publishedAt">) => void;
   onCancel: () => void;
 }) {

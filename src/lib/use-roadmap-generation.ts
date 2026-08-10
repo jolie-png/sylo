@@ -33,6 +33,7 @@ export type RoadmapInput = {
   priorWork?: string;
   clubs?: string;
   alreadyDone?: string;
+  diversitySelfId?: boolean;
 };
 
 export type GenerationResult = {

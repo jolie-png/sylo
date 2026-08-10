@@ -104,6 +104,7 @@ function Builder() {
   const [priorWork, setPriorWork] = useState("");
   const [clubs, setClubs] = useState("");
   const [alreadyDone, setAlreadyDone] = useState("");
+  const [diversitySelfId, setDiversitySelfId] = useState(false);
 
   const [resumeParsing, setResumeParsing] = useState(false);
 
@@ -136,10 +137,11 @@ function Builder() {
       priorWork: priorWork.trim() || undefined,
       clubs: clubs.trim() || undefined,
       alreadyDone: alreadyDone.trim() || undefined,
+      diversitySelfId,
     };
     setProfile(profile);
     try {
-      const { roadmap, live } = await generate({ trackId, goalText: effectiveGoalText, major, year, school, experience, gpa, skills, priorWork, clubs, alreadyDone });
+      const { roadmap, live } = await generate({ trackId, goalText: effectiveGoalText, major, year, school, experience, gpa, skills, priorWork, clubs, alreadyDone, diversitySelfId });
       setRoadmap(roadmap, live);
       navigate({ to: "/dashboard" });
     } catch {
@@ -456,6 +458,8 @@ function Builder() {
             <ResumeUpload
               onParsed={(data) => {
                 if (data.name?.trim()) setResumeName(data.name);
+                if (data.school?.trim()) setSchool(data.school);
+                if (data.year?.trim()) setYear(data.year);
                 if (data.experience?.trim()) setExperience(data.experience);
                 if (data.skills?.trim()) setSkills(data.skills);
                 if (data.priorWork?.trim()) setPriorWork(data.priorWork);
@@ -516,6 +520,24 @@ function Builder() {
                 onChange={setAlreadyDone}
                 multiline
               />
+
+              {/* Diversity & identity program opt-in */}
+              <label className="flex items-start gap-3 rounded-xl border bg-background p-3.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={diversitySelfId}
+                  onChange={(e) => setDiversitySelfId(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-muted-foreground/40 accent-primary"
+                />
+                <div>
+                  <span className="text-[13px] font-medium text-foreground">
+                    Include diversity and identity-based programs
+                  </span>
+                  <p className="mt-0.5 text-[12px] text-muted-foreground">
+                    Show programs for women, underrepresented minorities, first-gen students, LGBTQ+, and other identity-based groups (e.g. BOLD, MLT, SEO, SHPE, Women in Finance, Grace Hopper).
+                  </p>
+                </div>
+              </label>
             </div>
           ) : null}
         </div>

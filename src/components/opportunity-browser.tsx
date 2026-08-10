@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Pin, PinOff, SlidersHorizontal, Search, MessageCircle } from "lucide-react";
+import { Pin, PinOff, SlidersHorizontal, Search, MessageCircle, Plus, Check } from "lucide-react";
 import { Tag, FoundViaSearchBadge } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
@@ -28,15 +28,35 @@ const TRACK_GROUPS: { id: string; label: string; trackIds: TrackId[] }[] = [
  */
 export function OpportunityBrowser({ trackId }: { trackId: string }) {
   const navigate = useNavigate();
-  const { pinnedIds, togglePinned, resolveOpportunity, browsableOpportunities } = useWayfind();
-  const [view, setView] = useState<"track" | "all" | "pinned">("track");
+  const { pinnedIds, togglePinned, resolveOpportunity, browsableOpportunities, addCustomStep, customSteps, roadmap } = useWayfind();
+  const [view, setView] = useState<"track" | "all" | "pinned">(() => {
+    const saved = sessionStorage.getItem("opp-browser-tab");
+    return saved === "all" || saved === "pinned" ? saved : "track";
+  });
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [trackFilter, setTrackFilter] = useState<string[]>([]);
   const [query, setQuery] = useState("");
 
+  // Persist active tab to sessionStorage for back-navigation
+  const handleViewChange = (v: "track" | "all" | "pinned") => {
+    setView(v);
+    sessionStorage.setItem("opp-browser-tab", v);
+  };
+
   const trackOpportunities = browsableOpportunities(trackId);
+  // Include opportunities that are on the user's roadmap (even if from another track)
+  const roadmapOpIds = roadmap?.steps.map((s) => s.opportunityId) ?? [];
+  // Also include opportunities the user manually added via "Add to my roadmap" (stored as custom steps with matching titles)
+  const customStepTitles = customSteps.map((s) => s.title);
+  const roadmapOps = roadmapOpIds
+    .map((id) => resolveOpportunity(id))
+    .filter((op): op is Opportunity => op !== undefined && !trackOpportunities.some((t) => t.id === op.id));
+  const customMatchedOps = OPPORTUNITIES.filter(
+    (op) => customStepTitles.includes(op.name) && !trackOpportunities.some((t) => t.id === op.id) && !roadmapOps.some((r) => r.id === op.id)
+  );
+  const myTrackOpportunities = [...trackOpportunities, ...roadmapOps, ...customMatchedOps];
   // Include live opportunities so pinned live results show up
-  const allOpportunities = [...new Map([...trackOpportunities, ...OPPORTUNITIES].map(op => [op.id, op])).values()] as Opportunity[];
+  const allOpportunities = [...new Map([...myTrackOpportunities, ...OPPORTUNITIES].map(op => [op.id, op])).values()] as Opportunity[];
 
   // Determine the pool based on view
   let pool: Opportunity[];
@@ -45,7 +65,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
   } else if (view === "all") {
     pool = allOpportunities;
   } else {
-    pool = trackOpportunities;
+    pool = myTrackOpportunities;
   }
 
   const pinnedCount = allOpportunities.filter((op) => pinnedIds.includes(op.id)).length;
@@ -75,7 +95,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
         <div className="flex items-center gap-1.5 rounded-full border bg-muted/50 p-1 w-fit">
         <button
           type="button"
-          onClick={() => setView("track")}
+          onClick={() => handleViewChange("track")}
           className={cn(
             "tap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
             view === "track"
@@ -87,7 +107,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
         </button>
         <button
           type="button"
-          onClick={() => setView("all")}
+          onClick={() => handleViewChange("all")}
           className={cn(
             "tap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
             view === "all"
@@ -99,7 +119,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
         </button>
         <button
           type="button"
-          onClick={() => setView("pinned")}
+          onClick={() => handleViewChange("pinned")}
           className={cn(
             "tap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
             view === "pinned"
@@ -216,8 +236,8 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
           : view === "all"
             ? `${shown.length} programs, fellowships, and pipeline deadlines across all tracks. Pin the ones you don't want to miss.`
             : pool.some((op) => op.origin === "live")
-              ? "Verified opportunities on this track, plus what search turned up for you. Pin the ones you want to keep close."
-              : "Every verified opportunity on this track. Pin the ones you want to keep close."}
+              ? "Verified opportunities on this track, plus what search turned up for you. Pin the ones you want to keep close. Opportunities already on your roadmap are marked."
+              : "Every verified opportunity on this track. Pin the ones you want to keep close. Opportunities already on your roadmap are marked."}
       </p>
 
       {/* Empty state */}
@@ -238,6 +258,9 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
             const pinned = pinnedIds.includes(op.id);
             const full = resolveOpportunity(op.id) ?? op;
             const isExternal = op.id.startsWith("pipe-");
+            const onRoadmap = roadmap?.steps.some((s) => s.opportunityId === op.id) || false;
+            const inCustomSteps = customSteps.some((s) => s.title === op.name);
+            const alreadyAdded = onRoadmap || inCustomSteps;
             const trackLabel = view !== "track"
               ? TRACK_GROUPS.find((g) => g.trackIds.includes(op.track as TrackId))?.label
               : null;
@@ -258,25 +281,49 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-semibold leading-snug tracking-tight">{op.name}</p>
-                  <button
-                    type="button"
-                    aria-label={pinned ? `Unpin ${op.name}` : `Pin ${op.name}`}
-                    title={pinned ? "Unpin" : "Pin"}
-                    aria-pressed={pinned}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      togglePinned(op.id);
-                    }}
-                    className={`tap -mr-1 -mt-1 shrink-0 rounded-full p-1.5 ${
-                      pinned ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {pinned ? (
-                      <Pin className="h-4 w-4" fill="currentColor" />
+                  <div className="flex shrink-0 -mr-1 -mt-1">
+                    {!alreadyAdded ? (
+                      <button
+                        type="button"
+                        aria-label={`Add ${op.name} to roadmap`}
+                        title="Add to roadmap"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addCustomStep({
+                            title: op.name,
+                            note: `${full?.leverage || op.leverage || ""}\n\nLink: ${op.link}`,
+                            targetDate: op.deadline || undefined,
+                          });
+                        }}
+                        className="tap rounded-full p-1.5 text-muted-foreground hover:text-foreground"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
                     ) : (
-                      <PinOff className="h-4 w-4" />
+                      <span className="rounded-full p-1.5 text-emerald-600" title="On your roadmap">
+                        <Check className="h-4 w-4" />
+                      </span>
                     )}
-                  </button>
+                    <button
+                      type="button"
+                      aria-label={pinned ? `Unpin ${op.name}` : `Pin ${op.name}`}
+                      title={pinned ? "Unpin" : "Pin"}
+                      aria-pressed={pinned}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePinned(op.id);
+                      }}
+                      className={`tap rounded-full p-1.5 ${
+                        pinned ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {pinned ? (
+                        <Pin className="h-4 w-4" fill="currentColor" />
+                      ) : (
+                        <PinOff className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="mt-2.5 flex flex-wrap items-center gap-1.5 [&>*]:max-w-full [&>*]:whitespace-normal [&>*]:break-words">

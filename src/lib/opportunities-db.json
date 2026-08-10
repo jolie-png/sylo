@@ -50,7 +50,7 @@
     "contact": "https://mlt.org",
     "link": "https://mlt.org/career-prep/",
     "timeline": "18-month program starting spring of sophomore year. One cohort per year.",
-    "leverage": "80%+ of MLT fellows land top-tier internships. This is the single highest-conversion diversity pipeline for finance and consulting \u2014 one deadline, one shot per year.",
+    "leverage": "80%+ of MLT fellows land top-tier internships. An 18-month leadership development program with dedicated coaching, corporate access, and structured interview preparation for finance and consulting roles.",
     "tags": [
       "diversity-cohort",
       "fellowship",
@@ -258,7 +258,7 @@
     "contact": "https://www.seo-usa.org",
     "link": "https://tech.seo-usa.org/",
     "timeline": "6-week immersion + interview prep + direct placement at top tech firms. Miss Oct and wait a year.",
-    "leverage": "One of the highest-conversion diversity tech pipelines \u2014 comprehensive training plus direct placement. You don't cold-apply after this.",
+    "leverage": "One of the strongest tech career accelerators \u2014 comprehensive training in technical interviews, system design, and professional skills, plus direct placement at partner companies. 90%+ placement rate.",
     "tags": [
       "fellowship",
       "diversity-cohort",
@@ -460,7 +460,7 @@
       "Interest in consulting or entrepreneurship"
     ],
     "contact": "https://www.bain.com/careers",
-    "link": "https://www.bain.com/careers/roles/students/",
+    "link": "https://www.bain.com/careers/work-with-us/internships-programs/",
     "timeline": "Multi-day program + project work with Bain consultants. Strong pipeline to summer consultant internship.",
     "leverage": "Bain's primary sophomore pipeline. Consulting recruiting moves fast \u2014 by the time you hear about this program organically, the window is usually closed.",
     "tags": [
@@ -496,7 +496,7 @@
     "contact": "https://careers.google.com",
     "link": "https://buildyourfuture.withgoogle.com/programs/bold-immersion",
     "timeline": "Summer immersion at Google focused on business roles (Sales, Marketing, PM). Direct pathway to full-time offers.",
-    "leverage": "Google's business-track diversity pipeline. Unlike SWE roles, business roles at Google are nearly impossible to get without going through a program like this.",
+    "leverage": "A summer immersion at Google focused on business roles (Sales, Marketing, PM) with mentorship from senior leaders. Designed to develop the next generation of business leaders in tech \u2014 participants build real projects and get direct exposure to Google's product and go-to-market teams.",
     "tags": [
       "diversity-cohort",
       "early-ID",
@@ -926,7 +926,7 @@
       "Interest in trading, math, or CS"
     ],
     "contact": "https://careers.sig.com",
-    "link": "https://careers.sig.com/students/discovery-day",
+    "link": "https://sig.com/careers/early-talent/",
     "timeline": "1-day immersion program \u2192 pathway to summer internship. Limited spots.",
     "leverage": "One of the few quant firms with a dedicated freshman/sophomore day. Attend and you skip straight to intern interviews.",
     "tags": [
@@ -1034,7 +1034,7 @@
       "Business or STEM major"
     ],
     "contact": "https://apply.deloitte.com",
-    "link": "https://apply.deloitte.com/careers/DiscoverDeloitte",
+    "link": "https://jobsus.deloitte.com/",
     "timeline": "Summer program designed as consulting intro for sophomores \u2192 converts to full internship offer junior year.",
     "leverage": "Deloitte's dedicated sophomore entry point. Converts at a much higher rate than cold-applying junior year. One window per year.",
     "tags": [
@@ -1112,44 +1112,6 @@
       "entrepreneurship",
       "deadline-critical",
       "mentorship"
-    ],
-    "yearRelevance": [
-      "Freshman",
-      "Sophomore",
-      "Junior",
-      "Senior"
-    ],
-    "region": "National",
-    "confidence": "curated",
-    "lastVerified": "2026-07-01",
-    "recurring": true,
-    "source": "Julian048/CS-Programs-Fellowships-Insights"
-  },
-  {
-    "id": "pipe-shpe-conference",
-    "name": "SHPE National Convention Registration",
-    "track": "software-engineer",
-    "category": "Club",
-    "access": "direct",
-    "school": "any",
-    "deadline": "2026-09-30",
-    "timeframe": "Early registration window: Aug\u2013Sept (convention in Nov)",
-    "requirements": [
-      "Any year",
-      "Hispanic/Latinx in STEM",
-      "SHPE membership"
-    ],
-    "contact": "https://www.shpe.org",
-    "link": "https://www.shpe.org/events/national-convention",
-    "timeline": "Largest Hispanic STEM conference. On-site interviews with 200+ companies. Early registration gets priority interview slots.",
-    "leverage": "Companies fill internship slots at SHPE before general apps even open. If you're Hispanic in STEM, this is where recruiting happens \u2014 register early or lose interview priority.",
-    "tags": [
-      "diversity-cohort",
-      "conference",
-      "deadline-critical",
-      "recruiting",
-      "STEM",
-      "Hispanic"
     ],
     "yearRelevance": [
       "Freshman",
@@ -1284,7 +1246,7 @@
       "Diverse background preferred"
     ],
     "contact": "https://www.wellsfargo.com/about/careers/students/",
-    "link": "https://www.wellsfargo.com/about/careers/students/",
+    "link": "https://www.wellsfargo.com/about/careers/early-careers/",
     "timeline": "Summer rotational fellowship across multiple WF divisions \u2192 pathway to full-time internship junior year.",
     "leverage": "One of the few banking programs where you rotate through divisions before committing. Converts to full internship at high rate.",
     "tags": [
@@ -1318,7 +1280,7 @@
       "Interest in consulting/advisory"
     ],
     "contact": "https://www.kpmg.us/careers",
-    "link": "https://www.kpmg.us/careers/students.html",
+    "link": "https://kpmg.com/us/en/careers/students-and-recent-graduates.html",
     "timeline": "Apply by March \u2192 attend 3-day immersive in July with workshops and networking. Pipeline to intern offers.",
     "leverage": "Hands-on advisory workshops + direct networking with KPMG leaders. Attend this and you skip the generic app pool for their internship.",
     "tags": [
@@ -1351,7 +1313,7 @@
       "Interest in product management"
     ],
     "contact": "https://www.instacart.com/company/careers",
-    "link": "https://www.instacart.com/company/careers",
+    "link": "https://www.instacart.com/careers",
     "timeline": "Apply March \u2192 join APM cohort for rotational product management experience.",
     "leverage": "One of the few dedicated APM programs outside FAANG. Rotational experience across Instacart's product org with senior PM mentors.",
     "tags": [
@@ -1384,7 +1346,7 @@
       "Interest in banking, markets, or transaction banking"
     ],
     "contact": "https://www.barclays.com/careers",
-    "link": "https://home.barclays/careers/early-careers/",
+    "link": "https://search.jobs.barclays/students-graduates",
     "timeline": "Multi-day insight across multiple divisions (Coverage, M&A, Markets, Transaction Banking). Pipeline to junior internship.",
     "leverage": "Barclays runs separate Discover tracks for each division \u2014 apply to multiple. Dec 16 deadline means most students miss it over finals.",
     "tags": [
@@ -1914,7 +1876,7 @@
       "Interest in consulting, tax, or advisory"
     ],
     "contact": "https://www.ey.com/careers",
-    "link": "https://www.ey.com/en_us/careers/students",
+    "link": "https://www.ey.com/en_us/careers/students-and-entry-level-programs",
     "timeline": "Multi-day immersive for freshmen/sophomores \u2192 strong pipeline to EY's summer internship.",
     "leverage": "EY's dedicated underclassman early-ID. One of the Big 4 accounting firms \u2014 attending this signals interest 2 years before recruiting.",
     "tags": [
@@ -2066,7 +2028,7 @@
       "Intent to pursue PhD or MD/PhD"
     ],
     "contact": "https://www.nigms.nih.gov/training/MARC",
-    "link": "https://www.nigms.nih.gov/training/MARC/Pages/default.aspx",
+    "link": "https://www.nigms.nih.gov/training/marc",
     "timeline": "Apply to your campus program spring of sophomore year \u2192 2-year stipend ($13,000+/year) through junior and senior year + summer research + GRE prep + conference travel.",
     "leverage": "MARC scholars are admitted to biomedical PhD programs at 2\u20133x the national average rate. The two-year stipend lets you focus entirely on research instead of working a side job \u2014 and the NIH name on your CV signals serious intent to grad school admissions.",
     "tags": [
@@ -2586,6 +2548,7 @@
     "timeline": "Nominations due September; awards announced December",
     "leverage": "Full PhD funding plus advisor development training \u2014 signals elite-level commitment to the field.",
     "tags": [
+      "diversity-cohort",
       "diversity",
       "fully-funded",
       "phd-track",
@@ -2715,7 +2678,7 @@
       "0-1 years experience"
     ],
     "contact": "",
-    "link": "https://www.metacareers.com/life/programs/pathways/rpm",
+    "link": "https://www.metacareers.com/v2/jobs/1680851879404795/",
     "timeline": "Applications open Aug-Sep; interviews Oct-Nov",
     "leverage": "18-month rotation across two Meta product teams (Instagram, WhatsApp, Reality Labs, etc.). You ship to billions of users and leave with two distinct PM case studies \u2014 rare depth for a new grad.",
     "tags": [
@@ -2981,10 +2944,18 @@
     ],
     "contact": "https://ppiaprogram.org/",
     "link": "https://ppiaprogram.org/junior-summer-institute/",
-    "timeline": "Apply fall → 7-week fully funded summer at a top policy school → guaranteed grad school fee waivers at 50+ programs.",
+    "timeline": "Apply fall \u2192 7-week fully funded summer at a top policy school \u2192 guaranteed grad school fee waivers at 50+ programs.",
     "leverage": "The single most important pipeline program for MPP/MPA admissions. Completers get fee waivers at every top policy school and a network that lasts decades.",
-    "tags": ["policy", "fellowship", "grad-school-pipeline", "fully-funded"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "tags": [
+      "policy",
+      "fellowship",
+      "grad-school-pipeline",
+      "fully-funded"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3008,11 +2979,18 @@
       "Faculty nomination required"
     ],
     "contact": "https://www.truman.gov/",
-    "link": "https://www.truman.gov/candidates/faq",
-    "timeline": "Faculty nominates you fall → national app due Feb → finalist weekend in March → $30K for grad school + lifetime network.",
+    "link": "https://www.truman.gov/",
+    "timeline": "Faculty nominates you fall \u2192 national app due Feb \u2192 finalist weekend in March \u2192 $30K for grad school + lifetime network.",
     "leverage": "$30K for grad school and the strongest public-service credential an undergrad can earn. Law schools and policy programs treat Truman scholars as auto-admits.",
-    "tags": ["scholarship", "public-service", "grad-school", "prestige"],
-    "yearRelevance": ["Junior"],
+    "tags": [
+      "scholarship",
+      "public-service",
+      "grad-school",
+      "prestige"
+    ],
+    "yearRelevance": [
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3034,11 +3012,19 @@
       "Interest in law school"
     ],
     "contact": "https://www.lsac.org/",
-    "link": "https://www.lsac.org/discover-law/diversity-law-school/prelaw-undergraduate-scholars-plus-program",
-    "timeline": "Apply spring → 4-week summer intensive at a law school → LSAT prep, mock classes, mentorship from law students and faculty.",
+    "link": "https://www.lsac.org/discover-law/diversity-law-school",
+    "timeline": "Apply spring \u2192 4-week summer intensive at a law school \u2192 LSAT prep, mock classes, mentorship from law students and faculty.",
     "leverage": "Free LSAT prep + law school exposure before junior year. Students in PLUS programs score 5+ points higher on the LSAT and apply to more selective schools.",
-    "tags": ["pre-law", "diversity", "LSAT-prep", "pipeline"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "tags": [
+      "pre-law",
+      "diversity",
+      "LSAT-prep",
+      "pipeline"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3064,8 +3050,18 @@
     "link": "https://chci.org/programs/congressional-internship-program/",
     "timeline": "8-week paid internship on Capitol Hill + weekly leadership seminars + housing stipend. Place in a congressional office or federal agency.",
     "leverage": "Paid Hill experience with housing covered. Builds the policy network and writing samples that Truman and law school apps demand.",
-    "tags": ["congressional", "internship", "paid", "diversity", "government"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "tags": [
+      "congressional",
+      "internship",
+      "paid",
+      "diversity",
+      "government"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "Washington DC",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3089,10 +3085,18 @@
     ],
     "contact": "https://www.napaba.org/",
     "link": "https://www.napaba.org/page/LawFoundation",
-    "timeline": "Apply fall → scholarship covers LSAT prep + law school application fees → mentorship from practicing attorneys.",
+    "timeline": "Apply fall \u2192 scholarship covers LSAT prep + law school application fees \u2192 mentorship from practicing attorneys.",
     "leverage": "Covers the expensive parts of the law school application process (LSAT prep, CAS fees) plus pairs you with attorneys who write strong recs.",
-    "tags": ["scholarship", "pre-law", "diversity", "AAPI"],
-    "yearRelevance": ["Junior", "Senior"],
+    "tags": [
+      "scholarship",
+      "pre-law",
+      "diversity",
+      "AAPI"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3115,10 +3119,18 @@
     ],
     "contact": "https://www.ideocolab.com/",
     "link": "https://www.ideocolab.com/fellowship",
-    "timeline": "Apply Jan → 10-week summer fellowship at IDEO → work on real design challenges with Fortune 500 clients → portfolio case study + return offer pipeline.",
+    "timeline": "Apply Jan \u2192 10-week summer fellowship at IDEO \u2192 work on real design challenges with Fortune 500 clients \u2192 portfolio case study + return offer pipeline.",
     "leverage": "IDEO on your resume opens every door in design. The fellowship is the primary way undergrads get in without a grad degree.",
-    "tags": ["design", "fellowship", "prestigious", "portfolio"],
-    "yearRelevance": ["Junior", "Senior"],
+    "tags": [
+      "design",
+      "fellowship",
+      "prestigious",
+      "portfolio"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3141,10 +3153,19 @@
     ],
     "contact": "https://grow.google/certificates/ux-design/",
     "link": "https://buildyourfuture.withgoogle.com/apprenticeships",
-    "timeline": "Apply spring → 12-month paid apprenticeship → work on real Google products with a senior designer mentor → conversion to full-time.",
-    "leverage": "Paid apprenticeship that converts to full-time at Google. No CS degree required — portfolio and the UX certificate are what matter.",
-    "tags": ["design", "apprenticeship", "paid", "big-tech", "conversion"],
-    "yearRelevance": ["Junior", "Senior"],
+    "timeline": "Apply spring \u2192 12-month paid apprenticeship \u2192 work on real Google products with a senior designer mentor \u2192 conversion to full-time.",
+    "leverage": "Paid apprenticeship that converts to full-time at Google. No CS degree required \u2014 portfolio and the UX certificate are what matter.",
+    "tags": [
+      "design",
+      "apprenticeship",
+      "paid",
+      "big-tech",
+      "conversion"
+    ],
+    "yearRelevance": [
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3167,10 +3188,19 @@
     ],
     "contact": "https://www.figma.com/",
     "link": "https://www.figma.com/community/config",
-    "timeline": "Apply Feb → 8-week summer program → mentorship from Figma designers, Config conference scholarship, and a published community file.",
+    "timeline": "Apply Feb \u2192 8-week summer program \u2192 mentorship from Figma designers, Config conference scholarship, and a published community file.",
     "leverage": "Direct access to Figma's design team + conference attendance. Alumni get fast-tracked for Figma internships and the community exposure builds your following.",
-    "tags": ["design", "fellowship", "diversity", "community", "tools"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "tags": [
+      "design",
+      "fellowship",
+      "diversity",
+      "community",
+      "tools"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3194,10 +3224,19 @@
     ],
     "contact": "https://www.aiga.org/",
     "link": "https://www.aiga.org/membership-community/aiga-scholarships",
-    "timeline": "Apply spring → $2K–$5K scholarship + AIGA membership + mentorship pairing with a working designer.",
+    "timeline": "Apply spring \u2192 $2K\u2013$5K scholarship + AIGA membership + mentorship pairing with a working designer.",
     "leverage": "Covers tools and conference costs that add up fast in design. The AIGA network and mentorship are worth more than the money.",
-    "tags": ["scholarship", "design", "diversity", "mentorship"],
-    "yearRelevance": ["Sophomore", "Junior", "Senior"],
+    "tags": [
+      "scholarship",
+      "design",
+      "diversity",
+      "mentorship"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3221,10 +3260,18 @@
     ],
     "contact": "https://careers.microsoft.com/",
     "link": "https://careers.microsoft.com/students/us/en/uxdesign",
-    "timeline": "Apply Aug–Oct → 12-week paid summer internship → ship a real feature on a Microsoft product → strong return offer rate.",
-    "leverage": "One of the few big-tech design internships that actively recruits undergrads (not just grad students). Apply early — roles fill fast.",
-    "tags": ["design", "internship", "big-tech", "paid", "deadline-critical"],
-    "yearRelevance": ["Junior"],
+    "timeline": "Apply Aug\u2013Oct \u2192 12-week paid summer internship \u2192 ship a real feature on a Microsoft product \u2192 strong return offer rate.",
+    "leverage": "One of the few big-tech design internships that actively recruits undergrads (not just grad students). Apply early \u2014 roles fill fast.",
+    "tags": [
+      "design",
+      "internship",
+      "big-tech",
+      "paid",
+      "deadline-critical"
+    ],
+    "yearRelevance": [
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-07-01",
@@ -3239,7 +3286,7 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-03-01",
-    "timeframe": "Apply spring → hackathon runs summer → offers within 2 weeks",
+    "timeframe": "Apply spring \u2192 hackathon runs summer \u2192 offers within 2 weeks",
     "requirements": [
       "Enrolled undergraduate",
       "Pass online coding assessment (HackerRank, 2 problems)",
@@ -3247,10 +3294,20 @@
     ],
     "contact": "https://careers.jpmorgan.com",
     "link": "https://careers.jpmorgan.com/us/en/students/programs/code-for-good",
-    "timeline": "Pass coding assessment → attend 24-hour hackathon → build real app for nonprofit with JPMC engineers → top performers get internship offers directly. No additional interviews.",
+    "timeline": "Pass coding assessment \u2192 attend 24-hour hackathon \u2192 build real app for nonprofit with JPMC engineers \u2192 top performers get internship offers directly. No additional interviews.",
     "leverage": "The hackathon IS the interview. No phone screen, no LeetCode gauntlet. JPMC engineers watch you code in a team for 24 hours and decide based on that. Highest-conversion path into JP Morgan for students who perform well in team settings.",
-    "tags": ["hackathon", "direct-pipeline", "no-interview", "paid", "nonprofit", "team-based"],
-    "yearRelevance": ["Sophomore", "Junior"],
+    "tags": [
+      "hackathon",
+      "direct-pipeline",
+      "no-interview",
+      "paid",
+      "nonprofit",
+      "team-based"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -3265,7 +3322,7 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-09-15",
-    "timeframe": "Apply Sept → 5-month program → fast-track to summer analyst interviews",
+    "timeframe": "Apply Sept \u2192 5-month program \u2192 fast-track to summer analyst interviews",
     "requirements": [
       "Sophomore (2nd year undergraduate)",
       "Interest in financial services or technology",
@@ -3273,10 +3330,19 @@
     ],
     "contact": "https://www.goldmansachs.com/careers/students",
     "link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/emerging-leaders-series",
-    "timeline": "5-month program with virtual kickoff (Sept) + in-person components (Nov–Feb) → mentorship with Goldman VP → direct pipeline to summer analyst interview.",
+    "timeline": "5-month program with virtual kickoff (Sept) + in-person components (Nov\u2013Feb) \u2192 mentorship with Goldman VP \u2192 direct pipeline to summer analyst interview.",
     "leverage": "Goldman's primary sophomore pipeline. Participants get a named mentor, office visits, and priority interviews for the summer analyst role. You compete against ~50 ELS participants instead of 10,000 cold applicants.",
-    "tags": ["diversity-cohort", "direct-pipeline", "mentorship", "early-ID", "finance", "deadline-critical"],
-    "yearRelevance": ["Sophomore"],
+    "tags": [
+      "diversity-cohort",
+      "direct-pipeline",
+      "mentorship",
+      "early-ID",
+      "finance",
+      "deadline-critical"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -3291,7 +3357,7 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-01-15",
-    "timeframe": "Apply Jan → 10-week paid internship the following summer",
+    "timeframe": "Apply Jan \u2192 10-week paid internship the following summer",
     "requirements": [
       "Sophomore at US or Canadian university",
       "Underrepresented racial/ethnic background (Black, Hispanic/Latino, Indigenous)",
@@ -3299,10 +3365,19 @@
     ],
     "contact": "https://careers.bcg.com",
     "link": "https://careers.bcg.com/global/en/on-campus/programs",
-    "timeline": "10-week paid summer internship working on real BCG client engagements → paired with Associate mentor → direct funnel to junior-year full internship offer.",
-    "leverage": "BCG's flagship sophomore diversity pipeline. It's a real consulting internship — not an info session. Completing it fast-tracks you past the resume screen for the junior-year role. One annual cohort, limited spots.",
-    "tags": ["diversity-cohort", "direct-pipeline", "paid", "consulting", "sophomore", "deadline-critical"],
-    "yearRelevance": ["Sophomore"],
+    "timeline": "10-week paid summer internship working on real BCG client engagements \u2192 paired with Associate mentor \u2192 direct funnel to junior-year full internship offer.",
+    "leverage": "BCG's flagship sophomore development program. It's a real consulting internship \u2014 not an info session. You work on actual client engagements, get paired with a mentor, and strong performers are invited to interview for the junior-year role. One annual cohort, limited spots.",
+    "tags": [
+      "diversity-cohort",
+      "direct-pipeline",
+      "paid",
+      "consulting",
+      "sophomore",
+      "deadline-critical"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -3317,18 +3392,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-08-15",
-    "timeframe": "Register by Aug → attend Oct/Nov → interviews on-site",
+    "timeframe": "Register by Aug \u2192 attend Oct/Nov \u2192 interviews on-site",
     "requirements": [
       "SHPE member (any student can join)",
       "Enrolled undergraduate or graduate student",
       "STEM major"
     ],
     "contact": "https://shpe.org",
-    "link": "https://shpe.org/engage/events/",
-    "timeline": "Register → attend 4-day convention (Oct/Nov) → career fair with 200+ companies → on-site interviews and same-week offers from major tech and engineering firms.",
-    "leverage": "15,000+ attendees, massive career fair where companies actively recruit. Like Grace Hopper but for Hispanic/Latino engineers. Companies give on-site interviews — bypasses online application entirely. Attend through your school's SHPE chapter for funding.",
-    "tags": ["career-fair", "diversity", "on-site-interviews", "networking", "conference"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "link": "https://www.shpe.org/events/national-convention",
+    "timeline": "Register \u2192 attend 4-day convention (Oct/Nov) \u2192 career fair with 200+ companies \u2192 on-site interviews and same-week offers from major tech and engineering firms.",
+    "leverage": "15,000+ attendees, massive career fair where companies actively recruit. One of the largest STEM career conferences in the country \u2014 companies conduct on-site interviews and extend same-week offers. Attend through your school's SHPE chapter for funding.",
+    "tags": [
+      "career-fair",
+      "diversity",
+      "on-site-interviews",
+      "networking",
+      "conference"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -3343,17 +3429,29 @@
     "access": "direct",
     "school": "any",
     "deadline": "2026-07-15",
-    "timeframe": "Register by summer → attend Sept/Oct → career fair + interviews",
+    "timeframe": "Register by summer \u2192 attend Sept/Oct \u2192 career fair + interviews",
     "requirements": [
       "Enrolled undergraduate or graduate student in computing",
-      "Open to all — celebrates diversity in computing"
+      "Open to all \u2014 celebrates diversity in computing"
     ],
     "contact": "https://tapiaconference.cmd-it.org",
     "link": "https://tapiaconference.cmd-it.org",
-    "timeline": "Register (scholarships available) → attend 3-day conference → career fair with top tech companies → networking + on-site interview opportunities.",
+    "timeline": "Register (scholarships available) \u2192 attend 3-day conference \u2192 career fair with top tech companies \u2192 networking + on-site interview opportunities.",
     "leverage": "Smaller than GHC or SHPE (~2,000 attendees) but higher recruiter-to-student ratio. Companies actively recruit from underrepresented groups in computing. Scholarships cover registration + travel for many students.",
-    "tags": ["career-fair", "diversity", "computing", "networking", "scholarship-available", "conference"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "tags": [
+      "career-fair",
+      "diversity",
+      "computing",
+      "networking",
+      "scholarship-available",
+      "conference"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -3368,7 +3466,7 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-03-15",
-    "timeframe": "Apply spring of senior year HS → 4-week program summer before college",
+    "timeframe": "Apply spring of senior year HS \u2192 4-week program summer before college",
     "requirements": [
       "Rising first-year college student (apply spring of HS senior year)",
       "Passion for technology",
@@ -3376,10 +3474,18 @@
     ],
     "contact": "https://buildyourfuture.withgoogle.com",
     "link": "https://buildyourfuture.withgoogle.com/programs/computer-science-summer-institute",
-    "timeline": "4-week online intensive before freshman year → learn CS fundamentals from Google engineers → build community with cohort → early connection to Google recruiting pipeline.",
+    "timeline": "4-week online intensive before freshman year \u2192 learn CS fundamentals from Google engineers \u2192 build community with cohort \u2192 early connection to Google recruiting pipeline.",
     "leverage": "Google's pre-college diversity program. Completing CSSI puts you in Google's talent system before you've even started college. Alumni often get fast-tracked for STEP and internship interviews in subsequent years.",
-    "tags": ["diversity", "pre-college", "google-pipeline", "free", "virtual"],
-    "yearRelevance": ["Freshman"],
+    "tags": [
+      "diversity",
+      "pre-college",
+      "google-pipeline",
+      "free",
+      "virtual"
+    ],
+    "yearRelevance": [
+      "Freshman"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -3394,7 +3500,7 @@
     "access": "direct",
     "school": "any",
     "deadline": "2027-01-15",
-    "timeframe": "Apply winter → multi-day summit → pipeline to summer internship",
+    "timeframe": "Apply winter \u2192 multi-day summit \u2192 pipeline to summer internship",
     "requirements": [
       "Freshman or Sophomore",
       "CS or related major",
@@ -3402,10 +3508,19 @@
     ],
     "contact": "https://www.capitalonecareers.com",
     "link": "https://www.capitalonecareers.com/student-summit-to-summer-intern-students",
-    "timeline": "Multi-day summit with workshops, networking, and project work → strong performers get fast-tracked to summer internship interviews → 'Summit to Summer' pipeline.",
-    "leverage": "Capital One's dedicated early-career pipeline for underrepresented students. The summit functions as both education and evaluation — participants who perform well get priority access to internship interviews without cold-applying.",
-    "tags": ["diversity-cohort", "direct-pipeline", "early-ID", "hackathon", "tech"],
-    "yearRelevance": ["Freshman", "Sophomore"],
+    "timeline": "Multi-day summit with workshops, networking, and project work \u2192 strong performers get fast-tracked to summer internship interviews \u2192 'Summit to Summer' pipeline.",
+    "leverage": "Capital One's dedicated early-career pipeline for underrepresented students. The summit functions as both education and evaluation \u2014 participants who perform well get priority access to internship interviews without cold-applying.",
+    "tags": [
+      "diversity-cohort",
+      "direct-pipeline",
+      "early-ID",
+      "hackathon",
+      "tech"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
@@ -3420,21 +3535,376 @@
     "access": "direct",
     "school": "any",
     "deadline": "",
-    "timeframe": "Rolling — join anytime",
+    "timeframe": "Rolling \u2014 join anytime",
     "requirements": [
       "Black or Hispanic/Latinx college student",
       "Studying CS or related field"
     ],
     "contact": "https://www.colorstack.org",
     "link": "https://www.colorstack.org",
-    "timeline": "Join → access resume reviews, interview prep, job board, and direct referrals to partner companies (Google, Meta, Microsoft, etc.) → members get priority access to recruiting events.",
-    "leverage": "ColorStack partners directly with top tech companies who recruit from the member base. Members get exclusive job postings, referral opportunities, and community support. Free to join — the ROI is outsized for the zero cost.",
-    "tags": ["diversity", "community", "free", "referrals", "job-board", "networking"],
-    "yearRelevance": ["Freshman", "Sophomore", "Junior", "Senior"],
+    "timeline": "Join \u2192 access resume reviews, interview prep, job board, and direct referrals to partner companies (Google, Meta, Microsoft, etc.) \u2192 members get priority access to recruiting events.",
+    "leverage": "ColorStack partners directly with top tech companies who recruit from the member base. Members get exclusive job postings, referral opportunities, and community support. Free to join \u2014 the ROI is outsized for the zero cost.",
+    "tags": [
+      "diversity",
+      "community",
+      "free",
+      "referrals",
+      "job-board",
+      "networking"
+    ],
+    "yearRelevance": [
+      "Freshman",
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
     "region": "National",
     "confidence": "curated",
     "lastVerified": "2026-08-01",
     "recurring": false,
     "source": "ColorStack.org"
+  },
+  {
+    "id": "grad-mats-alignment",
+    "name": "MATS \u2014 ML Alignment Theory Scholars",
+    "track": "software-engineer",
+    "category": "Fellowship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-01-15",
+    "timeframe": "Applications open fall; program runs winter/spring (10 weeks)",
+    "requirements": [
+      "Graduate student or researcher",
+      "Strong ML/AI background",
+      "Interest in alignment research"
+    ],
+    "contact": "https://www.matsprogram.org",
+    "link": "https://www.matsprogram.org",
+    "timeline": "10-week research program in Berkeley. Matched with a senior alignment researcher as mentor. Produce original research on alignment problems. Past scholars have published at top venues and joined Anthropic, DeepMind, and Redwood.",
+    "leverage": "The most direct path from 'interested in alignment' to 'published alignment researcher with industry connections.' Mentors include researchers from Anthropic, DeepMind, and ARC. Alumni regularly get hired by top safety labs within 6 months of completing the program.",
+    "tags": [
+      "AI-safety",
+      "alignment",
+      "fellowship",
+      "research",
+      "graduate"
+    ],
+    "yearRelevance": [
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "matsprogram.org"
+  },
+  {
+    "id": "grad-anthropic-residency",
+    "name": "Anthropic Research Residency",
+    "track": "software-engineer",
+    "category": "Fellowship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "",
+    "timeframe": "Rolling applications; 6-12 month residency",
+    "requirements": [
+      "PhD student or postdoc",
+      "Strong ML research background",
+      "Publications at top venues preferred"
+    ],
+    "contact": "https://www.anthropic.com/careers",
+    "link": "https://www.anthropic.com/careers",
+    "timeline": "6-12 month paid residency at Anthropic working on interpretability, RLHF, or safety evaluation. Residents work on real safety research alongside full-time researchers and frequently convert to full-time offers.",
+    "leverage": "One of the few direct paths into a top AI safety lab without a completed PhD. Residents publish papers, build safety infrastructure, and get embedded in Anthropic's research culture. High conversion rate to full-time research scientist roles.",
+    "tags": [
+      "AI-safety",
+      "residency",
+      "research",
+      "industry",
+      "graduate"
+    ],
+    "yearRelevance": [
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "anthropic.com"
+  },
+  {
+    "id": "grad-redwood-research",
+    "name": "Redwood Research Fellowship",
+    "track": "software-engineer",
+    "category": "Fellowship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "",
+    "timeframe": "Rolling; programs run 2-3 months",
+    "requirements": [
+      "Strong ML/math background",
+      "Interest in interpretability or alignment",
+      "PhD student or equivalent experience"
+    ],
+    "contact": "https://www.redwoodresearch.org",
+    "link": "https://www.redwoodresearch.org",
+    "timeline": "2-3 month research fellowship focused on mechanistic interpretability and alignment. Small cohorts, intensive research with Redwood's team. Produce publishable results in a compressed timeline.",
+    "leverage": "Redwood pioneered mechanistic interpretability research. Their fellowships produce high-impact papers in short timeframes and connect you directly to the interpretability research community. Alumni are at Anthropic, DeepMind, and leading academic labs.",
+    "tags": [
+      "AI-safety",
+      "interpretability",
+      "fellowship",
+      "research",
+      "graduate"
+    ],
+    "yearRelevance": [
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "redwoodresearch.org"
+  },
+  {
+    "id": "grad-open-phil-scholarship",
+    "name": "Open Philanthropy AI Fellowship",
+    "track": "software-engineer",
+    "category": "Funding",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-03-01",
+    "timeframe": "Applications spring; funding covers full PhD",
+    "requirements": [
+      "PhD student in ML/AI",
+      "Research focus on AI safety, alignment, or governance",
+      "Any year of PhD"
+    ],
+    "contact": "https://www.openphilanthropy.org/focus/global-catastrophic-risks/potential-risks-from-advanced-artificial-intelligence/",
+    "link": "https://www.openphilanthropy.org",
+    "timeline": "Multi-year fellowship covering full PhD funding plus research expenses. No teaching requirements \u2014 designed to let you focus entirely on safety-relevant research. Includes networking events with other fellows and connections to safety-focused organizations.",
+    "leverage": "Removes financial constraints so you can focus purely on alignment research. The fellowship network includes researchers at every major safety lab. Having Open Phil funding signals to the field that your research direction is considered high-impact by the most influential AI safety funder.",
+    "tags": [
+      "AI-safety",
+      "funding",
+      "PhD",
+      "fellowship",
+      "graduate"
+    ],
+    "yearRelevance": [
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "openphilanthropy.org"
+  },
+  {
+    "id": "grad-deepmind-intern",
+    "name": "Google DeepMind Research Internship (PhD)",
+    "track": "software-engineer",
+    "category": "Internship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "",
+    "timeframe": "Rolling; 3-6 month internships year-round",
+    "requirements": [
+      "PhD student in ML/AI/CS",
+      "Published research at top venues",
+      "Strong coding skills (Python, JAX/PyTorch)"
+    ],
+    "contact": "https://deepmind.google/careers/",
+    "link": "https://deepmind.google/careers/internships/",
+    "timeline": "3-6 month paid research internship at DeepMind. Work on a defined research project with a host researcher. Interns frequently publish papers and can convert to full-time research scientist roles upon PhD completion.",
+    "leverage": "DeepMind internships carry significant prestige in ML research. Publishing a paper during your internship substantially strengthens your job market profile. The internal network and return offer pathway makes this one of the strongest signals for a research career.",
+    "tags": [
+      "research",
+      "internship",
+      "AI",
+      "industry",
+      "graduate",
+      "big-tech"
+    ],
+    "yearRelevance": [
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "deepmind.google"
+  },
+  {
+    "id": "grad-ai-safety-camp",
+    "name": "AI Safety Camp",
+    "track": "software-engineer",
+    "category": "Fellowship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2027-02-01",
+    "timeframe": "Applications winter; camp runs spring (2 weeks + ongoing)",
+    "requirements": [
+      "Graduate student or researcher",
+      "Interest in AI safety",
+      "Basic ML knowledge"
+    ],
+    "contact": "https://aisafety.camp",
+    "link": "https://aisafety.camp",
+    "timeline": "2-week intensive research sprint followed by months of continued collaboration. Teams form around specific safety research questions and produce papers or technical reports. Lower bar than MATS \u2014 good entry point into the safety research community.",
+    "leverage": "A structured way to start producing safety research if you haven't yet. Teams often continue collaborating after the camp ends, and the output becomes a portfolio piece. Good stepping stone toward MATS or lab residencies if you need initial safety research credentials.",
+    "tags": [
+      "AI-safety",
+      "research",
+      "fellowship",
+      "entry-point",
+      "graduate"
+    ],
+    "yearRelevance": [
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "aisafety.camp"
+  },
+  {
+    "id": "grad-nsf-grfp",
+    "name": "NSF Graduate Research Fellowship (GRFP)",
+    "track": "research-phd",
+    "category": "Funding",
+    "access": "direct",
+    "school": "any",
+    "deadline": "2026-10-21",
+    "timeframe": "Applications October; awards announced spring",
+    "requirements": [
+      "US citizen or permanent resident",
+      "Graduate student in STEM (1st or 2nd year)",
+      "Research-focused program"
+    ],
+    "contact": "https://www.nsfgrfp.org",
+    "link": "https://www.nsfgrfp.org",
+    "timeline": "3 years of funding ($37,000/year stipend + $16,000 tuition). One-time application window in your 1st or 2nd year of grad school. Widely considered the most prestigious early-career research fellowship in the US.",
+    "leverage": "GRFP gives you financial independence from your advisor's grants, which means freedom to pursue the research direction you want. It's also a strong CV signal \u2014 the selectivity (15-20% acceptance) means reviewers take your research seriously. Apply in your 2nd year if you have preliminary results.",
+    "tags": [
+      "funding",
+      "PhD",
+      "fellowship",
+      "prestigious",
+      "graduate",
+      "STEM"
+    ],
+    "yearRelevance": [
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "nsfgrfp.org"
+  },
+  {
+    "id": "grad-microsoft-research-intern",
+    "name": "Microsoft Research Internship (PhD)",
+    "track": "software-engineer",
+    "category": "Internship",
+    "access": "direct",
+    "school": "any",
+    "deadline": "",
+    "timeframe": "Rolling; summer and year-round positions",
+    "requirements": [
+      "PhD student in CS/AI/ML",
+      "Published research",
+      "Strong programming skills"
+    ],
+    "contact": "https://www.microsoft.com/en-us/research/careers/",
+    "link": "https://www.microsoft.com/en-us/research/careers/",
+    "timeline": "12-week summer internship (or longer) at MSR labs. Work with a senior researcher on a defined project. MSR interns regularly publish at top venues \u2014 the lab has a strong tradition of giving interns real research ownership.",
+    "leverage": "MSR internships are prestigious and offer true research autonomy. The lab has teams working on responsible AI, fairness, and safety. A publication from MSR significantly strengthens your academic job market profile or transition to industry research.",
+    "tags": [
+      "research",
+      "internship",
+      "AI",
+      "industry",
+      "graduate",
+      "big-tech"
+    ],
+    "yearRelevance": [
+      "Graduate"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "microsoft.com/research"
+  },
+  {
+    "id": "op-nyu-stern-womens-finance",
+    "name": "Stern Women in Finance Conference + Mentorship",
+    "track": "investment-banking",
+    "category": "Fellowship",
+    "access": "direct",
+    "school": "New York University",
+    "deadline": "2027-10-01",
+    "timeframe": "Apply Fall for academic year mentorship",
+    "requirements": [
+      "NYU undergraduate",
+      "Interest in finance",
+      "Women or non-binary students"
+    ],
+    "contact": "Stern Women in Business",
+    "link": "https://www.stern.nyu.edu/",
+    "timeline": "Year-long mentorship with a Stern alum in IB/PE/VC + annual conference with recruiting access from Goldman, JPM, Morgan Stanley.",
+    "leverage": "Direct mentorship from someone who recruited into your target bank. The conference generates more interviews than cold-applying to 50 firms.",
+    "tags": [
+      "women",
+      "mentorship",
+      "networking",
+      "finance"
+    ],
+    "yearRelevance": [
+      "Sophomore",
+      "Junior",
+      "Senior"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "NYU Stern"
+  },
+  {
+    "id": "op-nyu-wallstreet-scholars",
+    "name": "NYU Stern Wall Street Scholars Program",
+    "track": "investment-banking",
+    "category": "Fellowship",
+    "access": "direct",
+    "school": "New York University",
+    "deadline": "2027-09-15",
+    "timeframe": "Apply early Fall for Spring cohort",
+    "requirements": [
+      "NYU Stern sophomore",
+      "Minimum 3.5 GPA",
+      "Interest in finance careers"
+    ],
+    "contact": "Stern Office of Student Engagement",
+    "link": "https://www.stern.nyu.edu/experience-stern/about/departments-centers-initiatives/altman-paulson-initiative/scholars-program",
+    "timeline": "Semester-long cohort: firm visits, alumni panels, technical workshops (DCF, LBO, comps), and mock interviews with analysts.",
+    "leverage": "Structured IB prep with firm access that most sophomores have to build themselves. The alumni network from this cohort is where referrals come from.",
+    "tags": [
+      "early-ID",
+      "finance",
+      "networking",
+      "sophomore"
+    ],
+    "yearRelevance": [
+      "Sophomore"
+    ],
+    "region": "National",
+    "confidence": "curated",
+    "lastVerified": "2026-08-01",
+    "recurring": true,
+    "source": "NYU Stern"
   }
 ]

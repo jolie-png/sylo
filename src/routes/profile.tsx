@@ -79,6 +79,7 @@ function ProfilePage() {
         priorWork: draft.priorWork,
         clubs: draft.clubs,
         alreadyDone: draft.alreadyDone,
+        diversitySelfId: draft.diversitySelfId,
       });
       setRoadmap(nextRoadmap, live);
       setHasChanges(false);
@@ -254,6 +255,9 @@ function ProfilePage() {
           <ResumeUpload
             onParsed={(data) => {
               updateDraft({
+                name: data.name?.trim() || draft!.name,
+                school: data.school?.trim() || draft!.school,
+                year: data.year?.trim() || draft!.year,
                 experience: data.experience?.trim() || draft!.experience,
                 skills: data.skills?.trim() || draft!.skills,
                 priorWork: data.priorWork?.trim() || draft!.priorWork,
@@ -300,6 +304,24 @@ function ProfilePage() {
             onChange={(v) => updateDraft({ alreadyDone: v || undefined })}
             multiline
           />
+
+          {/* Diversity & identity program opt-in */}
+          <label className="flex items-start gap-3 rounded-xl border bg-background p-3.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={draft.diversitySelfId ?? false}
+              onChange={(e) => updateDraft({ diversitySelfId: e.target.checked })}
+              className="mt-0.5 h-4 w-4 rounded border-muted-foreground/40 accent-primary"
+            />
+            <div>
+              <span className="text-[13px] font-medium text-foreground">
+                Include diversity and identity-based programs
+              </span>
+              <p className="mt-0.5 text-[12px] text-muted-foreground">
+                Show programs for women, underrepresented minorities, first-gen students, LGBTQ+, and other identity-based groups (e.g. BOLD, MLT, SEO, SHPE, Women in Finance, Grace Hopper).
+              </p>
+            </div>
+          </label>
         </div>
       </div>
     </Workspace>

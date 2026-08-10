@@ -1,4 +1,4 @@
-import { Map, AlertCircle, ChevronRight, ChevronDown, GripVertical, Lightbulb, StickyNote } from "lucide-react";
+import { Map, ChevronRight, ChevronDown, GripVertical, Lightbulb, StickyNote } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { TRACKS, PERSONAS } from "@/lib/wayfind-data";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
@@ -136,21 +136,6 @@ export function RoadmapWorkspacePreview() {
 
           {/* Scrollable content area */}
           <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5">
-            {/* Gap alert banner */}
-            <div className="overflow-hidden rounded-xl border-2 border-amber-500/30 bg-amber-500/[0.06] p-3">
-              <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/20 text-amber-700">
-                  <AlertCircle className="h-3 w-3" />
-                </span>
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-700/90">
-                  Your biggest gap
-                </p>
-              </div>
-              <p className="mt-1.5 text-[12px] font-semibold leading-snug tracking-tight sm:text-[13px]">
-                No faculty mentor identified
-              </p>
-            </div>
-
             {/* Highest-leverage move */}
             {topOp ? (
               <div className="mt-3 rounded-xl border border-primary/10 bg-primary/5 p-3">

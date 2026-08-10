@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useCallback, useRef, useState } from "react";
-import { ChevronRight, ChevronDown, Map, Plus, Pencil, Trash2, AlertCircle, RefreshCw, Loader2, GripVertical, MessageCircle, ArrowUp, ArrowDown, GitBranch } from "lucide-react";
+import { ChevronRight, ChevronDown, Map, Plus, Pencil, Trash2, RefreshCw, Loader2, GripVertical, MessageCircle, ArrowUp, ArrowDown, GitBranch } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -28,7 +28,7 @@ import {
   CuratedBadge,
 } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
-import { getTrack, milestonesForTrack, POST_GRAD_YEARS, YEARS } from "@/lib/wayfind-data";
+import { getTrack, milestonesForTrack, POST_GRAD_YEARS, GRAD_YEARS, YEARS, isGradStudent } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
 import { formatTargetDate } from "@/lib/terms";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
@@ -164,10 +164,15 @@ function Dashboard() {
     })
     .slice(0, 3);
   const currentYearIndex = YEARS.indexOf(profile.year);
-  const futureYears = (["Sophomore", "Junior", "Senior"] as const).filter(
-    (y) => currentYearIndex < 0 || YEARS.indexOf(y) > currentYearIndex,
-  );
+  const isGrad = isGradStudent(profile.year);
+  const futureYears = isGrad
+    ? [] // Grad students don't have undergrad years ahead
+    : (["Sophomore", "Junior", "Senior"] as const).filter(
+        (y) => currentYearIndex < 0 || YEARS.indexOf(y) > currentYearIndex,
+      );
   const postGradItems = postGrad.projections;
+  // For grad students, use GRAD_YEARS; for undergrads, use POST_GRAD_YEARS
+  const projectionYears = isGrad ? GRAD_YEARS : POST_GRAD_YEARS;
 
   return (
     <Workspace wide>
@@ -209,10 +214,6 @@ function Dashboard() {
               ))}
             </div>
           </div>
-
-          <p className="mt-5 rounded-lg bg-primary/10 px-3 py-2 text-[13px] font-medium leading-relaxed text-primary">
-            {roadmap.gapAnalysis.bottomLine}
-          </p>
         </section>
       ) : null}
 
@@ -282,23 +283,6 @@ function Dashboard() {
       /> */}
 
 
-      {topOp?.gapLabel ? (
-        <div className="animate-reveal mt-6 overflow-hidden rounded-2xl border-2 border-amber-500/30 bg-amber-500/[0.06] p-6" style={{ animationDelay: "200ms" }}>
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/20 text-amber-700">
-              <AlertCircle className="h-3.5 w-3.5" />
-            </span>
-            <p className="text-xs font-semibold uppercase tracking-wide text-amber-700/90">
-              Your biggest gap
-            </p>
-          </div>
-          <p className="mt-3 text-[15px] font-semibold leading-snug tracking-tight sm:text-[17px]">
-            {topOp.gapLabel}
-          </p>
-        </div>
-      ) : null}
-
-
       {topOp ? (
         <div className="animate-reveal mt-8" style={{ animationDelay: "300ms" }}>
         <div className="animate-pulse-glow rounded-2xl border border-primary/20 bg-primary/[0.03] p-4 sm:p-6">
@@ -306,7 +290,7 @@ function Dashboard() {
             Your highest-leverage next move
           </p>
           <p className="mt-3 text-[20px] font-bold leading-tight tracking-tight sm:text-[26px]">{topOp.name}</p>
-          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{top.reasoning}</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground"><LinkifyText text={top.reasoning} /></p>
           <CascadePanel upstream={topOp.upstream} unlocks={topOp.unlocks} window={topOp.window} />
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Tag tone="amber">{topOp.timeframe}</Tag>
@@ -624,7 +608,7 @@ function Dashboard() {
           const futureCards = futureYears.filter(
             (y) => milestonesForTrack(profile.trackId).filter((m) => m.year === y).length > 0,
           ).length;
-          const postGradCards = postGradItems.length > 0 || postGrad.loading ? POST_GRAD_YEARS.filter(
+          const postGradCards = postGradItems.length > 0 || postGrad.loading ? projectionYears.filter(
             (y) => postGradItems.some((m) => m.year === y) || postGrad.loading,
           ).length : 0;
           const totalCards = 1 + futureCards + postGradCards;
@@ -701,7 +685,7 @@ function Dashboard() {
             );
           })}
 
-          {POST_GRAD_YEARS.map((year) => {
+          {projectionYears.map((year) => {
             const items = postGradItems.filter((m) => m.year === year);
             if (!items.length && !postGrad.loading) return null;
             return (
@@ -709,7 +693,7 @@ function Dashboard() {
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground/80">
                   What to do
                 </p>
-                <p className="mt-1 text-sm font-semibold tracking-tight">{year}</p>
+                <p className="mt-1 text-sm font-semibold tracking-tight">{year.replace("Graduate ", "")}</p>
                 {items.length > 0 ? (
                 <ul className="mt-4 space-y-6">
                   {items.map((m) => (
@@ -952,14 +936,10 @@ function SortableStep({
               <div className="mt-2 flex items-start gap-2 rounded-lg bg-muted/60 px-3 py-2">
                 <span className="mt-0.5 shrink-0 text-[11px] text-primary/70" aria-hidden="true">💡</span>
                 <p className="text-[13px] leading-relaxed text-foreground/80">
-                  {stepReasoningOverrides[step.opportunityId] || step.reasoning}
+                  <LinkifyText text={stepReasoningOverrides[step.opportunityId] || step.reasoning} />
                 </p>
               </div>
-              {stepReasoningOverrides[step.opportunityId] ? (
-                <p className="mt-1 pl-7 text-[11px] text-muted-foreground/50 italic">
-                  Sylo&apos;s original: {step.reasoning}
-                </p>
-              ) : null}
+              {/* Sylo's original reasoning hidden */}
               {stepNotes[step.opportunityId] ? (
                 <CollapsibleNote note={stepNotes[step.opportunityId]} />
               ) : null}
@@ -1257,6 +1237,7 @@ function NoDatasetState({ profile, track }: { profile: NonNullable<ReturnType<ty
         major: profile.major,
         year: profile.year,
         school: profile.school,
+        diversitySelfId: profile.diversitySelfId,
       });
       if (roadmap.steps.length > 0) {
         setRoadmap(roadmap, live);

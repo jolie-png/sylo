@@ -12,6 +12,7 @@ import {
   OPPORTUNITIES as SEED_OPPORTUNITIES,
   type Opportunity as SeedOpportunity,
   type TrackId,
+  isGradStudent,
 } from "./wayfind-data";
 
 // ---------------------------------------------------------------------------
@@ -125,12 +126,13 @@ for (const raw of rawRecords as unknown[]) {
 }
 
 // Merge: seed opportunities + external, deduplicated by id
+// External records take priority over seed records (allows JSON to override seed data with richer metadata)
 const seedRecords = SEED_OPPORTUNITIES.map(seedToRecord);
 const idSet = new Set<string>();
 const ALL_RECORDS: OpportunityRecord[] = [];
 const nameSet = new Set<string>();
 
-for (const rec of [...seedRecords, ...externalRecords]) {
+for (const rec of [...externalRecords, ...seedRecords]) {
   if (!idSet.has(rec.id)) {
     // Deduplicate by name within the same track (catches duplicate entries with different IDs)
     const nameKey = `${rec.track}:${rec.name.toLowerCase()}`;
@@ -183,6 +185,8 @@ export type OpportunityFilters = {
   year?: string;
   region?: string;
   tags?: string[];
+  /** Exclude opportunities that have ANY of these tags. Used to filter out diversity-cohort programs when user hasn't self-identified. */
+  excludeTags?: string[];
   deadlineWindow?: 30 | 60 | 90 | null;
   limit?: number;
 };
@@ -208,6 +212,7 @@ export function searchOpportunities(filters: OpportunityFilters = {}): Opportuni
   const year = filters.year ?? null;
   const region = filters.region?.trim().toLowerCase() ?? null;
   const tags = filters.tags?.map((t) => t.toLowerCase()) ?? null;
+  const excludeTags = filters.excludeTags?.map((t) => t.toLowerCase()) ?? null;
 
   const now = new Date();
   const deadlineCutoff = filters.deadlineWindow
@@ -255,7 +260,9 @@ export function searchOpportunities(filters: OpportunityFilters = {}): Opportuni
 
     // Year filter — exclude programs that specify year relevance if student's year isn't included
     if (year && rec.yearRelevance.length > 0) {
-      if (rec.yearRelevance.includes(year as any)) {
+      // Normalize: if student typed a custom grad year (e.g. "1st Year PhD"), match against "Graduate"
+      const normalizedYear = isGradStudent(year) ? "Graduate" : year;
+      if (rec.yearRelevance.includes(normalizedYear as any)) {
         score += 4;
       } else {
         // Program explicitly lists which years it's for, and this student isn't one of them
@@ -274,6 +281,18 @@ export function searchOpportunities(filters: OpportunityFilters = {}): Opportuni
     if (tags && tags.length > 0) {
       const hasMatch = tags.some((t) => LOWER_TAGS[i].includes(t));
       if (!hasMatch) continue;
+    }
+
+    // Exclude tags filter — skip opportunities that have any excluded tag
+    if (excludeTags && excludeTags.length > 0) {
+      const hasExcluded = excludeTags.some((t) => LOWER_TAGS[i].includes(t));
+      if (hasExcluded) continue;
+    }
+
+    // Women-tagged programs also excluded unless diversity opt-in is active
+    // (since excludeTags only contains "diversity-cohort", we separately check "women")
+    if (excludeTags && excludeTags.includes("diversity-cohort") && LOWER_TAGS[i].includes("women")) {
+      continue;
     }
 
     // Deadline window filter
@@ -314,6 +333,12 @@ export function searchOpportunities(filters: OpportunityFilters = {}): Opportuni
 /** Get a single opportunity by ID. */
 export function getOpportunityById(id: string): OpportunityRecord | undefined {
   return ALL_RECORDS.find((r) => r.id === id);
+}
+
+/** Get a single opportunity by name (case-insensitive, exact match). */
+export function getOpportunityByName(name: string): OpportunityRecord | undefined {
+  const lower = name.toLowerCase();
+  return ALL_RECORDS.find((r) => r.name.toLowerCase() === lower);
 }
 
 /** Get all unique tags in the dataset. */

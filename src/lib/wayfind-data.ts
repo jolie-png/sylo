@@ -123,7 +123,7 @@ export type Preferences = {
   style: "Discussion" | "Independent";
 };
 
-export const YEARS = ["Freshman", "Sophomore", "Junior", "Senior"];
+export const YEARS = ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"];
 
 export const MAJORS = [
   "Biology",
@@ -960,7 +960,7 @@ export function heroOpportunityForTrack(track: string) {
 // anything specific must live in OPPORTUNITIES instead.
 // ---------------------------------------------------------------------------
 
-export type MilestoneYear = "Sophomore" | "Junior" | "Senior" | "Year 1" | "Years 2–3";
+export type MilestoneYear = "Sophomore" | "Junior" | "Senior" | "Year 1" | "Years 2–3" | "Graduate Year 1" | "Graduate Years 2–3";
 
 export type Milestone = {
   track: TrackId;
@@ -1411,5 +1411,18 @@ export function postGradMilestonesForTrack(track: string) {
   return MILESTONES.filter((m) => m.track === track && (m.year === "Year 1" || m.year === "Years 2–3"));
 }
 
+/** Graduate-specific milestones (Graduate Year 1, Graduate Years 2–3). */
+export function gradMilestonesForTrack(track: string) {
+  return MILESTONES.filter((m) => m.track === track && (m.year === "Graduate Year 1" || m.year === "Graduate Years 2–3"));
+}
+
 /** All milestone year labels that apply after the current student year, including post-grad. */
 export const POST_GRAD_YEARS: MilestoneYear[] = ["Year 1", "Years 2–3"];
+
+/** Graduate-phase milestone year labels. */
+export const GRAD_YEARS: MilestoneYear[] = ["Graduate Year 1", "Graduate Years 2–3"];
+
+/** Whether the given year string indicates a graduate student. */
+export function isGradStudent(year: string): boolean {
+  return year === "Graduate" || year.toLowerCase().includes("grad") || year.toLowerCase().includes("phd") || year.toLowerCase().includes("mba") || year.toLowerCase().includes("master");
+}

@@ -14,9 +14,9 @@ function icsDate(dateStr: string): string {
  * Format a date as the day after (for DTEND of all-day events — iCal uses exclusive end).
  */
 function icsDatePlusOne(dateStr: string): string {
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().slice(0, 10).replace(/-/g, "");
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const nextDay = new Date(y, m - 1, d + 1);
+  return `${nextDay.getFullYear()}${String(nextDay.getMonth() + 1).padStart(2, "0")}${String(nextDay.getDate()).padStart(2, "0")}`;
 }
 
 /**
@@ -108,8 +108,13 @@ export function downloadICS(event: CalendarEvent): void {
  * Generate a Google Calendar URL for the event (opens in new tab).
  */
 export function googleCalendarUrl(event: CalendarEvent): string {
+  // Use the deadline date directly (no timezone conversion) for both start and end
+  // Google Calendar all-day events: dates=YYYYMMDD/YYYYMMDD where end is exclusive (day after)
   const startDate = icsDate(event.deadline);
-  const endDate = icsDatePlusOne(event.deadline);
+  // Parse without timezone issues by splitting the string directly
+  const [y, m, d] = event.deadline.split("-").map(Number);
+  const nextDay = new Date(y, m - 1, d + 1);
+  const endDate = `${nextDay.getFullYear()}${String(nextDay.getMonth() + 1).padStart(2, "0")}${String(nextDay.getDate()).padStart(2, "0")}`;
   const title = encodeURIComponent(`${event.title} — Application Deadline`);
   const details = encodeURIComponent(
     [event.description || "", event.url ? `\n\nApply: ${event.url}` : "", "\n\nAdded from Sylo"].filter(Boolean).join(""),

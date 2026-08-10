@@ -4,22 +4,35 @@
 // ---------------------------------------------------------------------------
 
 /**
- * Truncate a string at a word boundary, never mid-word.
+ * Truncate a string at a sentence boundary when possible, falling back to word boundary.
  * If the string is already under `max` characters, returns it unchanged.
- * Adds ellipsis only if content was actually cut.
+ * Prefers cutting at the end of a complete sentence to avoid mid-thought truncation.
  */
 export function trimAtWord(s: string, max: number): string {
   const cleaned = s.trim();
   if (cleaned.length <= max) return cleaned;
 
-  // Find the last space before the max limit
   const truncated = cleaned.slice(0, max);
-  const lastSpace = truncated.lastIndexOf(" ");
 
-  // If no space found (single giant word), just return up to max (unlikely for sentences)
+  // Try to find the last sentence-ending punctuation within the truncated text
+  // Look for . ! or ? followed by a space or end-of-string (to avoid cutting at abbreviations like "e.g.")
+  const sentenceEndPattern = /[.!?](?:\s|$)/g;
+  let lastSentenceEnd = -1;
+  let match: RegExpExecArray | null;
+  while ((match = sentenceEndPattern.exec(truncated)) !== null) {
+    lastSentenceEnd = match.index + 1; // Include the punctuation
+  }
+
+  // If we found a sentence boundary in the last 40% of the text, cut there
+  // (don't cut too aggressively — we want to keep most of the content)
+  if (lastSentenceEnd > max * 0.6) {
+    return cleaned.slice(0, lastSentenceEnd).trimEnd();
+  }
+
+  // Fallback: cut at word boundary
+  const lastSpace = truncated.lastIndexOf(" ");
   if (lastSpace <= 0) return truncated;
 
-  // Cut at word boundary — don't add ellipsis for cleaner display
   return truncated.slice(0, lastSpace).replace(/[,;:\-–—]\s*$/, "").trimEnd();
 }
 

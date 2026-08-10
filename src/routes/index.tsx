@@ -235,7 +235,7 @@ function Landing() {
               The invisible advisor every{" "}
               <span className="whitespace-nowrap">well-connected</span> student already has.
             </h2>
-            <p className="mt-3 text-[22px] font-bold tracking-tight text-primary sm:text-[28px]">Now it&apos;s yours.</p>
+            <p className="mt-3 text-[28px] font-bold tracking-tight text-primary sm:text-[38px]">Now it&apos;s yours.</p>
             <p className="mx-auto mt-5 max-w-md text-base text-muted-foreground text-balance">
               No sign-up required. Real roadmaps in seconds.{" "}
               <Link to="/about" className="font-medium text-primary underline-offset-4 hover:underline">

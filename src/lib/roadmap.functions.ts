@@ -17,6 +17,7 @@ const Input = z.object({
   priorWork: z.string().optional(),
   clubs: z.string().optional(),
   alreadyDone: z.string().optional(),
+  diversitySelfId: z.boolean().optional(),
 });
 
 const RoadmapSchema = z.object({
@@ -49,7 +50,12 @@ export const generateRoadmap = createServerFn({ method: "POST" })
     const key = process.env.LOVABLE_API_KEY;
 
     const track = TRACKS.find((t) => t.id === data.trackId) ?? TRACKS[0];
-    const pool = OPPORTUNITIES.filter((o) => o.track === track.id);
+    const pool = OPPORTUNITIES.filter((o) => {
+      if (o.track !== track.id) return false;
+      // Exclude diversity-cohort programs unless the student has opted in
+      if (!data.diversitySelfId && o.tags?.includes("diversity-cohort")) return false;
+      return true;
+    });
 
     // "Something else" (or any track with no verified dataset): stay honest —
     // no AI call, no invented programs, just the student's own words.
@@ -123,18 +129,18 @@ export const generateRoadmap = createServerFn({ method: "POST" })
       // Anti-hallucination: strip any URLs from reasoning text (the AI should
       // never embed links — real links come from the opportunity data itself).
       const sanitizeText = (s: string) => s.replace(/https?:\/\/[^\s)]+/g, "").trim();
-      const cleanedSteps = steps.map((s) => ({ ...s, reasoning: sanitizeText(s.reasoning).slice(0, 300) }));
-      const summary = sanitizeText(r.summary).slice(0, 400);
+      const cleanedSteps = steps.map((s) => ({ ...s, reasoning: sanitizeText(s.reasoning).slice(0, 600) }));
+      const summary = sanitizeText(r.summary).slice(0, 500);
 
       // Sanitize gap analysis text if present
       const gapAnalysis = r.gapAnalysis ? {
-        strengths: r.gapAnalysis.strengths.map((s) => sanitizeText(s).slice(0, 200)),
+        strengths: r.gapAnalysis.strengths.map((s) => sanitizeText(s).slice(0, 350)),
         gaps: r.gapAnalysis.gaps.map((g) => ({
-          gap: sanitizeText(g.gap).slice(0, 120),
-          why: sanitizeText(g.why).slice(0, 200),
-          action: sanitizeText(g.action).slice(0, 200),
+          gap: sanitizeText(g.gap).slice(0, 300),
+          why: sanitizeText(g.why).slice(0, 350),
+          action: sanitizeText(g.action).slice(0, 350),
         })),
-        bottomLine: sanitizeText(r.gapAnalysis.bottomLine).slice(0, 300),
+        bottomLine: sanitizeText(r.gapAnalysis.bottomLine).slice(0, 450),
       } : undefined;
 
       return { ...r, summary, steps: cleanedSteps, topOpportunityId: top, gapAnalysis };

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createAnthropicClient, hashKey } from "./anthropic.server";
-import { TRACKS } from "./wayfind-data";
+import { TRACKS, isGradStudent } from "./wayfind-data";
 import type { MilestoneYear } from "./wayfind-data";
 import { cleanText } from "./text-sanitize";
 
@@ -36,7 +36,7 @@ export type PostGradProjection = {
 };
 
 const ProjectionSchema = z.object({
-  year: z.enum(["Year 1", "Years 2–3"]),
+  year: z.enum(["Year 1", "Years 2–3", "Graduate Year 1", "Graduate Years 2–3"]),
   focus: z.string(),
   lookOutFor: z.string(),
   actions: z.array(z.string()),
@@ -81,7 +81,47 @@ function writeCache(key: string, value: PostGradProjection[]) {
 // Prompt construction
 // ---------------------------------------------------------------------------
 
-function buildSystemPrompt() {
+function buildSystemPrompt(isGrad: boolean) {
+  if (isGrad) {
+    return [
+      "You are an expert career advisor who creates deeply personalized projections for graduate students. You've read the student's full resume and background — your advice should feel like it comes from a mentor who knows them personally.",
+      "",
+      "Given a graduate student's profile (program, school, career goal, experience, skills), generate personalized milestones for two phases of their graduate journey:",
+      "1. Graduate Year 1: What to focus on in the first year of their program (coursework, rotations, research, networking, recruiting)",
+      "2. Graduate Years 2–3: What the next phase looks like (thesis/dissertation, job market, specialization, leadership)",
+      "",
+      "ADAPT TO PROGRAM TYPE:",
+      "- PhD students: Focus on advisor relationships, qualifying exams, research output, conferences, and the academic job market or industry transition.",
+      "- MBA students: Focus on recruiting season (happens Year 1 fall), summer internship conversion, leadership roles, and full-time offer negotiation.",
+      "- Master's (1-2 year): Focus on rapid skill-building, internship search, capstone/thesis, and full-time recruiting which often starts immediately.",
+      "- Law (JD): Focus on 1L grades, law review, summer associate positions, and specialization.",
+      "- Med school: Focus on preclinical years, Step 1 prep, clinical rotations, and residency match.",
+      "",
+      "CRITICAL PERSONALIZATION RULES:",
+      "- You MUST reference the student's specific companies, roles, and skills BY NAME.",
+      "- If they worked at Amazon before grad school, say 'Your Amazon experience positions you to...' not 'Your prior work experience...'",
+      "- The 'focus' should feel custom to their trajectory — an MBA with 3 years of consulting experience has a VERY different Year 1 than a career switcher.",
+      "- 'lookOutFor' should reference their specific situation and what people with THEIR background specifically need to watch for.",
+      "- Actions must build on what they've ALREADY done — not start from scratch.",
+      "- 'doneWhen' should reference a specific outcome that makes sense given their program and starting point.",
+      "",
+      "QUALITY RULES:",
+      "- Each action should be one sentence, concrete, and actionable. Not vague advice.",
+      "- Write in direct second person. No filler, no hedging.",
+      "- The overall arc should tell a coherent story through their graduate program.",
+      "- Every string must be a complete thought ending with proper punctuation. Never cut off mid-sentence.",
+      "- ALWAYS use gender-neutral language (they/them/you). Never assume gender — write 'your manager says you understand the constraints' not 'your manager says she/he understands.'",
+      "",
+      "Return ONLY a JSON object matching this schema:",
+      JSON.stringify({
+        projections: [
+          { year: "Graduate Year 1", focus: "short phrase", lookOutFor: "one sentence", actions: ["action 1", "action 2", "action 3", "action 4", "action 5"], doneWhen: "one sentence" },
+          { year: "Graduate Years 2–3", focus: "short phrase", lookOutFor: "one sentence", actions: ["action 1", "action 2", "action 3", "action 4", "action 5"], doneWhen: "one sentence" },
+        ],
+      }, null, 0),
+    ].join("\n");
+  }
+
   return [
     "You are an expert career advisor who creates deeply personalized post-graduation projections. You've read the student's full resume and background — your advice should feel like it comes from a mentor who knows them personally.",
     "",
@@ -105,6 +145,8 @@ function buildSystemPrompt() {
     "- If they mentioned specific companies they worked at, explain how that experience transfers or creates leverage.",
     "- Write in direct second person. No filler, no hedging, no 'consider doing X' — just 'Do X.'",
     "- The overall arc should tell a coherent story: here's where you are → here's Year 1 → here's Years 2-3, and each builds on the last.",
+    "- Every string must be a complete thought ending with proper punctuation. Never cut off mid-sentence.",
+    "- ALWAYS use gender-neutral language (they/them/you). Never assume gender — write 'your manager says you understand the constraints' not 'your manager says she/he understands.'",
     "",
     "CAUSALITY FRAMING:",
     "- 'lookOutFor' should use the pattern: 'People who reach [next-level role] by Year 2-3 typically [did X in Year 1]. Given your [specific background], the risk is [specific pitfall].'",
@@ -125,10 +167,11 @@ function buildSystemPrompt() {
 function buildUserPrompt(data: z.infer<typeof Input>) {
   const track = TRACKS.find((t) => t.id === data.trackId);
   const destination = data.goalText?.trim() || track?.label || "their career goal";
+  const isGrad = isGradStudent(data.year);
 
   const parts: string[] = [
     "STUDENT PROFILE:",
-    `- Year: ${data.year} (about to graduate)`,
+    `- Year: ${data.year}${isGrad ? " (currently in graduate program)" : " (about to graduate)"}`,
     `- Major: ${data.major}`,
     `- School: ${data.school}`,
     `- Career Goal: ${destination}`,
@@ -149,7 +192,11 @@ function buildUserPrompt(data: z.infer<typeof Input>) {
     parts.push("NOTE: Limited background provided. Personalize based on their major, school, and career goal.");
   }
   parts.push("");
-  parts.push("Generate personalized post-graduation projections for Year 1 and Years 2-3. Return strict JSON.");
+  if (isGrad) {
+    parts.push("This is a GRADUATE student. Generate projections for their graduate program phases (Graduate Year 1 and Graduate Years 2-3). Focus on what matters within their program — not generic post-undergrad advice. Return strict JSON.");
+  } else {
+    parts.push("Generate personalized post-graduation projections for Year 1 and Years 2-3. Return strict JSON.");
+  }
 
   return parts.join("\n");
 }
@@ -199,8 +246,8 @@ export const generatePostGradProjections = createServerFn({ method: "POST" })
       const response = await client.messages.create(
         {
           model: "claude-haiku-4-5-20251001",
-          max_tokens: 2500,
-          system: buildSystemPrompt(),
+          max_tokens: 4000,
+          system: buildSystemPrompt(isGradStudent(data.year)),
           messages: [{ role: "user", content: buildUserPrompt(data) }],
         },
         { signal: controller.signal },
@@ -225,10 +272,10 @@ export const generatePostGradProjections = createServerFn({ method: "POST" })
 
       const projections: PostGradProjection[] = parsed.data.projections.map((p) => ({
         year: p.year as MilestoneYear,
-        focus: cleanText(p.focus, 120),
-        lookOutFor: cleanText(p.lookOutFor, 300),
-        actions: p.actions.map((a) => cleanText(a, 200)).slice(0, 5),
-        doneWhen: cleanText(p.doneWhen, 300),
+        focus: cleanText(p.focus, 150),
+        lookOutFor: cleanText(p.lookOutFor, 600),
+        actions: p.actions.map((a) => cleanText(a, 400)).slice(0, 5),
+        doneWhen: cleanText(p.doneWhen, 500),
       }));
 
       console.error("[POST-GRAD] success!", { count: projections.length });

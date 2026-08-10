@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText, MessageCircle } from "lucide-react";
+import { Check, ChevronLeft, ExternalLink, FileText, MessageCircle, Pin, PinOff, Plus } from "lucide-react";
 import {
   Workspace,
   PageHeader,
@@ -16,6 +16,7 @@ import { OpportunityBrowser } from "@/components/opportunity-browser";
 import { DeadlinePill } from "@/components/deadline-badges";
 import { LinkifyText } from "@/components/linkify-text";
 import { CalendarButton } from "@/components/calendar-button";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/opportunity-details")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -47,15 +48,18 @@ function Details() {
     setStatus,
     hydrated,
     customSteps,
+    addCustomStep,
     updateCustomStep,
     removeCustomStep,
     resolveOpportunity,
     browsableOpportunities,
     liveOpportunities,
     addOpportunityToRoadmap,
+    pinnedIds,
+    togglePinned,
   } = useWayfind();
   const navigate = useNavigate();
-  const [showReasons, setShowReasons] = useState(true);
+  const [justAdded, setJustAdded] = useState(false);
 
   useEffect(() => {
     // Only redirect if there's no id — viewing a specific opportunity should always work
@@ -87,7 +91,8 @@ function Details() {
   const step = roadmap?.steps.find((s) => s.opportunityId === targetId);
   const track = profile ? getTrack(profile.trackId) : null;
 
-  if (custom) {
+  // If there's a custom step but it maps to a real opportunity, show the rich detail view
+  if (custom && !op) {
     return (
       <Workspace wide>
         <PageHeader
@@ -177,20 +182,34 @@ function Details() {
         <PageHeader
           icon={<FileText className="h-5 w-5" />}
           title={op.name}
-          subtitle={op.leverage}
+          subtitle={op.leverage?.replace(/\n*Link:\s*https?:\/\/[^\s,)]+/g, "").trim()}
           meta={[op.category, op.access === "translated" ? "Local equivalent" : "Direct access", op.timeframe]}
         />
 
-        {op.origin === "live" ? (
+        {/* {op.origin === "live" ? (
           <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2">
             <FoundViaSearchBadge />
             <span className="text-[13px] leading-relaxed text-muted-foreground">
               Found live and verified before appearing on your roadmap.
             </span>
           </div>
-        ) : null}
+        ) : null} */}
 
         <div className="mt-6">
+          {custom && (
+            <PropertyRow label="Status">
+              <select
+                value={custom.status}
+                onChange={(e) => updateCustomStep(custom.id, { status: e.target.value as typeof custom.status })}
+                className="tap rounded-xl border bg-background px-2 py-1 text-xs hover:border-primary/40 focus:border-primary/40"
+                aria-label="Change status"
+              >
+                <option value="not-started">Not started</option>
+                <option value="in-progress">In progress</option>
+                <option value="complete">Complete</option>
+              </select>
+            </PropertyRow>
+          )}
           <PropertyRow label="Requirements">
             <span className="flex flex-wrap items-center justify-end gap-x-1.5 text-sm text-foreground">
               {op.requirements.map((r, i) => (
@@ -206,10 +225,7 @@ function Details() {
             <DeadlinePill deadline={op.deadline} />
             <CalendarButton name={op.name} deadline={op.deadline} description={op.leverage} url={op.link} compact />
           </PropertyRow>
-          <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
-          <PropertyRow label="Contact">
-            {op.contact && !op.contact.includes("@campus.edu") ? <LinkifyText text={op.contact} /> : <span className="text-muted-foreground">Check your campus portal</span>}
-          </PropertyRow>
+          {/* <PropertyRow label="Timeline"><LinkifyText text={op.timeline} /></PropertyRow> */}
           {/* <PropertyRow label="Link">
             {op.link ? (
               <a href={op.link} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 hover:text-primary/80">
@@ -233,44 +249,85 @@ function Details() {
           </div>
         </div>
 
-        {op.link && !op.link.includes("campus.edu") ? (
-          <a
-            href={op.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="tap group mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
-          >
-            Open program page
-            <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
-          </a>
-        ) : null}
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          {(() => {
+            const urlMatch = !op.link && op.leverage ? op.leverage.match(/https?:\/\/[^\s,)]+/) : null;
+            const noteMatch = custom?.note ? custom.note.match(/https?:\/\/[^\s,)]+/) : null;
+            const displayLink = (op.link && !op.link.includes("campus.edu")) ? op.link : urlMatch?.[0] ?? noteMatch?.[0] ?? null;
+            return displayLink ? (
+              <a
+                href={displayLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tap group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+              >
+                Open program page
+                <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
+              </a>
+            ) : null;
+          })()}
 
-        {step === undefined && roadmap && (
-          <div className="mt-6 flex items-center gap-3 rounded-xl border bg-muted/50 px-4 py-3">
-            <p className="flex-1 text-[13px] text-muted-foreground">
-              This opportunity isn&apos;t on your roadmap yet.
-            </p>
+          {step === undefined && roadmap && !justAdded && !customSteps.some((s) => s.title === op.name) && (
             <button
               type="button"
-              onClick={() => addOpportunityToRoadmap(op.id)}
-              className="tap shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+              onClick={() => {
+                addCustomStep({
+                  title: op.name,
+                  note: `${op.leverage}\n\nLink: ${op.link}`,
+                  targetDate: op.deadline || undefined,
+                });
+                setJustAdded(true);
+              }}
+              className="tap inline-flex items-center gap-2 rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary shadow-sm hover:bg-primary/5"
             >
-              Add to my roadmap
+              Add to my roadmap & track
+              <Plus className="h-4 w-4" />
             </button>
-          </div>
-        )}
+          )}
+
+          {justAdded && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-5 py-2.5 text-sm font-medium text-emerald-700">
+              <Check className="h-4 w-4" />
+              Added to your roadmap & track
+            </span>
+          )}
+
+          {!justAdded && step === undefined && customSteps.some((s) => s.title === op.name) && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-5 py-2.5 text-sm font-medium text-emerald-700">
+              <Check className="h-4 w-4" />
+              On your roadmap & track
+            </span>
+          )}
+
+          <button
+            type="button"
+            onClick={() => togglePinned(op.id)}
+            className={cn(
+              "tap inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm",
+              pinnedIds.includes(op.id)
+                ? "border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
+                : "border-muted-foreground/30 text-muted-foreground hover:bg-muted/50"
+            )}
+          >
+            {pinnedIds.includes(op.id) ? <Pin className="h-4 w-4 fill-current" /> : <Pin className="h-4 w-4" />}
+            {pinnedIds.includes(op.id) ? "Pinned" : "Pin"}
+          </button>
+        </div>
+
         {step === undefined && !roadmap && (
-          <p className="mt-6 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] text-muted-foreground">
+          <p className="mt-4 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] text-muted-foreground">
             This opportunity isn&apos;t on your roadmap yet. Build a roadmap to see where it fits in your sequence.
           </p>
         )}
 
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <BackToOpportunities />
-          <Link to="/dashboard" className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
-            <ChevronLeft className="h-4 w-4" />
-            Back to roadmap
-          </Link>
+          {roadmap && (
+            <Link to="/dashboard" className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
+              <ChevronLeft className="h-4 w-4" />
+              Back to roadmap
+            </Link>
+          )}
         </div>
       </Workspace>
     );
@@ -287,14 +344,14 @@ function Details() {
         meta={[op.category, op.access === "translated" ? "Local equivalent" : "Direct access", op.timeframe]}
       />
 
-      {op.origin === "live" ? (
+      {/* {op.origin === "live" ? (
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2">
           <FoundViaSearchBadge />
           <span className="text-[13px] leading-relaxed text-muted-foreground">
             Found live and cross-checked against the sources below before making your roadmap.
           </span>
         </div>
-      ) : null}
+      ) : null} */}
 
       <div className="mt-6">
         <PropertyRow label="Status">
@@ -324,10 +381,7 @@ function Details() {
           <DeadlinePill deadline={op.deadline} />
           <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={op.link} compact />
         </PropertyRow>
-        <PropertyRow label="Timeline">{op.timeline}</PropertyRow>
-        <PropertyRow label="Contact">
-          {op.contact && !op.contact.includes("@campus.edu") ? <LinkifyText text={op.contact} /> : <span className="text-muted-foreground">Check your campus portal</span>}
-        </PropertyRow>
+        {/* <PropertyRow label="Timeline"><LinkifyText text={op.timeline} /></PropertyRow> */}
         {/* <PropertyRow label="Link">
           {op.link && !op.link.includes("campus.edu") ? (
             <a href={op.link} target="_blank" rel="noopener noreferrer" className="tap rounded-md font-medium text-primary hover:underline">
@@ -371,145 +425,155 @@ function Details() {
         ) : null} */}
       </div>
 
-      {op.link && !op.link.includes("campus.edu") ? (
-        <a
-          href={op.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="tap group mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
-        >
-          Open program page
-          <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
-        </a>
+      {(() => {
+        // Extract link from op.link, or from leverage/note text as fallback (for demoted steps)
+        const urlMatch = !op.link && op.leverage ? op.leverage.match(/https?:\/\/[^\s,)]+/) : null;
+        const displayLink = (op.link && !op.link.includes("campus.edu")) ? op.link : urlMatch?.[0] ?? null;
+
+        return displayLink ? (
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <a
+            href={displayLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tap group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+          >
+            Open program page
+            <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
+          </a>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">
+            <Check className="h-4 w-4" />
+            On your roadmap & track
+          </span>
+          <button
+            type="button"
+            onClick={() => togglePinned(op.id)}
+            className={cn(
+              "tap inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm",
+              pinnedIds.includes(op.id)
+                ? "border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
+                : "border-muted-foreground/30 text-muted-foreground hover:bg-muted/50"
+            )}
+          >
+            {pinnedIds.includes(op.id) ? <Pin className="h-4 w-4 fill-current" /> : <Pin className="h-4 w-4" />}
+            {pinnedIds.includes(op.id) ? "Pinned" : "Pin"}
+          </button>
+        </div>
+        ) : (
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">
+            <Check className="h-4 w-4" />
+            On your roadmap & track
+          </span>
+          <button
+            type="button"
+            onClick={() => togglePinned(op.id)}
+            className={cn(
+              "tap inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm",
+              pinnedIds.includes(op.id)
+                ? "border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
+                : "border-muted-foreground/30 text-muted-foreground hover:bg-muted/50"
+            )}
+          >
+            {pinnedIds.includes(op.id) ? <Pin className="h-4 w-4 fill-current" /> : <Pin className="h-4 w-4" />}
+            {pinnedIds.includes(op.id) ? "Pinned" : "Pin"}
+          </button>
+        </div>
+        );
+      })()}
+
+      {step.reasoning === "You added this opportunity to your roadmap." ? (
+        <div className="mt-6 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+          <span className="text-emerald-600 text-sm">✓</span>
+          <p className="flex-1 text-[13px] text-emerald-800">
+            Added to your roadmap & track.
+          </p>
+        </div>
       ) : null}
 
-      <section className="mt-10">
-        <h2 className="border-b pb-3 text-lg font-semibold tracking-tight">Why this matters for you</h2>
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-          You&apos;re a {profile?.year} {profile?.major} major at {profile?.school} heading toward{" "}
-          {track?.label || profile?.goalText || "your goal"}. {step.reasoning}
-        </p>
-      </section>
+      {step.reasoning !== "You added this opportunity to your roadmap." && step.reasoning !== "You added this to your roadmap." && !step.id.startsWith("promoted-") ? (
+        <>
+          <section className="mt-10">
+            <h2 className="border-b pb-3 text-lg font-semibold tracking-tight">Why Sylo recommended this for you</h2>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              You&apos;re a {profile?.year} {profile?.major} major at {profile?.school} heading toward{" "}
+              {track?.label || profile?.goalText || "your goal"}. <LinkifyText text={step.reasoning} />
+            </p>
 
-      {op.access === "translated" ? (
-        <section className="mt-8 rounded-2xl border border-primary/10 bg-primary/5 p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">
-            Opportunity translation
-          </p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div className="card-tonal rounded-2xl p-4">
-              <p className="text-sm font-semibold tracking-tight">Missing at {profile?.school}</p>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                {op.brandEquivalent} — {op.missingHere}
+            {/* Dependency chain details */}
+            {(op.upstream || op.unlocks?.length || op.window) ? (
+              <ul className="mt-4 space-y-2 rounded-lg bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+                {op.upstream ? (
+                  <li>• <span className="font-medium text-foreground/80">Builds on:</span> {op.upstream}{op.upstream.endsWith(".") ? "" : "."}</li>
+                ) : null}
+                {op.unlocks?.length ? (
+                  <li>• <span className="font-medium text-foreground/80">Opens:</span> {op.unlocks.join(" → ")}.</li>
+                ) : null}
+                <li>• Your school ({profile?.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly — no substitution needed."}</li>
+                {op.window ? (
+                  <li>• <span className="font-medium text-foreground/80">Timing:</span> {op.window}{op.window.endsWith(".") ? "" : "."}</li>
+                ) : op.timeframe ? (
+                  <li>• <span className="font-medium text-foreground/80">Window:</span> {op.timeframe}.</li>
+                ) : null}
+              </ul>
+            ) : null}
+          </section>
+
+          {op.access === "translated" ? (
+            <section className="mt-8 rounded-2xl border border-primary/10 bg-primary/5 p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary/80">
+                Opportunity translation
               </p>
-            </div>
-            <div className="card-tonal rounded-2xl p-4">
-              <p className="text-sm font-semibold tracking-tight">What you have instead</p>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                {op.name} — {op.leverage}
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div className="card-tonal rounded-2xl p-4">
+                  <p className="text-sm font-semibold tracking-tight">Missing at {profile?.school}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    {op.brandEquivalent} — {op.missingHere}
+                  </p>
+                </div>
+                <div className="card-tonal rounded-2xl p-4">
+                  <p className="text-sm font-semibold tracking-tight">What you have instead</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    {op.name} — {op.leverage}
+                  </p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                Admissions readers and recruiters are looking for the function, not the brand name. This
+                produces the same artifact: supervised work, a named recommender, and a dated record you
+                can point to.
               </p>
-            </div>
-          </div>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Admissions readers and recruiters are looking for the function, not the brand name. This
-            produces the same artifact: supervised work, a named recommender, and a dated record you
-            can point to.
-          </p>
-        </section>
+            </section>
+          ) : null}
+        </>
       ) : null}
-
-      <section className="mt-10">
-        <h2 className="border-b pb-3 text-lg font-semibold tracking-tight">Why did Sylo recommend this?</h2>
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-          {op.origin === "live" ? (
-            <>
-              Sylo searched for opportunities matching your goal, major, year, and school, then ran
-              follow-up searches to confirm each one still exists before showing it to you. It
-              ranked what survived by leverage and by how soon each window closes.
-            </>
-          ) : (
-            <>
-              Sylo ranked every opportunity tagged to {track?.label || "your goal"} by how much leverage it creates,
-              how soon its window closes, and what it unlocks downstream — then filtered to what you&apos;re eligible for right
-              now.
-            </>
-          )}{" "}
-          {op.id === roadmap?.topOpportunityId 
-            ? "This is your highest-leverage next move." 
-            : `This came in at position ${(roadmap?.steps.findIndex((s) => s.opportunityId === op.id) ?? 0) + 1} because of its timing and what it enables.`}
-        </p>
-        <button
-          type="button"
-          onClick={() => setShowReasons((v) => !v)}
-          className="tap mt-4 flex items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground"
-        >
-          {showReasons ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-          Reasoning factors
-        </button>
-        {showReasons ? (
-          op.origin === "live" ? (
-            <ul className="mt-3 space-y-2 pl-6 text-sm text-muted-foreground">
-              {op.requirements[0] ? (
-                <li>• The eligibility line found on its page: {op.requirements[0]}.</li>
-              ) : (
-                <li>• No eligibility requirements were published where Sylo could find them.</li>
-              )}
-              <li>
-                • Matched against your search: {profile?.year} {profile?.major} major at{" "}
-                {profile?.school}.
-              </li>
-              <li>
-                •{" "}
-                {op.singleSourced
-                  ? "Single-source confirmation. Sylo cross-checked and kept only what it could verify — direct link above."
-                  : `Corroborated across ${op.sources?.length ?? 2} independent sources, listed above.`}
-              </li>
-              <li>• Its window ({op.timeframe}) closes sooner than most other steps in your sequence.</li>
-            </ul>
-          ) : (
-            <ul className="mt-3 space-y-2 pl-6 text-sm text-muted-foreground">
-              {op.upstream ? (
-                <li>• <span className="font-medium text-foreground/80">Builds on:</span> {op.upstream}{op.upstream.endsWith(".") ? "" : "."}</li>
-              ) : (
-                <li>• Your year ({profile?.year}) meets the eligibility line: {op.requirements[0]}.</li>
-              )}
-              {op.unlocks?.length ? (
-                <li>• <span className="font-medium text-foreground/80">Opens:</span> {op.unlocks.join(" → ")}.</li>
-              ) : (
-                <li>• Your goal ({track?.label || profile?.goalText || "your career goal"}) is the track this opportunity is tagged to.</li>
-              )}
-              <li>• Your school ({profile?.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly — no substitution needed."}</li>
-              {op.window ? (
-                <li>• <span className="font-medium text-foreground/80">Timing:</span> {op.window}{op.window.endsWith(".") ? "" : "."}</li>
-              ) : (
-                <li>• Its window ({op.timeframe}) closes sooner than most other steps in your sequence.</li>
-              )}
-            </ul>
-          )
-        ) : null}
-      </section>
 
       <div className="mt-10 flex flex-wrap items-center gap-4">
         <BackToOpportunities />
-        <Link to="/dashboard" className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
-          <ChevronLeft className="h-4 w-4" />
-          Back to roadmap
-        </Link>
+        {roadmap && (
+          <Link to="/dashboard" className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
+            <ChevronLeft className="h-4 w-4" />
+            Back to roadmap
+          </Link>
+        )}
       </div>
     </Workspace>
   );
 }
 
-/** Returns to the browsable opportunities grid (no id in the URL). */
+/** Returns to the browsable opportunities grid preserving scroll position. */
 function BackToOpportunities() {
   return (
-    <Link
-      to="/opportunity-details"
-      search={{ id: undefined }}
+    <button
+      type="button"
+      onClick={() => {
+        // Go back in history to restore scroll position on the previous page
+        window.history.back();
+      }}
       className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground"
     >
       <ChevronLeft className="h-4 w-4" />
-      All opportunities
-    </Link>
+      Back
+    </button>
   );
 }

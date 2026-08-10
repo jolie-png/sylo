@@ -27,6 +27,8 @@ import { LongViewBoard } from "@/components/long-view-board";
 import { useWayfind } from "@/lib/sylo-store";
 import { type StepStatus } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
+import { LinkExtractor } from "@/components/link-extractor";
+import { AcademicTermSelector } from "@/components/academic-term-selector";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({
@@ -219,57 +221,83 @@ function Progress() {
       </div>
 
       {showAddForm && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!newTitle.trim()) return;
-            addCustomStep({ title: newTitle.trim(), note: newNote.trim() || undefined, targetDate: newDate.trim() || undefined });
-            setNewTitle("");
-            setNewNote("");
-            setNewDate("");
-            setShowAddForm(false);
-          }}
-          className="mt-3 space-y-3 rounded-2xl border border-dashed border-foreground/25 bg-muted/60 p-4"
-        >
-          <input
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="Step title (required)"
-            aria-label="Step title"
-            autoFocus
-            className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+        <div className="mt-3 space-y-4">
+          {/* Link extractor */}
+          <LinkExtractor
+            onExtracted={(details) => {
+              const noteLines = [details.description];
+              if (details.requirements.length > 0) noteLines.push(`Requirements: ${details.requirements.join(", ")}`);
+              if (details.contact) noteLines.push(`Contact: ${details.contact}`);
+              addCustomStep({
+                title: details.name,
+                note: noteLines.join("\n"),
+                targetDate: details.deadline || undefined,
+              });
+              setShowAddForm(false);
+            }}
+            onFallback={(failedUrl) => {
+              setNewNote(`Link: ${failedUrl}`);
+              setNewTitle("");
+            }}
           />
-          <textarea
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-            placeholder="Note (optional)"
-            aria-label="Note"
-            rows={2}
-            className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
-          />
-          <input
-            type="date"
-            value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-            aria-label="Target date (optional)"
-            className="rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
-          />
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="tap rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground"
-            >
-              Add step
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowAddForm(false)}
-              className="tap rounded-full border px-4 py-1.5 text-sm font-medium text-muted-foreground"
-            >
-              Cancel
-            </button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">or add manually</span>
+            <div className="h-px flex-1 bg-border" />
           </div>
-        </form>
+
+          {/* Manual form */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!newTitle.trim()) return;
+              addCustomStep({ title: newTitle.trim(), note: newNote.trim() || undefined, targetDate: newDate.trim() || undefined });
+              setNewTitle("");
+              setNewNote("");
+              setNewDate("");
+              setShowAddForm(false);
+            }}
+            className="space-y-3 rounded-2xl border border-dashed border-foreground/25 bg-muted/60 p-4"
+          >
+            <input
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder="Step title (required)"
+              aria-label="Step title"
+              className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+            />
+            <textarea
+              value={newNote}
+              onChange={(e) => setNewNote(e.target.value)}
+              placeholder="Note (optional)"
+              aria-label="Note"
+              rows={2}
+              className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+            />
+            <AcademicTermSelector
+              value={newDate}
+              currentYear={profile?.year ?? "Freshman"}
+              onChange={setNewDate}
+            />
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                className="tap rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground"
+              >
+                Add step
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAddForm(false)}
+                className="tap rounded-full border px-4 py-1.5 text-sm font-medium text-muted-foreground"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       )}
 
       {view === "long view" ? (

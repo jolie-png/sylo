@@ -249,7 +249,21 @@ function Details() {
           </a>
         ) : null}
 
-        {step === undefined && (
+        {step === undefined && roadmap && (
+          <div className="mt-6 flex items-center gap-3 rounded-xl border bg-muted/50 px-4 py-3">
+            <p className="flex-1 text-[13px] text-muted-foreground">
+              This opportunity isn&apos;t on your roadmap yet.
+            </p>
+            <button
+              type="button"
+              onClick={() => { /* addOpportunityToRoadmap(op.id) — TODO: wire up */ }}
+              className="tap shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+            >
+              Add to my roadmap
+            </button>
+          </div>
+        )}
+        {step === undefined && !roadmap && (
           <p className="mt-6 rounded-xl border bg-muted/50 px-3 py-2 text-[13px] text-muted-foreground">
             This opportunity isn&apos;t on your roadmap yet. Build a roadmap to see where it fits in your sequence.
           </p>
@@ -458,11 +472,22 @@ function Details() {
             </ul>
           ) : (
             <ul className="mt-3 space-y-2 pl-6 text-sm text-muted-foreground">
-              <li>• Your year ({profile?.year}) meets the eligibility line: {op.requirements[0]}.</li>
-              <li>• Your goal ({track?.label}) is the track this opportunity is tagged to.</li>
-              <li>• Your school ({profile?.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly, with no substitution needed."}</li>
-              <li>• Its window ({op.timeframe}) closes sooner than most other steps in your sequence.</li>
-              {profile?.major ? <li>• Your major ({profile?.major}) supplies the coursework this expects.</li> : null}
+              {op.upstream ? (
+                <li>• <span className="font-medium text-foreground/80">Builds on:</span> {op.upstream}</li>
+              ) : (
+                <li>• Your year ({profile?.year}) meets the eligibility line: {op.requirements[0]}.</li>
+              )}
+              {op.unlocks?.length ? (
+                <li>• <span className="font-medium text-foreground/80">Opens:</span> {op.unlocks.join(" → ")}</li>
+              ) : (
+                <li>• Your goal ({track?.label}) is the track this opportunity is tagged to.</li>
+              )}
+              <li>• Your school ({profile?.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly — no substitution needed."}</li>
+              {op.window ? (
+                <li>• <span className="font-medium text-foreground/80">Timing:</span> {op.window}</li>
+              ) : (
+                <li>• Its window ({op.timeframe}) closes sooner than most other steps in your sequence.</li>
+              )}
             </ul>
           )
         ) : null}

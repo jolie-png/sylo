@@ -248,10 +248,13 @@ export function searchOpportunities(filters: OpportunityFilters = {}): Opportuni
       if (recSchool === school) score += 8;
     }
 
-    // Year filter
+    // Year filter — exclude programs that specify year relevance if student's year isn't included
     if (year && rec.yearRelevance.length > 0) {
       if (rec.yearRelevance.includes(year as any)) {
         score += 4;
+      } else {
+        // Program explicitly lists which years it's for, and this student isn't one of them
+        continue;
       }
     }
 

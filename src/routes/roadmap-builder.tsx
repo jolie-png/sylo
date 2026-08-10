@@ -412,13 +412,14 @@ function Builder() {
 
 
         <label className="mt-8 block">
-          <span className="text-sm font-medium text-muted-foreground">In your own words</span>
+          <span className="text-sm font-medium text-muted-foreground">In your own words <span className="font-normal text-muted-foreground/60">(optional)</span></span>
           <input
             value={goalText}
             onChange={(e) => setGoalText(e.target.value)}
             placeholder="e.g. clinical research at a teaching hospital"
             className="mt-2 w-full rounded-2xl border bg-background px-4 py-3 text-sm outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
           />
+          <span className="mt-1.5 block text-[12px] text-muted-foreground/60">Add detail if you want — or leave blank and Sylo uses the track you picked above.</span>
         </label>
 
         <Field label="Major" value={major} onChange={setMajor} options={MAJORS} />

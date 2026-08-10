@@ -358,7 +358,12 @@ function Dashboard() {
                 index={i}
                 resolveOpportunity={resolveOpportunity}
                 toggleComplete={handleToggleComplete}
-                setStatus={setStatus}
+                setStatus={(id, s) => {
+                  if (s === "complete" && step.status !== "complete") {
+                    burst({ x: 50, y: 30 });
+                  }
+                  setStatus(id, s);
+                }}
                 removeStep={removeStep}
                 demoteStep={demoteStep}
                 stepNotes={stepNotes}

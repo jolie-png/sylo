@@ -352,6 +352,10 @@ function Progress() {
                 onDrop={(e) => {
                   e.preventDefault();
                   if (drag) {
+                    if (col.key === "complete") {
+                      // Fire confetti toward the right side where the Complete column is
+                      burst({ x: 85, y: 30 });
+                    }
                     if (drag.custom) updateCustomStep(drag.id, { status: col.key });
                     else setStatus(drag.id, col.key);
                   }

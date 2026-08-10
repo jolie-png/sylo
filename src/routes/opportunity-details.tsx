@@ -387,7 +387,7 @@ function Details() {
         <h2 className="border-b pb-3 text-lg font-semibold tracking-tight">Why this matters for you</h2>
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
           You&apos;re a {profile?.year} {profile?.major} major at {profile?.school} heading toward{" "}
-          {track?.label}. {step.reasoning}
+          {track?.label || profile?.goalText || "your goal"}. {step.reasoning}
         </p>
       </section>
 
@@ -429,7 +429,7 @@ function Details() {
             </>
           ) : (
             <>
-              Sylo ranked every opportunity tagged to {track?.label} by how much leverage it creates,
+              Sylo ranked every opportunity tagged to {track?.label || "your goal"} by how much leverage it creates,
               how soon its window closes, and what it unlocks downstream — then filtered to what you&apos;re eligible for right
               now.
             </>
@@ -476,7 +476,7 @@ function Details() {
               {op.unlocks?.length ? (
                 <li>• <span className="font-medium text-foreground/80">Opens:</span> {op.unlocks.join(" → ")}.</li>
               ) : (
-                <li>• Your goal ({track?.label}) is the track this opportunity is tagged to.</li>
+                <li>• Your goal ({track?.label || profile?.goalText || "your career goal"}) is the track this opportunity is tagged to.</li>
               )}
               <li>• Your school ({profile?.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly — no substitution needed."}</li>
               {op.window ? (

@@ -34,44 +34,60 @@ function ProfilePage() {
   const generate = useRoadmapGeneration();
   const [busy, setBusy] = useState(false);
   const [regenFailed, setRegenFailed] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const busyLabel = useSearchProgressLabel(busy);
+
+  // Local draft state — edits happen here, only saved on explicit "Save"
+  const [draft, setDraft] = useState<NonNullable<typeof profile> | null>(null);
 
   useEffect(() => {
     if (hydrated && (!profile || !roadmap)) navigate({ to: "/roadmap-builder" });
   }, [hydrated, profile, roadmap, navigate]);
 
-  if (!profile) return null;
+  // Initialize draft from profile
+  useEffect(() => {
+    if (profile && !draft) setDraft({ ...profile });
+  }, [profile]);
 
-  async function regenerate(next: NonNullable<typeof profile>) {
+  if (!profile || !draft) return null;
+
+  function updateDraft(patch: Partial<NonNullable<typeof profile>>) {
+    setDraft((prev) => prev ? { ...prev, ...patch } : prev);
+    setHasChanges(true);
+  }
+
+  function cancelChanges() {
+    setDraft({ ...profile! });
+    setHasChanges(false);
+  }
+
+  async function saveChanges() {
+    if (!draft) return;
     setBusy(true);
     setRegenFailed(false);
+    setProfile(draft);
     try {
       const { roadmap: nextRoadmap, live } = await generate({
-        trackId: next.trackId,
-        goalText: next.goalText,
-        major: next.major,
-        year: next.year,
-        school: next.school,
-        experience: next.experience,
-        gpa: next.gpa,
-        skills: next.skills,
-        priorWork: next.priorWork,
-        clubs: next.clubs,
-        alreadyDone: next.alreadyDone,
+        trackId: draft.trackId,
+        goalText: draft.goalText,
+        major: draft.major,
+        year: draft.year,
+        school: draft.school,
+        experience: draft.experience,
+        gpa: draft.gpa,
+        skills: draft.skills,
+        priorWork: draft.priorWork,
+        clubs: draft.clubs,
+        alreadyDone: draft.alreadyDone,
       });
       setRoadmap(nextRoadmap, live);
+      setHasChanges(false);
     } catch {
-      /* keep the existing roadmap if regeneration fails */
       setRegenFailed(true);
+      setHasChanges(false);
     } finally {
       setBusy(false);
     }
-  }
-
-  function update(patch: Partial<NonNullable<typeof profile>>, regen = false) {
-    const next = { ...profile!, ...patch };
-    setProfile(next);
-    if (regen) void regenerate(next);
   }
 
   const rows: {
@@ -85,16 +101,39 @@ function ProfilePage() {
     { label: "Major", key: "major", options: MAJORS, allowOther: true },
     { label: "Year", key: "year", options: YEARS, allowOther: true },
     { label: "University", key: "school", options: [], allowOther: true, combobox: true },
-    { label: "Career goal", key: "trackId", options: TRACKS.map((t) => t.id), allowOther: true },
+    { label: "Career goal", key: "trackId", options: TRACKS.filter((t) => t.id !== "something-else").map((t) => t.id), allowOther: true },
   ];
 
   return (
     <Workspace wide>
       <PageHeader
         icon={<User className="h-5 w-5" />}
-        title={profile.name || profile.personaName ? `${profile.name || profile.personaName}'s Profile` : "My Profile"}
-        subtitle="Changes here propagate to your roadmap and progress tracker."
+        title={draft.name || draft.personaName ? `${draft.name || draft.personaName}'s Profile` : "My Profile"}
+        subtitle="Edit your info below, then save to update your roadmap."
       />
+
+      {/* Save / Cancel bar */}
+      {hasChanges && !busy && (
+        <div className="mt-4 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+          <p className="flex-1 text-[13px] text-foreground">
+            You have unsaved changes. Save to regenerate your roadmap.
+          </p>
+          <button
+            type="button"
+            onClick={cancelChanges}
+            className="tap rounded-full border px-4 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={saveChanges}
+            className="tap rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+          >
+            Save & update roadmap
+          </button>
+        </div>
+      )}
 
       {busy ? <p className="mt-4 text-sm text-muted-foreground">{busyLabel}</p> : null}
       {!busy && regenFailed ? (
@@ -108,14 +147,14 @@ function ProfilePage() {
         <div className="flex items-start justify-between gap-6 py-3 text-sm first:pt-0">
           <span className="w-36 shrink-0 pt-1.5 text-muted-foreground">Name</span>
           <input
-            value={profile.name ?? ""}
-            onChange={(e) => update({ name: e.target.value })}
+            value={draft.name ?? ""}
+            onChange={(e) => updateDraft({ name: e.target.value })}
             placeholder="Your name"
             className="flex-1 rounded-xl border bg-background px-3 py-1.5 text-right text-sm outline-none transition-colors focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
           />
         </div>
         {rows.map((row) => {
-          const value = profile[row.key];
+          const value = draft[row.key];
           const isOther = row.allowOther && !row.options.includes(value);
 
           if (row.combobox) {
@@ -128,7 +167,7 @@ function ProfilePage() {
                 <div className="flex flex-1 flex-col items-end">
                   <SchoolCombobox
                     value={value}
-                    onChange={(next) => update({ school: next }, true)}
+                    onChange={(next) => updateDraft({ school: next })}
                     label={row.label}
                     className="max-w-xs rounded-xl px-3 py-1.5"
                   />
@@ -152,7 +191,7 @@ function ProfilePage() {
                       <button
                         key={o}
                         type="button"
-                        onClick={() => update({ [row.key]: o } as never, true)}
+                        onClick={() => updateDraft({ [row.key]: o } as never)}
                         className={cn(
                           "tap rounded-full border px-3 py-1 text-xs",
                           value === o
@@ -167,7 +206,7 @@ function ProfilePage() {
                   {row.allowOther ? (
                     <button
                       type="button"
-                      onClick={() => update({ [row.key]: isOther ? value : "" } as never)}
+                      onClick={() => updateDraft({ [row.key]: isOther ? value : "" } as never)}
                       className={cn(
                         "tap rounded-full border px-3 py-1 text-xs",
                         isOther
@@ -183,10 +222,7 @@ function ProfilePage() {
                   <input
                     value={value}
                     autoFocus
-                    onChange={(e) => update({ [row.key]: e.target.value } as never)}
-                    onBlur={() => {
-                      if (profile![row.key].trim()) void regenerate(profile!);
-                    }}
+                    onChange={(e) => updateDraft({ [row.key]: e.target.value } as never)}
                     placeholder={`Type your ${row.label.toLowerCase()}`}
                     aria-label={`Custom ${row.label}`}
                     className="w-full max-w-xs rounded-xl border bg-background px-3 py-1.5 text-right text-sm outline-none transition-colors focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
@@ -199,9 +235,8 @@ function ProfilePage() {
         <div className="flex items-start justify-between gap-6 py-3 text-sm first:pt-0 last:pb-0">
           <span className="w-36 shrink-0 pt-1.5 text-muted-foreground">In your own words</span>
           <input
-            value={profile.goalText}
-            onChange={(e) => update({ goalText: e.target.value })}
-            onBlur={() => void regenerate(profile!)}
+            value={draft.goalText}
+            onChange={(e) => updateDraft({ goalText: e.target.value })}
             placeholder="Optional"
             className="flex-1 rounded-xl border bg-background px-3 py-1.5 text-right text-sm outline-none transition-colors focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
           />
@@ -218,51 +253,51 @@ function ProfilePage() {
         <div className="mt-4 space-y-4">
           <ResumeUpload
             onParsed={(data) => {
-              update({
-                experience: data.experience?.trim() || profile!.experience,
-                skills: data.skills?.trim() || profile!.skills,
-                priorWork: data.priorWork?.trim() || profile!.priorWork,
-                clubs: data.clubs?.trim() || profile!.clubs,
-                alreadyDone: data.alreadyDone?.trim() || profile!.alreadyDone,
-              }, true);
+              updateDraft({
+                experience: data.experience?.trim() || draft!.experience,
+                skills: data.skills?.trim() || draft!.skills,
+                priorWork: data.priorWork?.trim() || draft!.priorWork,
+                clubs: data.clubs?.trim() || draft!.clubs,
+                alreadyDone: data.alreadyDone?.trim() || draft!.alreadyDone,
+              });
             }}
           />
           <ProfileContextField
             label="Experience & background"
             placeholder="e.g. Built a React app for a class project, tutored intro CS for two semesters…"
-            value={profile.experience ?? ""}
-            onBlur={(v) => update({ experience: v || undefined }, true)}
+            value={draft.experience ?? ""}
+            onChange={(v) => updateDraft({ experience: v || undefined })}
           />
           <ProfileContextField
             label="GPA (approximate is fine)"
             placeholder="e.g. 3.6"
-            value={profile.gpa ?? ""}
-            onBlur={(v) => update({ gpa: v || undefined })}
+            value={draft.gpa ?? ""}
+            onChange={(v) => updateDraft({ gpa: v || undefined })}
           />
           <ProfileContextField
             label="Skills & tools you know"
             placeholder="e.g. Python, JavaScript, React, SQL, Figma…"
-            value={profile.skills ?? ""}
-            onBlur={(v) => update({ skills: v || undefined }, true)}
+            value={draft.skills ?? ""}
+            onChange={(v) => updateDraft({ skills: v || undefined })}
           />
           <ProfileContextField
             label="Prior internships or jobs"
             placeholder="e.g. Summer intern at a startup, campus IT help desk…"
-            value={profile.priorWork ?? ""}
-            onBlur={(v) => update({ priorWork: v || undefined }, true)}
+            value={draft.priorWork ?? ""}
+            onChange={(v) => updateDraft({ priorWork: v || undefined })}
             multiline
           />
           <ProfileContextField
             label="Clubs & organizations"
             placeholder="e.g. ACM chapter, hackathon team, research lab…"
-            value={profile.clubs ?? ""}
-            onBlur={(v) => update({ clubs: v || undefined }, true)}
+            value={draft.clubs ?? ""}
+            onChange={(v) => updateDraft({ clubs: v || undefined })}
           />
           <ProfileContextField
             label="What you've already tried toward this goal"
             placeholder="e.g. Applied to Google STEP but didn't get it, took an online ML course…"
-            value={profile.alreadyDone ?? ""}
-            onBlur={(v) => update({ alreadyDone: v || undefined }, true)}
+            value={draft.alreadyDone ?? ""}
+            onChange={(v) => updateDraft({ alreadyDone: v || undefined })}
             multiline
           />
         </div>
@@ -276,20 +311,15 @@ function ProfileContextField({
   label,
   placeholder,
   value,
-  onBlur,
+  onChange,
   multiline,
 }: {
   label: string;
   placeholder: string;
   value: string;
-  onBlur: (v: string) => void;
+  onChange: (v: string) => void;
   multiline?: boolean;
 }) {
-  const [local, setLocal] = useState(value);
-
-  // Sync from parent when profile changes externally
-  useEffect(() => { setLocal(value); }, [value]);
-
   const shared =
     "w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary/40 focus:ring-2 focus:ring-primary/10";
   return (
@@ -297,18 +327,16 @@ function ProfileContextField({
       <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
       {multiline ? (
         <textarea
-          value={local}
-          onChange={(e) => setLocal(e.target.value)}
-          onBlur={() => onBlur(local.trim())}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={2}
           className={cn(shared, "mt-1.5 resize-none")}
         />
       ) : (
         <input
-          value={local}
-          onChange={(e) => setLocal(e.target.value)}
-          onBlur={() => onBlur(local.trim())}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={cn(shared, "mt-1.5")}
         />

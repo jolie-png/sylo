@@ -100,30 +100,14 @@ function Progress() {
   const [overCol, setOverCol] = useState<StepStatus | null>(null);
   const [collapsedCols, setCollapsedCols] = useState<Record<string, boolean>>({});
   const [openCards, setOpenCards] = useState<Record<string, boolean>>({});
-  const [showAddForm, setShowAddForm] = useState(() => {
-    try { return sessionStorage.getItem("sylo:progress:draft:open") === "true"; } catch { return false; }
-  });
-  const [newTitle, setNewTitle] = useState(() => {
-    try { return sessionStorage.getItem("sylo:progress:draft:title") ?? ""; } catch { return ""; }
-  });
-  const [newNote, setNewNote] = useState(() => {
-    try { return sessionStorage.getItem("sylo:progress:draft:note") ?? ""; } catch { return ""; }
-  });
-  const [newDate, setNewDate] = useState(() => {
-    try { return sessionStorage.getItem("sylo:progress:draft:date") ?? ""; } catch { return ""; }
-  });
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newNote, setNewNote] = useState("");
+  const [newDate, setNewDate] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
 
-  // Persist draft state across navigation
-  useEffect(() => {
-    try {
-      sessionStorage.setItem("sylo:progress:draft:open", String(showAddForm));
-      sessionStorage.setItem("sylo:progress:draft:title", newTitle);
-      sessionStorage.setItem("sylo:progress:draft:note", newNote);
-      sessionStorage.setItem("sylo:progress:draft:date", newDate);
-    } catch { /* sessionStorage unavailable */ }
-  }, [showAddForm, newTitle, newNote, newDate]);
+  // Session storage draft persistence disabled
 
   useEffect(() => {
     if (hydrated && (!profile || !roadmap)) navigate({ to: "/roadmap-builder" });

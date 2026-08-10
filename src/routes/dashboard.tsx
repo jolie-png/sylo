@@ -93,31 +93,16 @@ function Dashboard() {
   const navigate = useNavigate();
   const postGrad = usePostGradProjections(profile);
   const [showAlternates, setShowAlternates] = useState(false);
-  const [showForm, setShowForm] = useState(() => {
-    try { return sessionStorage.getItem("sylo:draft:open") === "true"; } catch { return false; }
-  });
+  const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
-  const [title, setTitle] = useState(() => {
-    try { return sessionStorage.getItem("sylo:draft:title") ?? ""; } catch { return ""; }
-  });
-  const [note, setNote] = useState(() => {
-    try { return sessionStorage.getItem("sylo:draft:note") ?? ""; } catch { return ""; }
-  });
-  const [targetDate, setTargetDate] = useState(() => {
-    try { return sessionStorage.getItem("sylo:draft:date") ?? ""; } catch { return ""; }
-  });
+  const [title, setTitle] = useState("");
+  const [note, setNote] = useState("");
+  const [targetDate, setTargetDate] = useState("");
 
-  // Persist draft state so navigation doesn't lose in-progress steps
-  useEffect(() => {
-    try {
-      sessionStorage.setItem("sylo:draft:open", String(showForm));
-      sessionStorage.setItem("sylo:draft:title", title);
-      sessionStorage.setItem("sylo:draft:note", note);
-      sessionStorage.setItem("sylo:draft:date", targetDate);
-    } catch { /* sessionStorage unavailable */ }
-  }, [showForm, title, note, targetDate]);
+  // Session storage draft persistence disabled
+  // useEffect(() => { ... }, [showForm, title, note, targetDate]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),

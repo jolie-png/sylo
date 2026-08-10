@@ -34,19 +34,19 @@ export function InlineNoteEditor({
   onClose,
 }: InlineNoteEditorProps) {
   const { setStepNote, setStepReasoning } = useWayfind();
-  const draft = readDraft(opportunityId);
-  const [noteValue, setNoteValue] = useState(draft?.note ?? existingNote ?? "");
-  const [reasoningValue, setReasoningValue] = useState(draft?.reasoning ?? existingReasoningOverride ?? reasoning);
+  // const draft = readDraft(opportunityId);
+  const [noteValue, setNoteValue] = useState(existingNote ?? "");
+  const [reasoningValue, setReasoningValue] = useState(existingReasoningOverride ?? reasoning);
   const reasoningRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     reasoningRef.current?.focus();
   }, []);
 
-  // Persist draft on every change
-  useEffect(() => {
-    writeDraft(opportunityId, noteValue, reasoningValue);
-  }, [opportunityId, noteValue, reasoningValue]);
+  // // Persist draft on every change
+  // useEffect(() => {
+  //   writeDraft(opportunityId, noteValue, reasoningValue);
+  // }, [opportunityId, noteValue, reasoningValue]);
 
   function handleSave() {
     const trimmedNote = noteValue.trim();
@@ -59,12 +59,12 @@ export function InlineNoteEditor({
     } else {
       setStepReasoning(opportunityId, trimmedReasoning);
     }
-    clearDraft(opportunityId);
+    // clearDraft(opportunityId);
     onClose();
   }
 
   function handleCancel() {
-    clearDraft(opportunityId);
+    // clearDraft(opportunityId);
     onClose();
   }
 

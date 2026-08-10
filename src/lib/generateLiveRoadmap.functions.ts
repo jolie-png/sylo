@@ -261,17 +261,21 @@ Rules:
 
       const reasoningResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1000,
-        system: `Given a student profile and a list of programs, return ONLY a JSON object where each key is a program name and each value is 1-2 sentences using CAUSALITY reasoning: explain what trajectory component this step provides and how it connects to their goal.
+        max_tokens: 1500,
+        system: `Given a student profile and a list of programs, return ONLY a JSON object where each key is a program name and each value is 2-3 sentences using CAUSALITY + ACTION reasoning.
 
-Format: "People who landed [goal] typically had [X]. Your [specific experience] gives you [Y], but you're missing [Z]. This program fills [Z] because [reason]."
+Structure each value as THREE parts:
+1. PATTERN: What people who reached [goal] typically demonstrated (name the 2-3 signals hiring committees look for).
+2. FIT: Which signals THIS student already has (name specific companies/projects) and which one this program fills.
+3. EDGE: One specific thing to emphasize in the application given their unique background — what angle makes them stand out vs. other applicants to this program.
 
-Example: {"Meta RPM":"Students who land APM roles typically had: shipped product + PM externship + user research evidence. Your Amazon internships cover the shipped product signal — RPM fills the PM externship gap and gives you cross-portfolio rotation that Google APM interviewers specifically value."}
+Example: {"Meta RPM":"PMs landing at Meta typically demonstrated: shipped product at scale + cross-functional leadership + data-driven decision-making. Your two Amazon Prime Video internships prove scale execution, but RPM specifically evaluates product intuition across unfamiliar domains — the rotation structure tests exactly this. In your application, lead with the 47% latency reduction as evidence you can tie engineering work to user outcomes, since most SDE-to-PM candidates can't articulate impact beyond technical metrics."}
 
 Rules:
-- Reference their actual companies, skills, and clubs by name.
-- Frame as trajectory gap-filling, not generic value statements.
-- Each value should answer: "What does this step add to the trajectory pattern that the student is missing?"`,
+- ALWAYS name their specific companies, skills, roles, and clubs. Never write "your prior experience" — write "your Amazon SDE internships."
+- The EDGE must be genuinely actionable — something they could use in their actual application essay or interview. Not generic advice like "show passion."
+- If you don't have enough info about the student to give an EDGE, focus on what the program specifically screens for that differs from other programs.
+- Each value should feel like it came from a mentor who knows both the student AND the program's selection criteria intimately.`,
         messages: [{
           role: "user",
           content: `${contextParts.join("\n")}\n\nPrograms: ${opListShort}\n\nReturn JSON.`,
@@ -295,7 +299,7 @@ Rules:
               const personalReasoning = reasonParsed[op.name] 
                 || Object.values(reasonParsed).find((_, i) => Object.keys(reasonParsed)[i]?.toLowerCase().includes(op.name.slice(0, 20).toLowerCase()));
               if (personalReasoning && typeof personalReasoning === "string") {
-                step.reasoning = cleanText(personalReasoning.replace(/https?:\/\/[^\s)]+/g, ""), 400);
+                step.reasoning = cleanText(personalReasoning.replace(/https?:\/\/[^\s)]+/g, ""), 550);
               }
             }
           }

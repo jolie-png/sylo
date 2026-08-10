@@ -200,22 +200,18 @@ async function buildCuratedRoadmap(
 
       const gapResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1500,
-        system: `You are an expert career advisor who creates deeply personalized gap analyses. Return ONLY a JSON object with:
-1. "gapAnalysis": { "strengths": [2-3 strings], "gaps": [{"gap": "string", "why": "string", "action": "string"} x 2-3], "bottomLine": "one sentence" }
-2. "reasoning": { "opportunityName": "1-2 sentence personalized explanation of why THIS opportunity matters for THIS student given their specific background" } — one entry per opportunity listed below.
+        max_tokens: 600,
+        system: `You produce a personalized gap analysis for a student. Return ONLY a JSON object:
+{"strengths":["string","string"],"gaps":[{"gap":"string","why":"string","action":"string"}],"bottomLine":"string"}
 
-CRITICAL PERSONALIZATION RULES:
-- In strengths: NAME specific companies, skills, or experiences from the profile. NOT "Strong technical background" — instead "Two Amazon SDE internships give you production-scale engineering judgment most candidates lack."
-- In gaps: Identify what's ACTUALLY missing given their specific background. If they have SDE experience but want PM, the gap isn't "needs technical skills" — it's "needs to demonstrate product judgment and user empathy beyond engineering execution."
-- In reasoning for each opportunity: Connect their SPECIFIC prior work to why this particular opportunity is the right next step. Name companies, tools, or projects they mentioned.
-- The bottomLine should feel like advice from a mentor who read their entire resume and knows their specific situation.
-- If the student lists "Amazon Prime Video SDE Intern", don't just say "prior internship experience" — say "Your Amazon Prime Video work on internal tools."
-- Each reasoning should answer: "Given everything THIS student has already done, why is THIS specific opportunity their highest-leverage next move?"
-- Never invent URLs. Never mention programs not listed below.`,
+Rules:
+- strengths: 2-3 strings. NAME specific companies, skills, or experiences from their profile. Not "Strong technical background" — instead "Two Amazon SDE internships give you production-scale engineering judgment."
+- gaps: 2-3 items. Identify what's ACTUALLY missing. If they have SDE experience but want PM, the gap is "product judgment beyond engineering execution."
+- bottomLine: One specific sentence of mentor-level advice.
+- Never invent URLs or program names.`,
         messages: [{
           role: "user",
-          content: `${contextParts.join("\n")}\n\nOpportunities on their roadmap:\n${opList}\n\nReturn JSON with gapAnalysis and reasoning for each opportunity.`,
+          content: `${contextParts.join("\n")}\n\nOpportunities available: ${opList}\n\nReturn JSON.`,
         }],
       });
 
@@ -226,31 +222,28 @@ CRITICAL PERSONALIZATION RULES:
       const gapJson = gapText.match(/\{[\s\S]*\}/);
       if (gapJson) {
         const cleanedJson = gapJson[0]
-          .replace(/,\s*([}\]])/g, "$1")
-          .replace(/[\r\n]+/g, " ");
-        const parsed = JSON.parse(cleanedJson);
-        if (parsed.gapAnalysis?.strengths && parsed.gapAnalysis?.gaps && parsed.gapAnalysis?.bottomLine) {
+          .replace(/,\s*([}\]])/g, "$1")       // trailing commas
+          .replace(/[\r\n]+/g, " ")             // newlines
+          .replace(/[\x00-\x1f\t]/g, " ");     // control chars
+        let parsed: any;
+        try {
+          parsed = JSON.parse(cleanedJson);
+        } catch {
+          // Retry with more aggressive cleanup
+          try {
+            parsed = JSON.parse(cleanedJson.replace(/([^\\])\\(?!["\\/bfnrtu])/g, "$1\\\\"));
+          } catch { /* give up */ }
+        }
+        if (parsed?.strengths && parsed?.gaps && parsed?.bottomLine) {
           gapAnalysis = {
-            strengths: parsed.gapAnalysis.strengths.map((s: string) => cleanText(s.replace(/https?:\/\/[^\s)]+/g, ""), 200)),
-            gaps: parsed.gapAnalysis.gaps.map((g: any) => ({
+            strengths: parsed.strengths.map((s: string) => cleanText(s.replace(/https?:\/\/[^\s)]+/g, ""), 200)),
+            gaps: parsed.gaps.map((g: any) => ({
               gap: cleanText(g.gap?.replace(/https?:\/\/[^\s)]+/g, "") || "", 120),
               why: cleanText(g.why?.replace(/https?:\/\/[^\s)]+/g, "") || "", 200),
               action: cleanText(g.action?.replace(/https?:\/\/[^\s)]+/g, "") || "", 200),
             })),
-            bottomLine: cleanText(parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, ""), 300),
+            bottomLine: cleanText(parsed.bottomLine.replace(/https?:\/\/[^\s)]+/g, ""), 300),
           };
-        }
-        // Apply personalized reasoning to steps
-        if (parsed.reasoning && typeof parsed.reasoning === "object") {
-          for (const step of steps) {
-            const op = opportunities.find((o) => o.id === step.opportunityId);
-            if (op) {
-              const personalReasoning = parsed.reasoning[op.name];
-              if (personalReasoning && typeof personalReasoning === "string") {
-                step.reasoning = cleanText(personalReasoning.replace(/https?:\/\/[^\s)]+/g, ""), 280);
-              }
-            }
-          }
         }
       }
     } catch (gapErr) {

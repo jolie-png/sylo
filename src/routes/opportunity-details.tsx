@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText, MessageCircle } from "lucide-react";
 import {
   Workspace,
   PageHeader,
@@ -52,6 +52,7 @@ function Details() {
     resolveOpportunity,
     browsableOpportunities,
     liveOpportunities,
+    addOpportunityToRoadmap,
   } = useWayfind();
   const navigate = useNavigate();
   const [showReasons, setShowReasons] = useState(true);
@@ -251,7 +252,7 @@ function Details() {
             </p>
             <button
               type="button"
-              onClick={() => { /* TODO: wire up add to roadmap */ }}
+              onClick={() => addOpportunityToRoadmap(op.id)}
               className="tap shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
             >
               Add to my roadmap

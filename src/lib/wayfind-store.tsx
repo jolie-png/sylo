@@ -314,10 +314,23 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resolveOpportunity = useCallback(
-    (id: string) =>
-      liveOpportunities.find((o) => o.id === id) ??
-      getOpportunity(id) ??
-      (getOpportunityById(id) as Opportunity | undefined),
+    (id: string): Opportunity | undefined => {
+      const fromLive = liveOpportunities.find((o) => o.id === id);
+      if (fromLive) return fromLive;
+      const fromSeed = getOpportunity(id);
+      if (fromSeed) return fromSeed;
+      const fromDb = getOpportunityById(id);
+      if (fromDb) {
+        // Ensure DB records have all fields the Opportunity type expects
+        return {
+          ...fromDb,
+          origin: fromDb.origin ?? "seed",
+          sources: fromDb.sources ?? [],
+          singleSourced: fromDb.singleSourced ?? false,
+        } as Opportunity;
+      }
+      return undefined;
+    },
     [liveOpportunities],
   );
 

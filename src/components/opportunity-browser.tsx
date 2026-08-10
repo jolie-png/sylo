@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Pin, PinOff, SlidersHorizontal, Search } from "lucide-react";
+import { Pin, PinOff, SlidersHorizontal, Search, MessageCircle } from "lucide-react";
 import { Tag, FoundViaSearchBadge } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
@@ -70,8 +70,9 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
 
   return (
     <div className="mt-6">
-      {/* Single unified nav bar */}
-      <div className="flex items-center gap-1.5 rounded-full border bg-muted/50 p-1 w-fit">
+      {/* Nav bar + Ask Sylo */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 rounded-full border bg-muted/50 p-1 w-fit">
         <button
           type="button"
           onClick={() => setView("track")}
@@ -107,6 +108,17 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
           )}
         >
           Pinned{pinnedCount ? ` (${pinnedCount})` : ""}
+        </button>
+      </div>
+        <button
+          type="button"
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent("open-ask-sylo", { detail: { query: "" } }));
+          }}
+          className="tap inline-flex items-center gap-1.5 rounded-full border border-primary/25 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/5"
+        >
+          <MessageCircle className="h-3.5 w-3.5" />
+          Ask Sylo
         </button>
       </div>
 

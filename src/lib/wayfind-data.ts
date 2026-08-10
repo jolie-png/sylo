@@ -1230,8 +1230,186 @@ export const MILESTONES: Milestone[] = [
     ],
     doneWhen: "All applications submitted by December deadlines, letters confirmed uploaded, you've contacted 2+ faculty per program, and you can present your research clearly in 10 minutes.",
   },
+
+  // -------------------------------------------------------------------------
+  // Post-graduation: Product Manager
+  // -------------------------------------------------------------------------
+  {
+    track: "product-manager",
+    year: "Year 1",
+    focus: "Earn trust and ship your first product win",
+    lookOutFor:
+      "First-year PMs are judged on execution speed and cross-functional relationships, not grand strategy. The ones who get promoted fastest ship small wins early and build credibility with engineers before proposing big bets.",
+    actions: [
+      "In your first 90 days: ship one measurable improvement to an existing product — not a new feature, a better version of something that already exists.",
+      "Build a 1:1 relationship with at least 3 engineers on your team. Understand their frustrations before proposing solutions.",
+      "Master your product's metrics: know the funnel, retention curves, and top-line KPIs cold. Be the person who notices when something moves.",
+      "Run your first A/B test end-to-end — hypothesis, design, analysis, decision. Document the learnings publicly for your team.",
+      "Get comfortable saying 'no' to feature requests with data. Practice writing clear one-pagers that explain why something isn't worth building right now.",
+    ],
+    doneWhen: "You've shipped 2–3 features that moved a metric your team cares about, your engineering lead trusts your judgment, and you can explain your product's strategy without looking at a doc.",
+  },
+  {
+    track: "product-manager",
+    year: "Years 2–3",
+    focus: "Own a problem space, not just a feature backlog",
+    lookOutFor:
+      "The transition from APM/PM to Senior PM is about moving from executing someone else's roadmap to defining the roadmap yourself. This requires developing product intuition, managing ambiguity, and influencing without authority across teams.",
+    actions: [
+      "Identify a customer problem your team isn't solving yet and write the strategy doc to address it — then get buy-in from leadership to pursue it.",
+      "Mentor a junior PM or intern. Teaching forces you to articulate frameworks you use intuitively and builds your leadership brand.",
+      "Build a network outside your immediate team: attend product leadership meetings, join cross-functional working groups, present at company all-hands.",
+      "Develop a point of view on where your product area is headed in 2–3 years. Write it down. Share it with your manager and get feedback.",
+      "Start evaluating whether you want to go deeper (staff PM, principal PM) or broader (general management, founder). Both paths require different investments starting now.",
+    ],
+    doneWhen: "You own a product area with P&L responsibility or team-level scope, you've influenced a strategic decision that affected multiple teams, and peers seek your opinion on product direction.",
+  },
+
+  // -------------------------------------------------------------------------
+  // Post-graduation: Physician-Scientist
+  // -------------------------------------------------------------------------
+  {
+    track: "physician-scientist",
+    year: "Year 1",
+    focus: "Survive first year of med school while maintaining research momentum",
+    lookOutFor:
+      "MD/PhD students who keep a toe in research during M1–M2 (even just a few hours/week on analysis or writing) transition back to full-time research far more smoothly than those who disconnect entirely.",
+    actions: [
+      "Complete your first-year coursework: anatomy, biochemistry, physiology. Boards preparation begins naturally through this material.",
+      "Maintain contact with your research lab — even 3–5 hours/week on data analysis or literature review keeps the thread alive.",
+      "Identify your thesis advisor if you haven't already. Have at least two conversations about potential dissertation directions by spring.",
+      "Build clinical reasoning skills early: engage deeply with patient encounters in your clinical skills course. These observations feed back into your research questions.",
+      "Connect with senior MD/PhD students — they know which qualifying exam pitfalls to avoid and which committees to seek out.",
+    ],
+    doneWhen: "You've passed your first-year coursework, maintained active contact with your research lab, and have a preliminary thesis direction and advisor confirmed.",
+  },
+  {
+    track: "physician-scientist",
+    year: "Years 2–3",
+    focus: "Complete the PhD transition and produce your core publications",
+    lookOutFor:
+      "The middle years are where MD/PhD students either build the publication record that defines their career or stall. Consistent output — even incremental results — matters more than waiting for one big finding.",
+    actions: [
+      "Pass Step 1/COMLEX (if your program requires pre-PhD) and transition fully into research by summer.",
+      "Publish at least one first-author paper by the end of year 3 — this is the single strongest predictor of competitive residency placement.",
+      "Present at one national conference per year. Build your professional identity in the research community now.",
+      "Begin thinking about residency specialties that align with your research. MD/PhD students match best when their research story and clinical specialty are coherent.",
+      "Develop one collaboration outside your immediate lab — interdisciplinary work broadens your funding potential and gives you a second reference point.",
+    ],
+    doneWhen: "You have at least one first-author publication, a clear dissertation arc with 2–3 aims defined, and you can articulate how your research connects to a clinical specialty.",
+  },
+
+  // -------------------------------------------------------------------------
+  // Post-graduation: Software Engineer
+  // -------------------------------------------------------------------------
+  {
+    track: "software-engineer",
+    year: "Year 1",
+    focus: "Go from contributor to owner of a system",
+    lookOutFor:
+      "Junior engineers who get promoted fastest own something end-to-end within 6 months — a service, a pipeline, a feature area. Breadth of contributions matters less than depth of ownership.",
+    actions: [
+      "In your first 90 days: learn the codebase by fixing bugs. Ship 10+ small PRs before proposing anything architectural.",
+      "Identify one system or service that needs an owner and volunteer to be the point person. Maintain it, improve it, document it.",
+      "Write design docs for any change that takes more than a week. Get comfortable with the review process even for medium-sized work.",
+      "Build on-call confidence: understand your team's alerts, runbooks, and failure modes. Being reliable during incidents builds trust fast.",
+      "Learn the adjacent systems your code talks to. Understand at least one layer above and below your primary service.",
+    ],
+    doneWhen: "You own one system or feature area, you can debug production issues in your domain independently, and you've shipped one project that required a design doc and cross-team coordination.",
+  },
+  {
+    track: "software-engineer",
+    year: "Years 2–3",
+    focus: "Lead technical projects and develop engineering judgment",
+    lookOutFor:
+      "The mid-level to senior transition isn't about writing more code — it's about making better technical decisions and multiplying the team's output. Senior engineers are judged on the problems they prevent, not just the features they ship.",
+    actions: [
+      "Lead a multi-month project end-to-end: scoping, design, implementation, launch, and retrospective. Delegate parts of it.",
+      "Mentor one or two junior engineers. Code reviews are a start, but proactive 1:1s and pair programming sessions are what actually accelerate people.",
+      "Develop expertise in one area that matters to the business: performance, reliability, security, or scalability. Become the person others consult.",
+      "Start identifying technical debt that's costing the team velocity. Write the proposal to fix it and make the case in terms leadership cares about (velocity, reliability, cost).",
+      "Decide whether you're on the IC (Staff/Principal) track or moving toward engineering management. Both require investment — the IC path needs deeper technical writing and broader influence, the EM path needs people skills and strategic thinking.",
+    ],
+    doneWhen: "You've led a project that shipped to production with significant impact, you're regularly consulted on technical decisions outside your immediate team, and you have a clear sense of your next career step.",
+  },
+
+  // -------------------------------------------------------------------------
+  // Post-graduation: Investment Banking
+  // -------------------------------------------------------------------------
+  {
+    track: "investment-banking",
+    year: "Year 1",
+    focus: "Survive analyst year and build your deal sheet",
+    lookOutFor:
+      "First-year analysts are evaluated on reliability, speed, and attitude under pressure. The analysts who get the best staffings (and later, the best exit opportunities) are the ones who never drop a ball and stay composed when deals go sideways at 2am.",
+    actions: [
+      "Master the core deliverables: pitch books, CIMs, models, and process letters. Speed and accuracy matter — triple-check every number before it goes to a VP.",
+      "Build relationships with associates — they control your staffings and write your reviews. Be the analyst they want on their deals.",
+      "Track every deal you touch: your deal sheet is your resume for exit opportunities. Note your specific contributions (ran the model, led the data room, etc.).",
+      "Start networking for exit opportunities by month 6 — PE/HF recruiting starts absurdly early (often 12 months into your analyst stint).",
+      "Take care of your health: establish one non-negotiable habit (gym, sleep minimum, weekend morning) to maintain sanity through the hours.",
+    ],
+    doneWhen: "You've closed 2–3 deals, your deal sheet has specific contributions documented, your VP and associates trust you with client-facing work, and you've started conversations with headhunters about exits.",
+  },
+  {
+    track: "investment-banking",
+    year: "Years 2–3",
+    focus: "Execute your exit or commit to the promote",
+    lookOutFor:
+      "Most banking analysts exit after 2 years to PE, hedge funds, or corporate development. If you're staying for the associate promote, you need to demonstrate client management and deal origination potential. Either way, the clock is ticking — make a decision by month 18.",
+    actions: [
+      "If pursuing PE: prep for technical interviews (LBO modeling, case studies, deal walk-throughs) starting 12 months in. Target 10+ headhunter relationships.",
+      "If pursuing hedge funds: develop an investment thesis, build a stock pitch, and understand public markets positioning. HF interviews test thinking, not just modeling.",
+      "If staying in banking: communicate interest in the associate promote to your staffer and group head by month 15. Start taking on more client-facing responsibilities.",
+      "Regardless of path: maintain your network outside finance. The people who transition to operating roles, startups, or business school later are those who kept relationships alive.",
+      "Consider MBA if you want to pivot — top programs value 2–3 years of banking experience highly, and applications are due in September/January of your target year.",
+    ],
+    doneWhen: "You've either secured your exit opportunity (PE/HF offer signed) or you've been promoted to associate. Either way, you can point to specific deal outcomes you drove and have a clear 5-year view of where you're headed.",
+  },
+
+  // -------------------------------------------------------------------------
+  // Post-graduation: Research PhD
+  // -------------------------------------------------------------------------
+  {
+    track: "research-phd",
+    year: "Year 1",
+    focus: "Pass qualifying exams and lock in your dissertation committee",
+    lookOutFor:
+      "The first PhD year is about proving you can do independent research at a professional level. Programs vary, but most expect you to clear coursework requirements, pass qualifiers, and begin original work within 12–18 months.",
+    actions: [
+      "Complete required coursework with strong performance — these grades rarely matter for your career, but failing a qualifier can delay everything by a year.",
+      "Formalize your advisor relationship: agree on expectations (meeting cadence, publication targets, timeline to candidacy) in writing or at least in a detailed conversation.",
+      "Begin your qualifying exam preparation 3–4 months in advance. Talk to students who passed recently — format and expectations vary wildly by program and committee.",
+      "Attend all lab meetings and your department's seminar series. Ask at least one question per month — visibility matters in small academic communities.",
+      "Write a 2-page research proposal for your dissertation direction. It will change, but the exercise of articulating it forces clarity.",
+    ],
+    doneWhen: "You've passed your qualifying exam, your dissertation committee is formed, and you have a clear (if preliminary) research plan that your advisor endorses.",
+  },
+  {
+    track: "research-phd",
+    year: "Years 2–3",
+    focus: "Produce publications and build your professional reputation",
+    lookOutFor:
+      "The mid-PhD years are where careers diverge. Students who publish consistently and present at conferences build the reputation that leads to postdoc offers, faculty positions, or industry research roles. Those who wait for the 'perfect result' often leave without publications.",
+    actions: [
+      "Submit at least one paper per year — even negative results or methods papers count. Consistent output beats waiting for a home run.",
+      "Present at 1–2 conferences annually. Oral presentations > posters for visibility, but both count.",
+      "Build 2–3 collaborations outside your immediate lab. Interdisciplinary work expands your network and funding potential.",
+      "Start thinking about what's next: academia (postdoc → faculty), industry research (e.g., Google DeepMind, Microsoft Research), or applied roles. Each path requires different positioning starting now.",
+      "Apply for at least one independent fellowship or grant (NSF GRFP if eligible, or discipline-specific awards). Funded students are more competitive for every next step.",
+    ],
+    doneWhen: "You have 2+ publications (at least one first-author), you're known at conferences in your subfield, and you have a realistic timeline to defense with your advisor's agreement.",
+  },
 ];
 
 export function milestonesForTrack(track: string) {
   return MILESTONES.filter((m) => m.track === track);
 }
+
+/** Post-graduation milestones only (Year 1, Years 2–3). */
+export function postGradMilestonesForTrack(track: string) {
+  return MILESTONES.filter((m) => m.track === track && (m.year === "Year 1" || m.year === "Years 2–3"));
+}
+
+/** All milestone year labels that apply after the current student year, including post-grad. */
+export const POST_GRAD_YEARS: MilestoneYear[] = ["Year 1", "Years 2–3"];

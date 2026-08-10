@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Clock, Compass } from "lucide-react";
+import { Clock, Compass, Loader2 } from "lucide-react";
 import { StatusAccentBar, StatusDot } from "@/components/roadmap-connector";
 import { StatusTag, Tag } from "@/components/workspace";
 import { cn } from "@/lib/utils";
 import { termFor, termsFromDeadlines, type Term } from "@/lib/terms";
 import {
   milestonesForTrack,
+  POST_GRAD_YEARS,
   YEARS,
   type Milestone,
   type Opportunity,
   type StepStatus,
 } from "@/lib/wayfind-data";
 import { useWayfind } from "@/lib/sylo-store";
+import { usePostGradProjections } from "@/lib/use-postgrad-projections";
 
 type Selection =
   | { kind: "opportunity"; op: Opportunity; status: StepStatus; reasoning?: string }
@@ -35,7 +37,8 @@ export function LongViewBoard({
   studentYear: string;
   school: string;
 }) {
-  const { resolveOpportunity } = useWayfind();
+  const { resolveOpportunity, profile } = useWayfind();
+  const postGrad = usePostGradProjections(profile);
 
   const resolved = steps
     .map((s) => ({ step: s, op: resolveOpportunity(s.opportunityId) }))
@@ -57,6 +60,10 @@ export function LongViewBoard({
     .map((year) => ({ year, items: milestonesForTrack(trackId as never).filter((m) => m.year === year) }))
     .filter((c) => c.items.length > 0);
 
+  const postGradColumns = POST_GRAD_YEARS
+    .map((year) => ({ year, items: postGrad.projections.filter((m) => m.year === year) }))
+    .filter((c) => c.items.length > 0 || postGrad.loading);
+
   const first = resolved[0];
   const [selected, setSelected] = useState<Selection | null>(
     first
@@ -64,7 +71,7 @@ export function LongViewBoard({
       : null,
   );
 
-  const columnCount = verifiedTerms.length + guidanceColumns.length;
+  const columnCount = verifiedTerms.length + guidanceColumns.length + postGradColumns.length;
 
   return (
     <div className="mt-6 overflow-hidden rounded-2xl border bg-card">
@@ -171,6 +178,57 @@ export function LongViewBoard({
                   </div>
                 </div>
               ))}
+
+              {postGradColumns.map((col) => (
+                <div key={col.year} className="min-h-[360px] border-r bg-emerald-50/50 dark:bg-emerald-950/20 p-4 last:border-r-0">
+                  <div className="flex items-center justify-between px-1">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-700/70 dark:text-emerald-400/70">
+                      After graduation
+                    </p>
+                    {postGrad.isLive && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 text-[9px] font-medium text-emerald-700 dark:text-emerald-400">
+                        <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                        Live
+                      </span>
+                    )}
+                    {postGrad.loading && (
+                      <Loader2 className="h-3 w-3 animate-spin text-emerald-600/60" />
+                    )}
+                  </div>
+                  <p className="px-1 pb-3 text-sm font-medium tracking-tight text-foreground/80">
+                    {col.year}
+                  </p>
+                  <div className="space-y-3">
+                    {col.items.length > 0 ? col.items.map((m) => {
+                      const active =
+                        selected?.kind === "milestone" && selected.milestone.focus === m.focus;
+                      return (
+                        <button
+                          key={m.focus}
+                          type="button"
+                          onClick={() => setSelected({ kind: "milestone", milestone: m as unknown as Milestone })}
+                          className={cn(
+                            "tap w-full rounded-xl border border-dashed border-emerald-500/30 bg-transparent px-4 py-4 text-left",
+                            active && "border-emerald-500/50 bg-emerald-500/[0.06]",
+                          )}
+                        >
+                          <p className="text-[13px] font-medium leading-snug tracking-tight text-foreground/75">
+                            {m.focus}
+                          </p>
+                          <p className="mt-2 text-[11px] text-emerald-700/60 dark:text-emerald-400/60">
+                            Post-grad · {col.year}
+                          </p>
+                        </button>
+                      );
+                    }) : postGrad.loading ? (
+                      <div className="space-y-3 px-1">
+                        <div className="h-16 animate-pulse rounded-xl border border-dashed border-emerald-500/20 bg-emerald-500/[0.03]" />
+                        <div className="h-16 animate-pulse rounded-xl border border-dashed border-emerald-500/20 bg-emerald-500/[0.03]" />
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -209,7 +267,9 @@ export function LongViewBoard({
                 {selected.milestone.focus}
               </p>
               <p className="mt-2 text-[11px] uppercase tracking-wide text-muted-foreground/70">
-                General guidance · {selected.milestone.year} year
+                {selected.milestone.year === "Year 1" || selected.milestone.year === "Years 2–3"
+                  ? `After graduation · ${selected.milestone.year}`
+                  : `General guidance · ${selected.milestone.year} year`}
               </p>
               <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
                 <span className="text-muted-foreground/70">What usually matters: </span>

@@ -28,10 +28,11 @@ import {
   CuratedBadge,
 } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
-import { getTrack, milestonesForTrack, YEARS } from "@/lib/wayfind-data";
+import { getTrack, milestonesForTrack, POST_GRAD_YEARS, YEARS } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
 import { formatTargetDate } from "@/lib/terms";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
+import { usePostGradProjections } from "@/lib/use-postgrad-projections";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { AcademicTermSelector } from "@/components/academic-term-selector";
@@ -88,14 +89,33 @@ function Dashboard() {
     stepReasoningOverrides,
   } = useWayfind();
   const navigate = useNavigate();
+  const postGrad = usePostGradProjections(profile);
   const [showAlternates, setShowAlternates] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(() => {
+    try { return sessionStorage.getItem("sylo:draft:open") === "true"; } catch { return false; }
+  });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
-  const [title, setTitle] = useState("");
-  const [note, setNote] = useState("");
-  const [targetDate, setTargetDate] = useState("");
+  const [title, setTitle] = useState(() => {
+    try { return sessionStorage.getItem("sylo:draft:title") ?? ""; } catch { return ""; }
+  });
+  const [note, setNote] = useState(() => {
+    try { return sessionStorage.getItem("sylo:draft:note") ?? ""; } catch { return ""; }
+  });
+  const [targetDate, setTargetDate] = useState(() => {
+    try { return sessionStorage.getItem("sylo:draft:date") ?? ""; } catch { return ""; }
+  });
+
+  // Persist draft state so navigation doesn't lose in-progress steps
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("sylo:draft:open", String(showForm));
+      sessionStorage.setItem("sylo:draft:title", title);
+      sessionStorage.setItem("sylo:draft:note", note);
+      sessionStorage.setItem("sylo:draft:date", targetDate);
+    } catch { /* sessionStorage unavailable */ }
+  }, [showForm, title, note, targetDate]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -160,6 +180,7 @@ function Dashboard() {
   const futureYears = (["Sophomore", "Junior", "Senior"] as const).filter(
     (y) => currentYearIndex < 0 || YEARS.indexOf(y) > currentYearIndex,
   );
+  const postGradItems = postGrad.projections;
 
   return (
     <Workspace wide>
@@ -600,7 +621,10 @@ function Dashboard() {
           const futureCards = futureYears.filter(
             (y) => milestonesForTrack(profile.trackId).filter((m) => m.year === y).length > 0,
           ).length;
-          const totalCards = 1 + futureCards;
+          const postGradCards = postGradItems.length > 0 || postGrad.loading ? POST_GRAD_YEARS.filter(
+            (y) => postGradItems.some((m) => m.year === y) || postGrad.loading,
+          ).length : 0;
+          const totalCards = 1 + futureCards + postGradCards;
           const gridCols =
             totalCards >= 3
               ? "md:grid-cols-3"
@@ -670,6 +694,65 @@ function Dashboard() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            );
+          })}
+
+          {POST_GRAD_YEARS.map((year) => {
+            const items = postGradItems.filter((m) => m.year === year);
+            if (!items.length && !postGrad.loading) return null;
+            return (
+              <div key={year} className="rounded-2xl border border-emerald-500/12 bg-emerald-500/[0.04] p-5">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] uppercase tracking-wide text-emerald-700/80 dark:text-emerald-400/80">
+                    After graduation
+                  </p>
+                  {postGrad.isLive && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Personalized
+                    </span>
+                  )}
+                  {postGrad.loading && (
+                    <Loader2 className="h-3 w-3 animate-spin text-emerald-600/60" />
+                  )}
+                </div>
+                <p className="mt-1 text-sm font-semibold tracking-tight">{year}</p>
+                {items.length > 0 ? (
+                <ul className="mt-4 space-y-6">
+                  {items.map((m) => (
+                    <li key={m.focus}>
+                      <p className="text-[14px] font-semibold tracking-tight text-foreground">
+                        {m.focus}
+                      </p>
+                      <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                        {m.lookOutFor}
+                      </p>
+                      <ol className="mt-3 space-y-2 pl-4">
+                        {m.actions.map((action, i) => (
+                          <li key={i} className="flex gap-2 text-[13px] leading-relaxed text-foreground/80">
+                            <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded bg-emerald-100 dark:bg-emerald-900/40 text-[10px] font-medium tabular-nums text-emerald-700 dark:text-emerald-400">
+                              {i + 1}
+                            </span>
+                            <span>{action}</span>
+                          </li>
+                        ))}
+                      </ol>
+                      <div className="mt-3 rounded-lg border border-emerald-500/10 bg-emerald-500/5 px-3 py-2">
+                        <p className="text-[12px] font-medium text-emerald-700 dark:text-emerald-400">
+                          Done when: <span className="font-normal text-foreground/70">{m.doneWhen}</span>
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                ) : postGrad.loading ? (
+                  <div className="mt-4 space-y-3">
+                    <div className="h-4 w-3/4 animate-pulse rounded bg-emerald-100 dark:bg-emerald-900/30" />
+                    <div className="h-3 w-full animate-pulse rounded bg-emerald-100/60 dark:bg-emerald-900/20" />
+                    <div className="h-3 w-5/6 animate-pulse rounded bg-emerald-100/60 dark:bg-emerald-900/20" />
+                  </div>
+                ) : null}
               </div>
             );
           })}

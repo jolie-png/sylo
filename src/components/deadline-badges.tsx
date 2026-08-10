@@ -25,8 +25,10 @@ export function getDeadlineStatus(deadline: string, recurring = false) {
   const days = Math.ceil((dl.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   if (days <= 14) return { label: `Due in ${days}d`, state: "urgent" as const };
   if (days <= 30) return { label: `Due in ${days}d`, state: "soon" as const };
+  // Always show year to eliminate ambiguity about which cycle a deadline belongs to
+  const formatted = dl.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   return {
-    label: `Due by ${dl.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
+    label: `Due by ${formatted}`,
     state: "open" as const,
   };
 }

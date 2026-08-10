@@ -200,14 +200,17 @@ async function buildCuratedRoadmap(
       const gapResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 1500,
-        system: `You analyze a student's fit for their roadmap. Return ONLY a JSON object with:
+        system: `You are an expert career advisor who creates deeply personalized gap analyses. Return ONLY a JSON object with:
 1. "gapAnalysis": { "strengths": [2-3 strings], "gaps": [{"gap": "string", "why": "string", "action": "string"} x 2-3], "bottomLine": "one sentence" }
 2. "reasoning": { "opportunityName": "1-2 sentence personalized explanation of why THIS opportunity matters for THIS student given their specific background" } — one entry per opportunity listed below.
 
-Rules:
-- Reference the student's actual experience, skills, and gaps in each reasoning. Don't be generic.
-- If the student has prior work at a company, explain how the opportunity builds on or complements that.
-- Each reasoning should answer: "Why should THIS specific student do THIS specific thing next?"
+CRITICAL PERSONALIZATION RULES:
+- In strengths: NAME specific companies, skills, or experiences from the profile. NOT "Strong technical background" — instead "Two Amazon SDE internships give you production-scale engineering judgment most candidates lack."
+- In gaps: Identify what's ACTUALLY missing given their specific background. If they have SDE experience but want PM, the gap isn't "needs technical skills" — it's "needs to demonstrate product judgment and user empathy beyond engineering execution."
+- In reasoning for each opportunity: Connect their SPECIFIC prior work to why this particular opportunity is the right next step. Name companies, tools, or projects they mentioned.
+- The bottomLine should feel like advice from a mentor who read their entire resume and knows their specific situation.
+- If the student lists "Amazon Prime Video SDE Intern", don't just say "prior internship experience" — say "Your Amazon Prime Video work on internal tools."
+- Each reasoning should answer: "Given everything THIS student has already done, why is THIS specific opportunity their highest-leverage next move?"
 - Never invent URLs. Never mention programs not listed below.`,
         messages: [{
           role: "user",
@@ -326,15 +329,30 @@ function buildSystemPrompt() {
     "7. ALWAYS include a 'gapAnalysis' object in your JSON response with: strengths (2-3 strings about what the student's year/major/school gives them), gaps (array of {gap, why, action} — 2-3 gaps between where they are and their goal), bottomLine (one sentence on their single biggest focus). Base this on their year, major, and goal even if no resume context is provided.",
     "8. In the reasoning field for each opportunity, reference the student's specific gaps — explain why THIS opportunity matters given what they're missing.",
     "",
-    "reasoning: 1-2 sentences, plain second person.",
-    "summary: 1-2 forward-framed sentences.",
-    "deadline: ISO YYYY-MM-DD if found, otherwise empty string.",
+    "PERSONALIZATION RULES (CRITICAL — every reasoning and gap must feel like it was written for THIS student, not a generic archetype):",
+    "- If the student lists prior internships (e.g. 'Amazon Prime Video SDE Intern'), NAME the company in your reasoning. Example: 'Your Amazon experience gives you production-scale credibility — this role lets you apply that to a consumer product from the PM seat.'",
+    "- If the student lists skills (e.g. 'Python, SQL, Figma'), reference specific ones that are relevant. Example: 'Your SQL and quantitative research background means you can skip the data fluency ramp most new PMs struggle with.'",
+    "- If the student lists clubs or orgs, connect them. Example: 'Leading in Columbia's CORE shows you can drive cross-functional work — APM programs screen for exactly this.'",
+    "- In gapAnalysis.strengths, cite the SPECIFIC experience that makes them strong — not generic statements about their major or school.",
+    "- In gapAnalysis.gaps, identify what's ACTUALLY missing given their specific background — don't repeat generic advice that ignores their resume.",
+    "- The bottomLine should reference their specific situation, not a one-size-fits-all statement.",
+    "- NEVER write generic reasoning like 'This is great for CS students' or 'Good for aspiring PMs'. Always connect to THIS student's specific data.",
+    "",
+    "DEADLINE RULES:",
+    "- deadline MUST be a full ISO date: YYYY-MM-DD. The year is REQUIRED.",
+    "- The year must be the CURRENT or NEXT application cycle relative to today's date (provided in the user prompt). Never use past years.",
+    "- If the search results mention a month but no year, infer the correct year: if the month is in the future relative to today, use the current year. If it's in the past, use next year.",
+    "- If no specific date is found in the search results, leave deadline as empty string. Do NOT guess dates.",
+    "",
+    "reasoning: 1-2 sentences, plain second person. MUST reference something specific from the student's profile.",
+    "summary: 1-2 forward-framed sentences that reference the student's specific background.",
+    "deadline: ISO YYYY-MM-DD if found in search results, otherwise empty string. MUST include year.",
     "category: exactly one of " + CATEGORIES.join(", ") + ".",
     "",
     "Chain reasoning fields: gapLabel ONLY on the first opportunity. upstream, unlocks, and window on EVERY opportunity.",
     "",
     "DEPENDENCY CHAIN RULES (upstream/unlocks/window):",
-    "- upstream: What this step builds on. Use ONLY facts from the search results or obvious academic prerequisites (e.g. 'Completed intro CS course'). If nothing is required, write 'None — open to all eligible students'.",
+    "- upstream: What this step builds on. Reference the student's ACTUAL prior experience where relevant (e.g. 'Builds on your Amazon SDE internship experience'). Use ONLY facts from the search results or the student's profile. If nothing is required, write 'None — open to all eligible students'.",
     "- unlocks: 1-3 things this step makes possible. Only include outcomes that are logically true (e.g. a research position unlocks a faculty rec letter). Never invent program names not in the search results.",
     "- window: The timing constraint if a deadline exists. Copy from the deadline/timeframe info. If no hard deadline, write 'Rolling' or omit.",
     "- NEVER invent program names, deadlines, or prerequisites that aren't stated in the search results or obvious from the opportunity type.",
@@ -362,14 +380,21 @@ function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
     `- Today: ${new Date().toISOString().slice(0, 10)}`,
   ];
   if (data.gpa) contextLines.push(`- GPA: ${data.gpa}`);
-  if (data.skills) contextLines.push(`- Skills: ${data.skills}`);
-  if (data.experience) contextLines.push(`- Experience: ${data.experience}`);
+  if (data.skills) contextLines.push(`- Skills & tools: ${data.skills}`);
+  if (data.experience) contextLines.push(`- Experience & background: ${data.experience}`);
   if (data.priorWork) contextLines.push(`- Prior internships/jobs: ${data.priorWork}`);
   if (data.clubs) contextLines.push(`- Clubs/orgs: ${data.clubs}`);
   if (data.alreadyDone) contextLines.push(`- Already tried toward this goal: ${data.alreadyDone}`);
 
+  // Explicitly flag what's available for personalization
+  const hasContext = !!(data.experience || data.priorWork || data.skills || data.clubs || data.alreadyDone);
+
   return [
     ...contextLines,
+    "",
+    hasContext
+      ? "IMPORTANT: This student has provided detailed background (experience, internships, skills, clubs). Your reasoning for EVERY opportunity MUST reference their specific background by name. Do NOT write generic reasoning. Every 'reasoning' field should read like it was written by an advisor who read their full resume."
+      : "NOTE: This student has not provided detailed background yet. Base personalization on their year, major, school, and goal.",
     "",
     "SEARCH RESULTS (your only source of fact):",
     "============================================",
@@ -378,8 +403,9 @@ function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
     "",
     "Extract real opportunities from these results. Only include things the search results actually describe.",
     "Use the student's background to rank results by relevance — prioritize opportunities that fit their current skill level and fill gaps in their experience.",
-    "For EVERY opportunity, include upstream (what it builds on), unlocks (what it opens — only logical outcomes, never invented program names), and window (timing). If no prerequisite exists, set upstream to 'None — open to all eligible students'.",
-    "ALWAYS include a gapAnalysis object — use the student's year, major, school, and goal to identify strengths and gaps even without a resume.",
+    "For EVERY opportunity, include upstream (what it builds on — reference their prior experience where relevant), unlocks (what it opens — only logical outcomes, never invented program names), and window (timing). If no prerequisite exists, set upstream to 'None — open to all eligible students'.",
+    "ALWAYS include a gapAnalysis object — strengths must cite SPECIFIC things from their profile, gaps must identify what's ACTUALLY missing given their background.",
+    "All deadlines must be YYYY-MM-DD format with a plausible year relative to today's date. If a deadline year isn't stated, infer it (future month = this year, past month = next year). If you can't determine a date, use empty string.",
     "Return strict JSON.",
   ].join("\n");
 }
@@ -449,7 +475,20 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
 
     opportunities.push({
       id, name, track: track.id, category: raw.category, access: "direct", school: data.school,
-      deadline: /^\d{4}-\d{2}-\d{2}$/.test(raw.deadline.trim()) ? raw.deadline.trim() : "",
+      deadline: (() => {
+        const d = raw.deadline.trim();
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return "";
+        // Reject dates more than 18 months in the past — likely a stale or hallucinated deadline
+        const deadlineDate = new Date(d);
+        const cutoff = new Date();
+        cutoff.setMonth(cutoff.getMonth() - 18);
+        if (deadlineDate < cutoff) return "";
+        // Reject dates more than 2 years in the future — likely hallucinated
+        const maxFuture = new Date();
+        maxFuture.setFullYear(maxFuture.getFullYear() + 2);
+        if (deadlineDate > maxFuture) return "";
+        return d;
+      })(),
       timeframe: trim(raw.timeframe, 80) || "Timing not confirmed",
       requirements: raw.requirements.map((r) => trim(r, 90)).filter(Boolean).slice(0, 6),
       contact: trim(raw.contact, 120), link,

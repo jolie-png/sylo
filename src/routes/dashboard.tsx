@@ -582,9 +582,6 @@ function Dashboard() {
                         {s.targetDate ? (
                           <CalendarButton name={s.title} deadline={s.targetDate} description={s.note || ""} compact />
                         ) : null}
-                        {s.note ? (
-                          <NoteIndicator note={s.note} />
-                        ) : null}
                       </div>
                       {s.note && expandedNotes[s.id] ? (
                         <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
@@ -595,7 +592,7 @@ function Dashboard() {
                         <button
                           type="button"
                           onClick={() => setExpandedNotes((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
-                          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80"
                         >
                           {expandedNotes[s.id] ? (
                             <ChevronDown className="h-3.5 w-3.5" />
@@ -937,9 +934,6 @@ function SortableStep({
               <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
               {op.origin === "live" ? <FoundViaSearchBadge /> : null}
               {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}
-              {stepNotes[step.opportunityId] ? (
-                <NoteIndicator note={stepNotes[step.opportunityId]} />
-              ) : null}
             </div>
             <button
               type="button"

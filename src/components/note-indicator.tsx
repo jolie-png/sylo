@@ -31,7 +31,7 @@ export function NoteIndicator({ note }: NoteIndicatorProps) {
         <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Note
         </p>
-        <p className="text-sm leading-relaxed whitespace-pre-wrap break-all">
+        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
           <LinkifyText text={note} />
         </p>
       </PopoverContent>

@@ -153,6 +153,25 @@ export function fromGenerated(r: GeneratedRoadmap): Roadmap {
   };
 }
 
+/** Causality-framed reasoning per step for instant demo personas. */
+const PERSONA_REASONING: Record<string, Record<string, string>> = {
+  maya: {
+    "op-gt-urop-pura": "Students who land top SWE internships at Google/Meta typically have: a shipped project + one research or teaching experience that shows depth. PURA gives you funded research under a faculty mentor — the project you build here becomes your strongest interview talking point, and the stipend means you don't need a part-time job eating your build time.",
+    "op-gt-createx-learn": "The interns who stand out at FAANG all have one thing in common: they shipped something real outside of coursework. CREATE-X gives you a shipped product for course credit — interviewers notice a startup prototype more than another LeetCode badge because it proves you can scope, build, and deliver.",
+    "op-gt-createx-launch": "Founders (even of failed startups) get fast-tracked in SWE recruiting because they've proven they can ship under ambiguity. Launch gives you seed funding, legal support, and a Demo Day — even if the company doesn't survive, the experience makes your resume impossible to ignore.",
+    "op-gt-coop": "Co-op students at GT get 3 full rotations of industry experience before graduating — most come back with a return offer without ever doing a traditional job search. Starting after your research semester means you interview with a real project story (PURA) instead of just coursework.",
+    "op-gt-uroc": "The freshmen who get into PURA already have a faculty relationship. UROC is the on-ramp — you email a professor, commit 10 hours/week, and build the trust that turns into a PURA recommendation. Without this step, PURA's 'faculty mentor identified' requirement becomes a blocker.",
+    "op-gt-grip": "GRIP requires active research experience — which PURA gives you. Government research with security clearance eligibility is a unique resume line that signals you can ship in constrained, high-stakes environments. It also opens a career path most CS students never consider.",
+  },
+  alex: {
+    "op-ucla-urfp": "Students who get strong MD/PhD committee letters typically spent 2+ quarters under one PI. URFP funds that relationship — you get a stipend, a spring symposium presentation, and the sustained mentorship that produces the 'independently designed an experiment' letter language admissions committees look for.",
+    "op-ucla-bisep": "The pre-meds who secure PI mentors by sophomore spring all started in a structured program like BISEP freshman year. It places you in a real lab before most students even know how to ask — and the faculty relationship you build here is what satisfies URFP's 'mentor identified' requirement next quarter.",
+    "op-ucla-premed-summer": "MD/PhD programs expect both bench research AND clinical exposure. PMSS at UCLA Health gives you 8 weeks of real patient interaction at a top academic medical center — exactly the clinical depth that separates your application from students who only have shadowing hours.",
+    "op-ucla-hhmi-pathways": "HHMI Pathways accepts students who already have lab experience (BISEP or URFP satisfies this). The HHMI name on your CV is recognized by every MD/PhD committee in the country, and the cohort's grad school prep workshops give you MCAT strategy and application support you'd otherwise pay thousands for.",
+    "op-ucla-mcdb-research": "This is the zero-barrier entry point. You email a professor, show up to office hours, and start working in their lab — no application, no GPA cutoff, no deadline. The students who get strong rec letters for URFP and HHMI all started exactly here: by showing initiative before being asked.",
+  },
+};
+
 export function personaRoadmap(persona: Persona): Roadmap {
   const track = TRACKS.find((t) => t.id === persona.track)!;
   const pool = OPPORTUNITIES.filter((o) => o.track === persona.track).sort((a, b) => {
@@ -225,7 +244,7 @@ export function personaRoadmap(persona: Persona): Roadmap {
     steps: pool.map((o, i) => ({
       id: o.id,
       opportunityId: o.id,
-      reasoning: o.leverage,
+      reasoning: PERSONA_REASONING[persona.id]?.[o.id] || o.leverage,
       // Demo feel: top step is "in-progress" (the current focus), the last
       // rolling-deadline step is "complete" (low-barrier thing already done).
       status: (i === 0 ? "in-progress" : i === pool.length - 1 ? "complete" : "not-started") as StepStatus,

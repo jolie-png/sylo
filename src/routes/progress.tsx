@@ -505,7 +505,7 @@ function Progress() {
                           </div>
                         ) : null}
                         {expanded && editingStepId !== s.id ? (
-                          <p className="mt-2 break-all text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                          <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
                             <LinkifyText text={s.reasoning} />
                           </p>
                         ) : null}
@@ -640,7 +640,7 @@ function Progress() {
                               </button>
                             </div>
                             {expanded && s.note ? (
-                              <p className="mt-2 break-all text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                              <p className="mt-2 break-words text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
                                 <LinkifyText text={s.note} />
                               </p>
                             ) : null}

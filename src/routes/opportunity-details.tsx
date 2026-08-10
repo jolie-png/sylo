@@ -168,7 +168,7 @@ function Details() {
         <PageHeader icon={<FileText className="h-5 w-5" />} title="Opportunity Details" subtitle="Pick a step from your roadmap." />
         <Link to="/dashboard" className="tap mt-6 inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
           <ChevronLeft className="h-4 w-4" />
-          Back to dashboard
+          Back to roadmap
         </Link>
       </Workspace>
     );
@@ -259,7 +259,7 @@ function Details() {
           <BackToOpportunities />
           <Link to="/dashboard" className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
             <ChevronLeft className="h-4 w-4" />
-            Back to dashboard
+            Back to roadmap
           </Link>
         </div>
       </Workspace>
@@ -472,7 +472,7 @@ function Details() {
         <BackToOpportunities />
         <Link to="/dashboard" className="tap inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-primary hover:text-primary/80">
           <ChevronLeft className="h-4 w-4" />
-          Back to dashboard
+          Back to roadmap
         </Link>
       </div>
     </Workspace>

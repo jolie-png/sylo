@@ -182,21 +182,23 @@ async function buildCuratedRoadmap(
   // Attempt a lightweight Claude call for gap analysis + personalized reasoning
   let gapAnalysis: LiveRoadmap["gapAnalysis"] | undefined;
   if (anthropicKey) {
-    try {
-      console.error("[LIVE-ROADMAP] gap analysis + personalization: calling Claude...");
-      const client = createAnthropicClient(anthropicKey);
-      const track = TRACKS.find((t) => t.id === data.trackId);
-      const destination = data.goalText?.trim() || track?.label || "their goal";
-      const opList = opportunities.slice(0, 10).map((o, i) => `${i + 1}. ${o.name} — ${o.leverage.slice(0, 80)}`).join("\n");
+    const track = TRACKS.find((t) => t.id === data.trackId);
+    const destination = data.goalText?.trim() || track?.label || "their goal";
+    const opList = opportunities.slice(0, 10).map((o, i) => `${i + 1}. ${o.name} — ${o.leverage.slice(0, 80)}`).join("\n");
 
-      const contextParts = [
-        `Student: ${data.year} ${data.major} major at ${data.school}, heading toward ${destination}.`,
-      ];
-      if (data.experience) contextParts.push(`Experience: ${data.experience}`);
-      if (data.skills) contextParts.push(`Skills: ${data.skills}`);
-      if (data.priorWork) contextParts.push(`Prior work: ${data.priorWork}`);
-      if (data.clubs) contextParts.push(`Clubs: ${data.clubs}`);
-      if (data.alreadyDone) contextParts.push(`Already done: ${data.alreadyDone}`);
+    const contextParts = [
+      `Student: ${data.year} ${data.major} major at ${data.school}, heading toward ${destination}.`,
+    ];
+    if (data.experience) contextParts.push(`Experience: ${data.experience}`);
+    if (data.skills) contextParts.push(`Skills: ${data.skills}`);
+    if (data.priorWork) contextParts.push(`Prior work: ${data.priorWork}`);
+    if (data.clubs) contextParts.push(`Clubs: ${data.clubs}`);
+    if (data.alreadyDone) contextParts.push(`Already done: ${data.alreadyDone}`);
+
+    // First call: gap analysis
+    try {
+      console.error("[LIVE-ROADMAP] gap analysis: calling Claude...");
+      const client = createAnthropicClient(anthropicKey);
 
       const gapResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
@@ -247,7 +249,50 @@ Rules:
         }
       }
     } catch (gapErr) {
-      console.error("[LIVE-ROADMAP] gap analysis + personalization failed:", gapErr);
+      console.error("[LIVE-ROADMAP] gap analysis failed:", gapErr);
+    }
+
+    // Second call: personalized reasoning per step (separate to keep JSON small)
+    try {
+      const client = createAnthropicClient(anthropicKey);
+      const top5 = opportunities.slice(0, 5);
+      const opListShort = top5.map((o) => o.name).join(", ");
+
+      const reasoningResponse = await client.messages.create({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 600,
+        system: `Given a student profile and a list of programs, return ONLY a JSON object where each key is a program name and each value is 1 sentence explaining why THIS student specifically should do it. Reference their actual experience by name. Example: {"Google APM":"Your Amazon SDE internships prove technical depth — APM lets you translate that into product ownership at Google scale."}`,
+        messages: [{
+          role: "user",
+          content: `${contextParts.join("\n")}\n\nPrograms: ${opListShort}\n\nReturn JSON.`,
+        }],
+      });
+
+      const reasonText = reasoningResponse.content
+        .filter((b) => b.type === "text")
+        .map((b) => (b as { type: "text"; text: string }).text)
+        .join("");
+      const reasonJson = reasonText.match(/\{[\s\S]*\}/);
+      if (reasonJson) {
+        const cleaned = reasonJson[0].replace(/,\s*([}\]])/g, "$1").replace(/[\r\n\t]/g, " ").replace(/[\x00-\x1f]/g, " ");
+        let reasonParsed: any;
+        try { reasonParsed = JSON.parse(cleaned); } catch { /* skip */ }
+        if (reasonParsed && typeof reasonParsed === "object") {
+          for (const step of steps) {
+            const op = opportunities.find((o) => o.id === step.opportunityId);
+            if (op) {
+              // Try exact match or fuzzy match on the key
+              const personalReasoning = reasonParsed[op.name] 
+                || Object.values(reasonParsed).find((_, i) => Object.keys(reasonParsed)[i]?.toLowerCase().includes(op.name.slice(0, 20).toLowerCase()));
+              if (personalReasoning && typeof personalReasoning === "string") {
+                step.reasoning = cleanText(personalReasoning.replace(/https?:\/\/[^\s)]+/g, ""), 280);
+              }
+            }
+          }
+        }
+      }
+    } catch (reasonErr) {
+      console.error("[LIVE-ROADMAP] personalized reasoning failed:", reasonErr);
     }
   }
 

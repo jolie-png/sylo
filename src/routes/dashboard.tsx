@@ -370,6 +370,16 @@ function Dashboard() {
                 resolveOpportunity={resolveOpportunity}
                 toggleComplete={handleToggleComplete}
                 setStatus={(id, s) => {
+                  if (s === "complete" && step.status !== "complete") {
+                    // Get checkbox position from the SortableStep's ref
+                    const el = document.querySelector(`[data-step-id="${step.id}"] [role="checkbox"]`);
+                    if (el) {
+                      const rect = el.getBoundingClientRect();
+                      burst({ x: (rect.left + rect.width / 2) / window.innerWidth * 100, y: (rect.top + rect.height / 2) / window.innerHeight * 100 });
+                    } else {
+                      burst({ x: 15, y: 30 });
+                    }
+                  }
                   setStatus(id, s);
                 }}
                 removeStep={removeStep}
@@ -379,6 +389,7 @@ function Dashboard() {
                 editingStepId={editingStepId}
                 setEditingStepId={setEditingStepId}
                 topOpId={topOp?.id}
+                burst={burst}
               />
             ))}
           </ol>
@@ -842,6 +853,7 @@ function SortableStep({
   editingStepId,
   setEditingStepId,
   topOpId,
+  burst,
 }: {
   step: any;
   index: number;
@@ -855,8 +867,10 @@ function SortableStep({
   editingStepId: string | null;
   setEditingStepId: (id: string | null) => void;
   topOpId: string | undefined;
+  burst: (origin: { x: number; y: number }) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: step.id });
+  const checkboxRef = useRef<HTMLSpanElement>(null);
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -868,6 +882,7 @@ function SortableStep({
   return (
     <li
       ref={setNodeRef}
+      data-step-id={step.id}
       style={{ ...style, animationDelay: `${500 + index * 80}ms` }}
       className={cn("animate-reveal transition-opacity duration-200", isDragging && "opacity-50 z-50")}
     >
@@ -893,11 +908,13 @@ function SortableStep({
           <GripVertical className="h-3 w-3 text-muted-foreground/50" aria-hidden="true" />
           <span className="text-sm tabular-nums text-muted-foreground">{index + 1}</span>
         </span>
-        <NotionCheckbox
-          checked={done}
-          onChange={(e) => toggleComplete(step.opportunityId, e)}
-          label={`Mark ${op.name} complete`}
-        />
+        <span ref={checkboxRef}>
+          <NotionCheckbox
+            checked={done}
+            onChange={(e) => toggleComplete(step.opportunityId, e)}
+            label={`Mark ${op.name} complete`}
+          />
+        </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-2">
             <div className="flex flex-1 flex-wrap items-center gap-2">

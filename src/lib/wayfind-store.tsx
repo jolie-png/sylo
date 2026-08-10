@@ -128,6 +128,8 @@ type State = {
   removeStep: (opportunityId: string) => void;
   /** Move a roadmap step back to "Your additions" as a custom step. */
   demoteStep: (opportunityId: string) => void;
+  /** Add an existing opportunity to the roadmap as a new step. */
+  addOpportunityToRoadmap: (opportunityId: string) => void;
   /** Set or remove a User_Note for a Sylo_Step. Null/empty removes the note. */
   setStepNote: (opportunityId: string, note: string | null) => void;
   /** Set or remove a reasoning override for a Sylo_Step. Null/empty removes it. */
@@ -557,6 +559,25 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  /** Add an existing opportunity to the roadmap as a new step at the end. */
+  const addOpportunityToRoadmap = useCallback((opportunityId: string) => {
+    setRoadmapState((prev) => {
+      if (!prev) return prev;
+      // Don't add if already on the roadmap
+      if (prev.steps.some((s) => s.opportunityId === opportunityId)) return prev;
+
+      const newStep: Step = {
+        id: `added-${opportunityId}-${Date.now()}`,
+        opportunityId,
+        reasoning: "You added this opportunity to your roadmap.",
+        status: "not-started" as StepStatus,
+        statusChangedAt: new Date().toISOString(),
+      };
+
+      return { ...prev, steps: [...prev.steps, newStep] };
+    });
+  }, []);
+
   /** Move a roadmap step back to "Your additions" as a custom step. */
   const demoteStep = useCallback((opportunityId: string) => {
     if (!roadmap) return;
@@ -646,6 +667,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       reorderSteps,
       removeStep,
       demoteStep,
+      addOpportunityToRoadmap,
       setStepNote,
       setStepReasoning,
     }),
@@ -674,6 +696,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       reorderSteps,
       removeStep,
       demoteStep,
+      addOpportunityToRoadmap,
       setStepNote,
       setStepReasoning,
     ],

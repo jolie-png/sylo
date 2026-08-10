@@ -256,7 +256,7 @@ function Details() {
             </p>
             <button
               type="button"
-              onClick={() => { /* addOpportunityToRoadmap(op.id) — TODO: wire up */ }}
+              onClick={() => { /* TODO: wire up add to roadmap */ }}
               className="tap shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
             >
               Add to my roadmap
@@ -433,14 +433,14 @@ function Details() {
             </>
           ) : (
             <>
-              Sylo ranked every opportunity tagged to {track?.label} by how much leverage it creates
-              and how soon its window closes, then filtered to what you&apos;re eligible for right
+              Sylo ranked every opportunity tagged to {track?.label} by how much leverage it creates,
+              how soon its window closes, and what it unlocks downstream — then filtered to what you&apos;re eligible for right
               now.
             </>
           )}{" "}
-          This one came out{" "}
-          {op.id === roadmap?.topOpportunityId ? "first" : `at position ${(roadmap?.steps.findIndex((s) => s.opportunityId === op.id) ?? 0) + 1}`}
-          .
+          {op.id === roadmap?.topOpportunityId 
+            ? "This is your highest-leverage next move." 
+            : `This came in at position ${(roadmap?.steps.findIndex((s) => s.opportunityId === op.id) ?? 0) + 1} because of its timing and what it enables.`}
         </p>
         <button
           type="button"
@@ -473,18 +473,18 @@ function Details() {
           ) : (
             <ul className="mt-3 space-y-2 pl-6 text-sm text-muted-foreground">
               {op.upstream ? (
-                <li>• <span className="font-medium text-foreground/80">Builds on:</span> {op.upstream}</li>
+                <li>• <span className="font-medium text-foreground/80">Builds on:</span> {op.upstream}{op.upstream.endsWith(".") ? "" : "."}</li>
               ) : (
                 <li>• Your year ({profile?.year}) meets the eligibility line: {op.requirements[0]}.</li>
               )}
               {op.unlocks?.length ? (
-                <li>• <span className="font-medium text-foreground/80">Opens:</span> {op.unlocks.join(" → ")}</li>
+                <li>• <span className="font-medium text-foreground/80">Opens:</span> {op.unlocks.join(" → ")}.</li>
               ) : (
                 <li>• Your goal ({track?.label}) is the track this opportunity is tagged to.</li>
               )}
               <li>• Your school ({profile?.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly — no substitution needed."}</li>
               {op.window ? (
-                <li>• <span className="font-medium text-foreground/80">Timing:</span> {op.window}</li>
+                <li>• <span className="font-medium text-foreground/80">Timing:</span> {op.window}{op.window.endsWith(".") ? "" : "."}</li>
               ) : (
                 <li>• Its window ({op.timeframe}) closes sooner than most other steps in your sequence.</li>
               )}

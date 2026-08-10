@@ -8,8 +8,8 @@ import type { StepStatus } from "@/lib/wayfind-data";
 
 
 const NAV = [
-  { to: "/dashboard", label: "Roadmap", icon: Map },
   { to: "/paths", label: "Success Maps", icon: Sparkles },
+  { to: "/dashboard", label: "Roadmap", icon: Map },
   { to: "/progress", label: "Progress", icon: KanbanSquare },
   { to: "/opportunity-details", label: "Opportunities", icon: FileText },
   { to: "/profile", label: "Profile", icon: User },

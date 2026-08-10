@@ -81,6 +81,13 @@ export function usePostGradProjections(profile: Profile | null): PostGradState {
       return;
     }
 
+    // Instant demo personas have hand-crafted milestones — don't overlay AI projections
+    if (profile.personaName) {
+      setProjections([]);
+      setIsLive(false);
+      return;
+    }
+
     const key = profileKey(profile);
     const stored = loadStored();
 
@@ -144,6 +151,8 @@ export function usePostGradProjections(profile: Profile | null): PostGradState {
   // Auto-generate on mount if we don't have live data for this profile
   useEffect(() => {
     if (!profile) return;
+    // Skip for instant demo personas — they already have hand-crafted milestones
+    if (profile.personaName) return;
 
     const key = profileKey(profile);
     const stored = loadStored();

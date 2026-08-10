@@ -444,18 +444,34 @@ function Progress() {
                                 "in-progress",
                                 "complete",
                               ];
-                              setStatus(s.opportunityId, order[(order.indexOf(s.status) + 1) % 3]);
+                              if (s.status === "complete") {
+                                setStatus(s.opportunityId, "in-progress");
+                              } else {
+                                setStatus(s.opportunityId, order[(order.indexOf(s.status) + 1) % 3]);
+                              }
                             }}
-                            className="tap inline-flex rounded-md text-xs font-medium text-primary hover:underline"
+                            className={cn(
+                              "tap inline-flex rounded-md text-xs font-medium hover:underline",
+                              s.status === "complete" ? "text-muted-foreground" : "text-primary"
+                            )}
                           >
-                            Advance
+                            {s.status === "complete" ? "Back" : "Advance"}
                           </button>
+                          {s.status === "in-progress" ? (
+                            <button
+                              type="button"
+                              onClick={() => setStatus(s.opportunityId, "not-started")}
+                              className="tap inline-flex rounded-md text-xs font-medium text-muted-foreground hover:underline"
+                            >
+                              Back
+                            </button>
+                          ) : null}
                           <button
                             type="button"
                             onClick={() => setEditingStepId(editingStepId === s.id ? null : s.id)}
                             aria-label={`Edit note for ${op.name}`}
                             title="Edit note"
-                            className="tap rounded-md p-1 text-muted-foreground hover:text-foreground"
+                            className="tap ml-auto rounded-md p-1 text-muted-foreground hover:text-foreground"
                           >
                             <Pencil className="h-3 w-3" />
                           </button>

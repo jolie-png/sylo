@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createAnthropicClient, hashKey } from "./anthropic.server";
 import { TRACKS } from "./wayfind-data";
 import type { MilestoneYear } from "./wayfind-data";
+import { cleanText } from "./text-sanitize";
 
 // ---------------------------------------------------------------------------
 // Input schema — same student profile fields as roadmap generation
@@ -218,10 +219,10 @@ export const generatePostGradProjections = createServerFn({ method: "POST" })
 
       const projections: PostGradProjection[] = parsed.data.projections.map((p) => ({
         year: p.year as MilestoneYear,
-        focus: p.focus.slice(0, 120),
-        lookOutFor: p.lookOutFor.slice(0, 300),
-        actions: p.actions.map((a) => a.slice(0, 200)).slice(0, 5),
-        doneWhen: p.doneWhen.slice(0, 300),
+        focus: cleanText(p.focus, 120),
+        lookOutFor: cleanText(p.lookOutFor, 300),
+        actions: p.actions.map((a) => cleanText(a, 200)).slice(0, 5),
+        doneWhen: cleanText(p.doneWhen, 300),
       }));
 
       console.error("[POST-GRAD] success!", { count: projections.length });

@@ -4,6 +4,7 @@ import { createAnthropicClient, hashKey } from "./anthropic.server";
 import { TRACKS, type Opportunity, type OpportunitySource } from "./wayfind-data";
 import type { GapAnalysis } from "./wayfind-store";
 import { searchOpportunities, type OpportunityRecord } from "./opportunities-db";
+import { cleanText } from "./text-sanitize";
 
 const Input = z.object({
   trackId: z.string(),
@@ -230,13 +231,13 @@ CRITICAL PERSONALIZATION RULES:
         const parsed = JSON.parse(cleanedJson);
         if (parsed.gapAnalysis?.strengths && parsed.gapAnalysis?.gaps && parsed.gapAnalysis?.bottomLine) {
           gapAnalysis = {
-            strengths: parsed.gapAnalysis.strengths.map((s: string) => s.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200)),
+            strengths: parsed.gapAnalysis.strengths.map((s: string) => cleanText(s.replace(/https?:\/\/[^\s)]+/g, ""), 200)),
             gaps: parsed.gapAnalysis.gaps.map((g: any) => ({
-              gap: g.gap?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 120) || "",
-              why: g.why?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200) || "",
-              action: g.action?.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200) || "",
+              gap: cleanText(g.gap?.replace(/https?:\/\/[^\s)]+/g, "") || "", 120),
+              why: cleanText(g.why?.replace(/https?:\/\/[^\s)]+/g, "") || "", 200),
+              action: cleanText(g.action?.replace(/https?:\/\/[^\s)]+/g, "") || "", 200),
             })),
-            bottomLine: parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 300),
+            bottomLine: cleanText(parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, ""), 300),
           };
         }
         // Apply personalized reasoning to steps
@@ -246,7 +247,7 @@ CRITICAL PERSONALIZATION RULES:
             if (op) {
               const personalReasoning = parsed.reasoning[op.name];
               if (personalReasoning && typeof personalReasoning === "string") {
-                step.reasoning = personalReasoning.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 280);
+                step.reasoning = cleanText(personalReasoning.replace(/https?:\/\/[^\s)]+/g, ""), 280);
               }
             }
           }
@@ -424,7 +425,7 @@ function slug(name: string, i: number) {
   return `live-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "opportunity"}-${i}`;
 }
 
-const trim = (s: string, max: number) => s.trim().slice(0, max);
+const trim = (s: string, max: number) => cleanText(s, max);
 
 function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof Input>, knownUrls?: Set<string>): LiveRoadmap | null {
   const track = TRACKS.find((t) => t.id === data.trackId) ?? TRACKS[0];
@@ -512,13 +513,13 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     opportunities,
     // Sanitize gap analysis — strip any hallucinated URLs from text fields
     gapAnalysis: parsed.gapAnalysis ? {
-      strengths: parsed.gapAnalysis.strengths.map((s) => s.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200)),
+      strengths: parsed.gapAnalysis.strengths.map((s) => cleanText(s.replace(/https?:\/\/[^\s)]+/g, ""), 200)),
       gaps: parsed.gapAnalysis.gaps.map((g) => ({
-        gap: g.gap.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 120),
-        why: g.why.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200),
-        action: g.action.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 200),
+        gap: cleanText(g.gap.replace(/https?:\/\/[^\s)]+/g, ""), 120),
+        why: cleanText(g.why.replace(/https?:\/\/[^\s)]+/g, ""), 200),
+        action: cleanText(g.action.replace(/https?:\/\/[^\s)]+/g, ""), 200),
       })),
-      bottomLine: parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, "").trim().slice(0, 300),
+      bottomLine: cleanText(parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, ""), 300),
     } : undefined,
   };
 }
@@ -579,7 +580,7 @@ function fallbackFromSearchResults(
     });
     steps.push({
       opportunityId: id,
-      reasoning: r.snippet.slice(0, 280) || `Relevant result for ${goal} at ${data.school}.`,
+      reasoning: cleanText(r.snippet, 280) || `Relevant result for ${goal} at ${data.school}.`,
     });
   }
 

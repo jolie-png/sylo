@@ -9,6 +9,23 @@ type InlineNoteEditorProps = {
   onClose: () => void;
 };
 
+const DRAFT_KEY = (id: string) => `sylo:note-draft:${id}`;
+
+function readDraft(id: string): { note?: string; reasoning?: string } | null {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY(id));
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function writeDraft(id: string, note: string, reasoning: string) {
+  try { sessionStorage.setItem(DRAFT_KEY(id), JSON.stringify({ note, reasoning })); } catch {}
+}
+
+function clearDraft(id: string) {
+  try { sessionStorage.removeItem(DRAFT_KEY(id)); } catch {}
+}
+
 export function InlineNoteEditor({
   opportunityId,
   existingNote,
@@ -17,13 +34,19 @@ export function InlineNoteEditor({
   onClose,
 }: InlineNoteEditorProps) {
   const { setStepNote, setStepReasoning } = useWayfind();
-  const [noteValue, setNoteValue] = useState(existingNote ?? "");
-  const [reasoningValue, setReasoningValue] = useState(existingReasoningOverride ?? reasoning);
+  const draft = readDraft(opportunityId);
+  const [noteValue, setNoteValue] = useState(draft?.note ?? existingNote ?? "");
+  const [reasoningValue, setReasoningValue] = useState(draft?.reasoning ?? existingReasoningOverride ?? reasoning);
   const reasoningRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     reasoningRef.current?.focus();
   }, []);
+
+  // Persist draft on every change
+  useEffect(() => {
+    writeDraft(opportunityId, noteValue, reasoningValue);
+  }, [opportunityId, noteValue, reasoningValue]);
 
   function handleSave() {
     const trimmedNote = noteValue.trim();
@@ -36,6 +59,12 @@ export function InlineNoteEditor({
     } else {
       setStepReasoning(opportunityId, trimmedReasoning);
     }
+    clearDraft(opportunityId);
+    onClose();
+  }
+
+  function handleCancel() {
+    clearDraft(opportunityId);
     onClose();
   }
 
@@ -81,7 +110,7 @@ export function InlineNoteEditor({
         </button>
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleCancel}
           className="tap tap-surface rounded-full border px-4 py-1.5 text-sm font-medium"
         >
           Cancel

@@ -1,8 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Briefcase, ChevronRight, Code, Heart, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, Briefcase, ChevronRight, Code, Heart, Sparkles, TrendingUp, Users, PenLine } from "lucide-react";
 import { useState } from "react";
 import { Workspace, PageHeader } from "@/components/workspace";
 import { SUCCESS_STORIES, type SuccessStory } from "@/lib/success-stories";
+import { getPublishedMaps, type PublishedMap } from "@/lib/published-maps";
+import { PublishedMapCard } from "@/components/published-map-card";
+import { SuccessMapForm } from "@/components/success-map-form";
+import { TRACKS } from "@/lib/wayfind-data";
+import { useWayfind } from "@/lib/sylo-store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/paths")({
@@ -18,6 +23,31 @@ export const Route = createFileRoute("/paths")({
 
 function PathsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [trackFilter, setTrackFilter] = useState<string>("");
+  const [submitted, setSubmitted] = useState(false);
+  const { profile } = useWayfind();
+
+  const publishedMaps = getPublishedMaps(trackFilter ? { query: trackFilter } : undefined);
+
+  const handleSubmit = (map: Omit<PublishedMap, "id" | "publishedAt">) => {
+    // MVP: log to console (operator would copy this to the static JSON)
+    console.log("[SUCCESS MAP SUBMISSION]", JSON.stringify({ ...map, id: `pub-${Date.now()}`, publishedAt: new Date().toISOString().slice(0, 10) }, null, 2));
+    setShowForm(false);
+    setSubmitted(true);
+  };
+
+  if (showForm) {
+    return (
+      <Workspace wide>
+        <SuccessMapForm
+          prefill={profile ? { school: profile.school, major: profile.major, track: profile.trackId } : undefined}
+          onSubmit={handleSubmit}
+          onCancel={() => setShowForm(false)}
+        />
+      </Workspace>
+    );
+  }
 
   return (
     <Workspace wide>
@@ -27,6 +57,7 @@ function PathsPage() {
         subtitle="Real roadmaps from students who made it to where you want to go."
       />
 
+      {/* Curated stories section */}
       <div className="mt-8 space-y-4">
         {SUCCESS_STORIES.map((story) => (
           <StoryCard
@@ -38,17 +69,79 @@ function PathsPage() {
         ))}
       </div>
 
+      {/* Community published maps section */}
+      {publishedMaps.length > 0 && (
+        <section className="mt-12">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <h2 className="text-lg font-semibold tracking-tight">Community paths</h2>
+            </div>
+
+            {/* Search filter */}
+            <input
+              type="text"
+              value={trackFilter}
+              onChange={(e) => setTrackFilter(e.target.value)}
+              placeholder="Search paths..."
+              className="w-48 rounded-xl border bg-background px-3 py-1.5 text-xs outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+              aria-label="Search community paths"
+            />
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Paths shared by students who completed their roadmap. Reviewed before publishing.
+          </p>
+
+          <div className="mt-5 space-y-4">
+            {publishedMaps.map((map) => (
+              <PublishedMapCard
+                key={map.id}
+                map={map}
+                expanded={expanded === map.id}
+                onToggle={() => setExpanded(expanded === map.id ? null : map.id)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Share your path CTA */}
       <div className="mt-10 rounded-2xl border border-dashed border-foreground/20 bg-muted/30 p-6 text-center">
-        <p className="text-sm text-muted-foreground">Your path is next.</p>
-        <Link
-          to="/roadmap-builder"
-          className="tap group mt-3 inline-flex items-center justify-between gap-4 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/95"
-        >
-          <span>Build my roadmap</span>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
-            <ArrowRight className="h-4 w-4" />
-          </span>
-        </Link>
+        {submitted ? (
+          <>
+            <p className="text-sm font-medium text-foreground">Thanks for sharing your path!</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              We'll review it and publish it so future students can see what worked.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground">
+              Have a path that worked? Share it so others can see what you did.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowForm(true)}
+              className="tap group mt-3 inline-flex items-center justify-between gap-4 rounded-full border border-primary/30 bg-primary/5 px-6 py-3 text-sm font-semibold text-primary hover:bg-primary/10"
+            >
+              <PenLine className="h-4 w-4" />
+              <span>Share my path</span>
+            </button>
+          </>
+        )}
+
+        <div className="mt-4 border-t pt-4">
+          <p className="text-sm text-muted-foreground">Or start building yours.</p>
+          <Link
+            to="/roadmap-builder"
+            className="tap group mt-3 inline-flex items-center justify-between gap-4 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/95"
+          >
+            <span>Build my roadmap</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-primary-foreground/30 transition-colors group-hover:bg-primary-foreground/10">
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </Link>
+        </div>
       </div>
 
     </Workspace>

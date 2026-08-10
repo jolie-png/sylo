@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Clock, Compass, Loader2 } from "lucide-react";
+import { Clock, Compass } from "lucide-react";
 import { StatusAccentBar, StatusDot } from "@/components/roadmap-connector";
 import { StatusTag, Tag } from "@/components/workspace";
 import { cn } from "@/lib/utils";
@@ -180,21 +180,10 @@ export function LongViewBoard({
               ))}
 
               {postGradColumns.map((col) => (
-                <div key={col.year} className="min-h-[360px] border-r bg-emerald-50/50 dark:bg-emerald-950/20 p-4 last:border-r-0">
-                  <div className="flex items-center justify-between px-1">
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-700/70 dark:text-emerald-400/70">
-                      After graduation
-                    </p>
-                    {postGrad.isLive && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 text-[9px] font-medium text-emerald-700 dark:text-emerald-400">
-                        <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-                        Live
-                      </span>
-                    )}
-                    {postGrad.loading && (
-                      <Loader2 className="h-3 w-3 animate-spin text-emerald-600/60" />
-                    )}
-                  </div>
+                <div key={col.year} className="min-h-[360px] border-r bg-muted/25 p-4 last:border-r-0">
+                  <p className="px-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                    What to do
+                  </p>
                   <p className="px-1 pb-3 text-sm font-medium tracking-tight text-foreground/80">
                     {col.year}
                   </p>
@@ -208,22 +197,22 @@ export function LongViewBoard({
                           type="button"
                           onClick={() => setSelected({ kind: "milestone", milestone: m as unknown as Milestone })}
                           className={cn(
-                            "tap w-full rounded-xl border border-dashed border-emerald-500/30 bg-transparent px-4 py-4 text-left",
-                            active && "border-emerald-500/50 bg-emerald-500/[0.06]",
+                            "tap w-full rounded-xl border border-dashed border-foreground/20 bg-transparent px-4 py-4 text-left",
+                            active && "border-primary/40 bg-primary/[0.04]",
                           )}
                         >
                           <p className="text-[13px] font-medium leading-snug tracking-tight text-foreground/75">
                             {m.focus}
                           </p>
-                          <p className="mt-2 text-[11px] text-emerald-700/60 dark:text-emerald-400/60">
-                            Post-grad · {col.year}
+                          <p className="mt-2 text-[11px] text-muted-foreground/70">
+                            Milestone · {col.year}
                           </p>
                         </button>
                       );
                     }) : postGrad.loading ? (
                       <div className="space-y-3 px-1">
-                        <div className="h-16 animate-pulse rounded-xl border border-dashed border-emerald-500/20 bg-emerald-500/[0.03]" />
-                        <div className="h-16 animate-pulse rounded-xl border border-dashed border-emerald-500/20 bg-emerald-500/[0.03]" />
+                        <div className="h-16 animate-pulse rounded-xl border border-dashed border-foreground/10 bg-muted/40" />
+                        <div className="h-16 animate-pulse rounded-xl border border-dashed border-foreground/10 bg-muted/40" />
                       </div>
                     ) : null}
                   </div>

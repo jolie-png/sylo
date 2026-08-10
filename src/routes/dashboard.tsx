@@ -702,21 +702,10 @@ function Dashboard() {
             const items = postGradItems.filter((m) => m.year === year);
             if (!items.length && !postGrad.loading) return null;
             return (
-              <div key={year} className="rounded-2xl border border-emerald-500/12 bg-emerald-500/[0.04] p-5">
-                <div className="flex items-center justify-between">
-                  <p className="text-[11px] uppercase tracking-wide text-emerald-700/80 dark:text-emerald-400/80">
-                    After graduation
-                  </p>
-                  {postGrad.isLive && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      Personalized
-                    </span>
-                  )}
-                  {postGrad.loading && (
-                    <Loader2 className="h-3 w-3 animate-spin text-emerald-600/60" />
-                  )}
-                </div>
+              <div key={year} className="card-tonal rounded-2xl p-5">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground/80">
+                  What to do
+                </p>
                 <p className="mt-1 text-sm font-semibold tracking-tight">{year}</p>
                 {items.length > 0 ? (
                 <ul className="mt-4 space-y-6">
@@ -731,15 +720,15 @@ function Dashboard() {
                       <ol className="mt-3 space-y-2 pl-4">
                         {m.actions.map((action, i) => (
                           <li key={i} className="flex gap-2 text-[13px] leading-relaxed text-foreground/80">
-                            <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded bg-emerald-100 dark:bg-emerald-900/40 text-[10px] font-medium tabular-nums text-emerald-700 dark:text-emerald-400">
+                            <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded bg-secondary text-[10px] font-medium tabular-nums text-muted-foreground">
                               {i + 1}
                             </span>
                             <span>{action}</span>
                           </li>
                         ))}
                       </ol>
-                      <div className="mt-3 rounded-lg border border-emerald-500/10 bg-emerald-500/5 px-3 py-2">
-                        <p className="text-[12px] font-medium text-emerald-700 dark:text-emerald-400">
+                      <div className="mt-3 rounded-lg border border-primary/10 bg-primary/5 px-3 py-2">
+                        <p className="text-[12px] font-medium text-primary/90">
                           Done when: <span className="font-normal text-foreground/70">{m.doneWhen}</span>
                         </p>
                       </div>
@@ -748,9 +737,9 @@ function Dashboard() {
                 </ul>
                 ) : postGrad.loading ? (
                   <div className="mt-4 space-y-3">
-                    <div className="h-4 w-3/4 animate-pulse rounded bg-emerald-100 dark:bg-emerald-900/30" />
-                    <div className="h-3 w-full animate-pulse rounded bg-emerald-100/60 dark:bg-emerald-900/20" />
-                    <div className="h-3 w-5/6 animate-pulse rounded bg-emerald-100/60 dark:bg-emerald-900/20" />
+                    <div className="h-4 w-3/4 animate-pulse rounded bg-secondary" />
+                    <div className="h-3 w-full animate-pulse rounded bg-secondary/60" />
+                    <div className="h-3 w-5/6 animate-pulse rounded bg-secondary/60" />
                   </div>
                 ) : null}
               </div>

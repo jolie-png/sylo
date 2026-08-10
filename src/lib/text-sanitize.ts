@@ -26,6 +26,7 @@ export function trimAtWord(s: string, max: number): string {
 /**
  * Detect and fix common AI text generation artifacts:
  * - Trailing incomplete words (< 3 chars at end of string after a space)
+ * - Sentences that end with dangling prepositions/connectors (truncation signal)
  * - Unclosed parentheses or quotes
  * - Sentences that end abruptly without punctuation after being clearly mid-thought
  */
@@ -47,6 +48,33 @@ export function sanitizeGenerated(s: string): string {
     if (lastWord.length > 0 && lastWord.length <= 2 && !validShortWords.has(lastWord)) {
       // Likely a truncated word — remove it
       text = text.slice(0, lastSpaceIdx).trimEnd();
+    }
+  }
+
+  // Detect sentences ending with dangling prepositions/connectors — a strong
+  // signal of mid-sentence truncation. These words are valid on their own but
+  // almost never end a sentence properly.
+  const danglingEnders = new Set([
+    "from", "with", "and", "the", "your", "their", "this", "that", "which",
+    "where", "when", "while", "into", "onto", "upon", "about", "after",
+    "before", "between", "through", "during", "without", "within", "toward",
+    "towards", "against", "beyond", "under", "over", "for", "but", "nor",
+    "yet", "both", "either", "neither", "not", "also", "then", "than",
+    "because", "since", "although", "though", "whether", "unless", "until",
+    "can", "will", "would", "could", "should", "shall", "may", "might",
+    "must", "has", "have", "had", "was", "were", "been", "being",
+  ]);
+
+  // Check if the text ends with a dangling word (with or without period)
+  const trailingMatch = text.match(/\s(\w+)[.]?$/);
+  if (trailingMatch) {
+    const candidate = trailingMatch[1].toLowerCase();
+    if (danglingEnders.has(candidate)) {
+      // Remove the dangling ending — cut back to the previous sentence or clause
+      const cutPoint = text.lastIndexOf(" ", text.length - trailingMatch[0].length);
+      if (cutPoint > text.length * 0.5) {
+        text = text.slice(0, cutPoint).trimEnd();
+      }
     }
   }
 

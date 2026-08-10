@@ -9,6 +9,7 @@ type UploadStatus = "idle" | "uploading" | "processing" | "success" | "error";
 
 interface ResumeUploadProps {
   onParsed: (data: ParsedResumeData) => void;
+  onStatusChange?: (isParsing: boolean) => void;
   disabled?: boolean;
 }
 
@@ -25,7 +26,7 @@ function readFileAsBase64(file: File): Promise<string> {
   });
 }
 
-export function ResumeUpload({ onParsed, disabled }: ResumeUploadProps) {
+export function ResumeUpload({ onParsed, onStatusChange, disabled }: ResumeUploadProps) {
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [fileName, setFileName] = useState("");
@@ -47,6 +48,7 @@ export function ResumeUpload({ onParsed, disabled }: ResumeUploadProps) {
 
       // 2. Read as base64
       setStatus("uploading");
+      onStatusChange?.(true);
       setFileName(file.name);
 
       let base64: string;
@@ -69,16 +71,19 @@ export function ResumeUpload({ onParsed, disabled }: ResumeUploadProps) {
         if (result && "error" in result && result.error) {
           setErrorMessage((result as { error: true; message: string }).message);
           setStatus("error");
+          onStatusChange?.(false);
           return;
         }
 
         onParsed(result as ParsedResumeData);
         setStatus("success");
+        onStatusChange?.(false);
       } catch {
         setErrorMessage(
           "Could not upload your resume. Please check your connection and try again.",
         );
         setStatus("error");
+        onStatusChange?.(false);
       }
     },
     [callParseResume, onParsed],

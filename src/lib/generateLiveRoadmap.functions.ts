@@ -202,7 +202,7 @@ async function buildCuratedRoadmap(
 
       const gapResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 600,
+        max_tokens: 1200,
         system: `You produce a personalized gap analysis for a student. Return ONLY a JSON object:
 {"strengths":["string","string"],"gaps":[{"gap":"string","why":"string","action":"string"}],"bottomLine":"string"}
 
@@ -260,7 +260,7 @@ Rules:
 
       const reasoningResponse = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 600,
+        max_tokens: 1000,
         system: `Given a student profile and a list of programs, return ONLY a JSON object where each key is a program name and each value is 1 sentence explaining why THIS student specifically should do it. Reference their actual experience by name. Example: {"Google APM":"Your Amazon SDE internships prove technical depth — APM lets you translate that into product ownership at Google scale."}`,
         messages: [{
           role: "user",

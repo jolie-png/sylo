@@ -105,11 +105,13 @@ function Builder() {
   const [clubs, setClubs] = useState("");
   const [alreadyDone, setAlreadyDone] = useState("");
 
+  const [resumeParsing, setResumeParsing] = useState(false);
+
   const ready = trackId && major && year && school;
   const busyLabel = useSearchProgressLabel(busy);
 
   async function submit() {
-    if (!ready || busy) return;
+    if (!ready || busy || resumeParsing) return;
     setBusy(true);
     setError("");
     setDemoPulse(false);
@@ -461,6 +463,7 @@ function Builder() {
                 if (data.alreadyDone?.trim()) setAlreadyDone(data.alreadyDone);
                 setMoreOpen(true);
               }}
+              onStatusChange={setResumeParsing}
             />
           </div>
 
@@ -515,11 +518,11 @@ function Builder() {
         <button
           type="button"
           onClick={submit}
-          disabled={!ready || busy}
+          disabled={!ready || busy || resumeParsing}
           className="tap mt-10 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95 hover:shadow-xl hover:shadow-primary/25 disabled:opacity-40 disabled:active:scale-100 sm:w-auto"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {busy ? busyLabel : "Build my roadmap"}
+          {busy ? busyLabel : resumeParsing ? "Parsing resume..." : "Build my roadmap"}
           {!busy ? <ArrowRight className="h-4 w-4" /> : null}
         </button>
 

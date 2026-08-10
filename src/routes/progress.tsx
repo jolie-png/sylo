@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useConfettiBurst } from "@/components/confetti-burst";
 import {
   KanbanSquare,
   Clock,
@@ -92,6 +93,7 @@ function Progress() {
     stepReasoningOverrides,
   } = useWayfind();
   const navigate = useNavigate();
+  const { burst, ConfettiContainer } = useConfettiBurst();
   const [view, setView] = useState<"board" | "list" | "long view">("board");
   const [drag, setDrag] = useState<{ id: string; custom: boolean } | null>(null);
   const [overCol, setOverCol] = useState<StepStatus | null>(null);
@@ -135,6 +137,7 @@ function Progress() {
 
   return (
     <Workspace wide>
+      {ConfettiContainer}
       <PageHeader
         icon={<KanbanSquare className="h-5 w-5" />}
         title="Progress Tracker"
@@ -438,7 +441,7 @@ function Progress() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => {
+                            onClick={(e) => {
                               const order: StepStatus[] = [
                                 "not-started",
                                 "in-progress",
@@ -447,7 +450,13 @@ function Progress() {
                               if (s.status === "complete") {
                                 setStatus(s.opportunityId, "in-progress");
                               } else {
-                                setStatus(s.opportunityId, order[(order.indexOf(s.status) + 1) % 3]);
+                                const next = order[(order.indexOf(s.status) + 1) % 3];
+                                if (next === "complete") {
+                                  const x = (e.clientX / window.innerWidth) * 100;
+                                  const y = (e.clientY / window.innerHeight) * 100;
+                                  burst({ x, y });
+                                }
+                                setStatus(s.opportunityId, next);
                               }
                             }}
                             className={cn(

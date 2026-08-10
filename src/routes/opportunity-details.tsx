@@ -15,6 +15,7 @@ import { getTrack } from "@/lib/wayfind-data";
 import { OpportunityBrowser } from "@/components/opportunity-browser";
 import { DeadlinePill } from "@/components/deadline-badges";
 import { LinkifyText } from "@/components/linkify-text";
+import { CalendarButton } from "@/components/calendar-button";
 
 export const Route = createFileRoute("/opportunity-details")({
   validateSearch: (search: Record<string, unknown>) => ({

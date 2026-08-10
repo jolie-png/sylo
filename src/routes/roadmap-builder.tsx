@@ -464,6 +464,14 @@ function Builder() {
                 setMoreOpen(true);
               }}
               onStatusChange={setResumeParsing}
+              onRemove={() => {
+                setResumeName("");
+                setExperience("");
+                setSkills("");
+                setPriorWork("");
+                setClubs("");
+                setAlreadyDone("");
+              }}
             />
           </div>
 

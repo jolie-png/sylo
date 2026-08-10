@@ -10,6 +10,7 @@ type UploadStatus = "idle" | "uploading" | "processing" | "success" | "error";
 interface ResumeUploadProps {
   onParsed: (data: ParsedResumeData) => void;
   onStatusChange?: (isParsing: boolean) => void;
+  onRemove?: () => void;
   disabled?: boolean;
 }
 
@@ -26,7 +27,7 @@ function readFileAsBase64(file: File): Promise<string> {
   });
 }
 
-export function ResumeUpload({ onParsed, onStatusChange, disabled }: ResumeUploadProps) {
+export function ResumeUpload({ onParsed, onStatusChange, onRemove, disabled }: ResumeUploadProps) {
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [fileName, setFileName] = useState("");
@@ -178,13 +179,24 @@ export function ResumeUpload({ onParsed, onStatusChange, disabled }: ResumeUploa
             Resume analyzed — fields updated below
           </span>
           <span className="text-xs text-muted-foreground">{fileName}</span>
-          <button
-            type="button"
-            onClick={reset}
-            className="mt-1 text-xs font-medium text-primary underline-offset-2 hover:underline"
-          >
-            Upload different file
-          </button>
+          <div className="mt-1 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={reset}
+              className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+            >
+              Upload different file
+            </button>
+            {onRemove ? (
+              <button
+                type="button"
+                onClick={() => { reset(); onRemove(); }}
+                className="text-xs font-medium text-muted-foreground underline-offset-2 hover:text-destructive hover:underline"
+              >
+                Remove resume
+              </button>
+            ) : null}
+          </div>
         </div>
       )}
 

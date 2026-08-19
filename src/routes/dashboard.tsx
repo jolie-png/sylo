@@ -385,31 +385,6 @@ function Dashboard() {
 
         {showForm ? (
           <div className="mt-4 space-y-4">
-            {/* Link extractor */}
-            <LinkExtractor
-              onExtracted={(details) => {
-                const noteLines = [details.description];
-                if (details.requirements.length > 0) noteLines.push(`Requirements: ${details.requirements.join(", ")}`);
-                if (details.contact) noteLines.push(`Contact: ${details.contact}`);
-                addCustomStep({
-                  title: details.name,
-                  note: noteLines.join("\n"),
-                  targetDate: details.deadline || undefined,
-                });
-                setShowForm(false);
-              }}
-              onFallback={(failedUrl) => {
-                setNote(`Link: ${failedUrl}`);
-                setTitle("");
-              }}
-            />
-
-            {/* Divider */}
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">or add manually</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
 
             {/* Manual form */}
             <form
@@ -788,6 +763,26 @@ function Dashboard() {
 
       <section className="mt-8 border-t pt-5">
         <Link
+          to="/pin"
+          className="tap inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+        >
+          Drop a pin on something you found <ChevronRight className="h-3.5 w-3.5" />
+        </Link>
+        <p className="mt-1 text-xs text-muted-foreground">
+        </p>
+      </section>
+
+      <section className="mt-8 border-t pt-5">
+        <Link
+          to="/progress"
+          className="tap inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+        >
+          Track your progress <ChevronRight className="h-3.5 w-3.5" />
+        </Link>
+      </section>
+
+      <section className="mt-8 border-t pt-5">
+        <Link
           to="/paths"
           className="tap inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
@@ -834,8 +829,70 @@ function SortableStep({
     transition,
   };
   const op = resolveOpportunity(step.opportunityId);
-  if (!op) return null;
+  if (!op && !step.isGapAction) return null;
   const done = step.status === "complete";
+
+  // Gap action steps: personal action items from gap analysis
+  if (step.isGapAction) {
+    return (
+      <li
+        ref={setNodeRef}
+        data-step-id={step.id}
+        style={{ ...style, animationDelay: `${500 + index * 80}ms` }}
+        className={cn("animate-reveal transition-opacity duration-200", isDragging && "opacity-50 z-50")}
+      >
+        {index > 0 ? (
+          <div className="flex justify-start pl-7" aria-hidden="true">
+            <WavyConnector />
+          </div>
+        ) : null}
+        <div
+          className={cn(
+            "card-tonal relative flex items-start gap-3.5 rounded-2xl pl-5 pr-4 py-4",
+            done && "bg-primary/[0.07] ring-1 ring-inset ring-primary/15",
+          )}
+        >
+          <StatusAccentBar status={step.status} />
+          <span
+            className="flex w-5 shrink-0 cursor-grab flex-col items-center gap-0.5 pt-1 active:cursor-grabbing"
+            {...attributes}
+            {...listeners}
+            aria-label={`Reorder step ${index + 1}`}
+            title="Drag to reorder"
+          >
+            <GripVertical className="h-3 w-3 text-muted-foreground/50" aria-hidden="true" />
+            <span className="text-sm tabular-nums text-muted-foreground">{index + 1}</span>
+          </span>
+          <span ref={checkboxRef}>
+            <NotionCheckbox
+              checked={done}
+              onChange={(e) => toggleComplete(step.opportunityId, e)}
+              label="Mark action complete"
+            />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className={cn("text-sm font-semibold tracking-tight", done && "line-through opacity-60")}>
+                {step.gapActionTitle}
+              </p>
+              <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
+            </div>
+            <div className="mt-2 flex items-start gap-1.5">
+              <span className="mt-0.5 shrink-0 text-[11px] text-primary/70" aria-hidden="true">💡</span>
+              <p className="text-[13px] leading-relaxed text-foreground/80">
+                <LinkifyText text={step.reasoning} />
+              </p>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            <button type="button" onClick={() => removeStep(step.opportunityId)} className="tap rounded-full p-1.5 text-muted-foreground hover:text-destructive" title="Remove">
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      </li>
+    );
+  }
 
   return (
     <li
@@ -895,6 +952,15 @@ function SortableStep({
             </div>
             <button
               type="button"
+              onClick={() => demoteStep(step.opportunityId)}
+              aria-label={`Move ${op.name} to additions`}
+              title="Move to additions"
+              className="tap tap-surface shrink-0 rounded-lg border p-1.5 text-muted-foreground hover:text-primary"
+            >
+              <ArrowDown className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
               onClick={() => setEditingStepId(step.id)}
               aria-label={`Edit note for ${op.name}`}
               title="Edit"
@@ -904,19 +970,10 @@ function SortableStep({
             </button>
             <button
               type="button"
-              onClick={() => demoteStep(step.opportunityId)}
-              aria-label={`Move ${op.name} to additions`}
-              title="Move to additions"
-              className="tap tap-surface hidden shrink-0 rounded-lg border p-1.5 text-muted-foreground hover:text-primary sm:block"
-            >
-              <ArrowDown className="h-3.5 w-3.5" />
-            </button>
-            <button
-              type="button"
               onClick={() => removeStep(step.opportunityId)}
               aria-label={`Remove ${op.name} from roadmap`}
               title="Remove from roadmap"
-              className="tap tap-surface hidden shrink-0 rounded-lg border p-1.5 text-muted-foreground sm:block"
+              className="tap tap-surface shrink-0 rounded-lg border p-1.5 text-muted-foreground"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Map, ChevronRight, ChevronDown, GripVertical, Lightbulb, StickyNote } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { TRACKS, PERSONAS } from "@/lib/wayfind-data";
@@ -34,15 +35,15 @@ const PREVIEW_OPS = OPPORTUNITIES.filter((o) => o.track === "physician-scientist
 const STEPS: MockStep[] = PREVIEW_OPS.map((o, i) => ({
   name: o.name,
   timeframe: o.timeframe,
-  status: i === 0 ? "in-progress" : i === PREVIEW_OPS.length - 1 ? "complete" : "not-started",
+  status: i >= 3 ? "complete" : i === 0 ? "in-progress" : "not-started",
   reasoning: o.leverage,
   gapLabel: i === 0 ? (o as any).gapLabel : undefined,
-  hasNote: i === 0 || i === 3, // show note indicator on first and fourth steps
+  hasNote: i === 3, // show note indicator on fourth step only
 }));
 
 const topOp = PREVIEW_OPS[0]; // the in-progress one is the "highest leverage next move"
-const completed = STEPS.filter((s) => s.status === "complete").length + 1; // +1 for custom step "Shadow Dr. Nguyen"
-const totalSteps = STEPS.length + 2; // +2 custom steps
+const completed = STEPS.filter((s) => s.status === "complete").length;
+const totalSteps = STEPS.length;
 
 const STATUS_BAR: Record<MockStep["status"], string> = {
   complete: "bg-tag-green-foreground/70",
@@ -77,6 +78,51 @@ function MiniWavyConnector() {
 }
 
 export function RoadmapWorkspacePreview() {
+  // Animate the "Email Dr. Bhatt" step: check off → type a note → reset
+  const [checked, setChecked] = useState(false);
+  const [showNote, setShowNote] = useState(false);
+  const [noteText, setNoteText] = useState("");
+
+  const FULL_NOTE = "Sent email — following up next Tuesday if no reply.";
+
+  useEffect(() => {
+    let timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    function cycle() {
+      // Step 1: Check the box
+      setChecked(true);
+
+      // Step 2: Show note area after a beat
+      timeouts.push(setTimeout(() => setShowNote(true), 700));
+
+      // Step 3: Type the note character by character
+      timeouts.push(setTimeout(() => {
+        let i = 0;
+        function typeChar() {
+          if (i <= FULL_NOTE.length) {
+            setNoteText(FULL_NOTE.slice(0, i));
+            i++;
+            timeouts.push(setTimeout(typeChar, 40));
+          }
+        }
+        typeChar();
+      }, 1000));
+
+      // Step 4: Hold the completed state
+      timeouts.push(setTimeout(() => {
+        setShowNote(false);
+        setNoteText("");
+        setChecked(false);
+      }, 6500));
+
+      // Step 5: Restart the cycle
+      timeouts.push(setTimeout(cycle, 8000));
+    }
+
+    timeouts.push(setTimeout(cycle, 2000));
+    return () => timeouts.forEach(clearTimeout);
+  }, []);
+
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-[0_4px_24px_-6px_rgba(26,26,26,0.1),0_0_0_1px_rgba(26,26,26,0.03)]">
       <div className="flex min-h-[460px]">
@@ -88,10 +134,10 @@ export function RoadmapWorkspacePreview() {
           </div>
           <nav className="space-y-0.5 px-3">
             {[
-              { label: "Roadmap", active: true },
               { label: "Success Maps", active: false },
-              { label: "Progress", active: false },
-              { label: "Opportunities", active: false },
+              { label: "Roadmap", active: true },
+              { label: "Pin Drop", active: false },
+              { label: "Progress Board", active: false },
               { label: "Profile", active: false },
               { label: "About", active: false },
             ].map((item) => (
@@ -162,7 +208,7 @@ export function RoadmapWorkspacePreview() {
               Here&apos;s your roadmap
             </h3>
             <p className="mt-0.5 text-[10px] text-muted-foreground">
-              {completed}/{totalSteps} steps complete
+              {checked ? completed + 1 : completed}/{totalSteps} steps complete
             </p>
 
             {/* Vertical step list */}
@@ -178,7 +224,9 @@ export function RoadmapWorkspacePreview() {
                     {/* Status accent bar */}
                     <span
                       aria-hidden="true"
-                      className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-full ${STATUS_BAR[step.status]}`}
+                      className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-full ${
+                        i === 0 && checked ? STATUS_BAR["complete"] : STATUS_BAR[step.status]
+                      }`}
                     />
                     {/* Drag handle + number */}
                     <span className="flex w-4 shrink-0 flex-col items-center gap-0.5 pt-0.5">
@@ -187,13 +235,13 @@ export function RoadmapWorkspacePreview() {
                     </span>
                     {/* Checkbox */}
                     <span
-                      className={`mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-[4px] border ${
-                        step.status === "complete"
+                      className={`mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-[4px] border transition-all duration-300 ${
+                        (i === 0 && checked) || step.status === "complete"
                           ? "border-primary bg-primary"
                           : "border-border bg-background"
-                      }`}
+                      } ${i === 0 && checked ? "scale-110" : ""}`}
                     >
-                      {step.status === "complete" && (
+                      {((i === 0 && checked) || step.status === "complete") && (
                         <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 text-primary-foreground" aria-hidden="true">
                           <path d="M2.5 6.3 4.7 8.5 9.5 3.7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -203,83 +251,46 @@ export function RoadmapWorkspacePreview() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span
-                          className={`text-[12px] font-semibold tracking-tight ${
-                            step.status === "complete" ? "text-muted-foreground line-through" : ""
+                          className={`text-[12px] font-semibold tracking-tight transition-all duration-300 ${
+                            (i === 0 && checked) || step.status === "complete" ? "text-muted-foreground line-through" : ""
                           }`}
                         >
                           {step.name}
                         </span>
-                        <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-medium ${STATUS_TAG[step.status].cls}`}>
-                          {STATUS_TAG[step.status].label}
+                        <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-medium ${
+                          i === 0 && checked ? STATUS_TAG["complete"].cls : STATUS_TAG[step.status].cls
+                        }`}>
+                          {i === 0 && checked ? STATUS_TAG["complete"].label : STATUS_TAG[step.status].label}
                         </span>
-                        {step.hasNote && step.status !== "complete" ? (
+                        {step.hasNote && step.status !== "complete" && !(i === 0 && checked) ? (
                           <span className="text-amber-500"><StickyNote className="h-3 w-3" /></span>
                         ) : null}
                       </div>
                       <p className="mt-0.5 text-[10px] text-muted-foreground">{step.timeframe}</p>
-                      {step.reasoning && step.status !== "complete" && (
+                      {/* Animated note typing on first step */}
+                      {i === 0 && showNote && (
+                        <div className="mt-1.5 transition-opacity duration-300">
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-primary/80">
+                            <ChevronDown className="h-2.5 w-2.5" /> Note
+                          </span>
+                          <p className="mt-1 rounded-md bg-muted/80 px-2 py-1.5 text-[10px] leading-relaxed text-muted-foreground">
+                            {noteText}
+                            <span className="ml-0.5 inline-block h-[1em] w-[1.5px] translate-y-[0.1em] rounded-full bg-primary/60 animate-pulse" />
+                          </p>
+                        </div>
+                      )}
+                      {/* Static reasoning (non-animated steps) */}
+                      {step.reasoning && step.status !== "complete" && !(i === 0 && showNote) && (
                         <p className="mt-1 flex items-start gap-1 text-[10px] leading-relaxed text-muted-foreground/80">
                           <Lightbulb className="mt-0.5 h-2.5 w-2.5 shrink-0 text-primary/60" />
                           <span className="line-clamp-1">{step.reasoning}</span>
                         </p>
-                      )}
-                      {/* Show expanded note on first step */}
-                      {i === 0 && (
-                        <div className="mt-1.5">
-                          <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-primary/80">
-                            <ChevronDown className="h-2.5 w-2.5" /> Hide note
-                          </span>
-                          <p className="mt-1 rounded-md bg-muted/80 px-2 py-1.5 text-[10px] leading-relaxed text-muted-foreground">
-                            Takes ~20 students per cohort. App asks for a personal statement about health disparities — start drafting now.
-                          </p>
-                        </div>
                       )}
                     </div>
                   </div>
                 </li>
               ))}
             </ol>
-
-            {/* Custom steps section — "Added by you" */}
-            <div className="mt-4 rounded-xl border border-dashed border-foreground/20 bg-muted/30 p-3">
-              <div className="flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-[4px] border border-border bg-background" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[12px] font-semibold tracking-tight">
-                      Email Dr. Bhatt about BISEP lab rotation
-                    </span>
-                    <span className="rounded-md border border-dashed border-foreground/25 bg-transparent px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
-                      Added by you
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">10/1/2026</span>
-                  </div>
-                  <span className="mt-1.5 inline-flex items-center gap-0.5 text-[10px] font-medium text-muted-foreground">
-                    <ChevronRight className="h-2.5 w-2.5" /> View note
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="mt-2 rounded-xl border border-dashed border-foreground/20 bg-primary/[0.04] p-3">
-              <div className="flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-[4px] border border-primary bg-primary">
-                  <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 text-primary-foreground" aria-hidden="true">
-                    <path d="M2.5 6.3 4.7 8.5 9.5 3.7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[12px] font-semibold tracking-tight text-muted-foreground line-through">
-                      Shadow Dr. Nguyen at UCLA Health (40hr)
-                    </span>
-                    <span className="rounded-md border border-dashed border-foreground/25 bg-transparent px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
-                      Added by you
-                    </span>
-                    <span className="text-amber-500"><StickyNote className="h-3 w-3" /></span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -317,14 +328,14 @@ export function RoadmapWorkspacePreview() {
           <div className="mt-auto pt-4">
             <div className="flex items-baseline gap-1.5">
               <span className="text-lg font-bold tabular-nums text-foreground">
-                {completed}<span className="text-muted-foreground/50">/{totalSteps}</span>
+                {checked ? completed + 1 : completed}<span className="text-muted-foreground/50">/{totalSteps}</span>
               </span>
               <span className="text-[10px] text-muted-foreground">steps done</span>
             </div>
             <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
               <div
                 className="h-full rounded-full bg-primary transition-all"
-                style={{ width: `${(completed / totalSteps) * 100}%` }}
+                style={{ width: `${((checked ? completed + 1 : completed) / totalSteps) * 100}%` }}
               />
             </div>
           </div>

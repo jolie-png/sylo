@@ -100,6 +100,13 @@ function AboutPage() {
             research funding — filtered to what&apos;s open to that student right now, sequenced by leverage
             and deadline, with direct links to the actual application page.
           </p>
+          <p>
+            And when a student spots an opportunity on their own — a flyer, an Instagram post, an email from
+            a professor — they can drop a pin on it. Sylo reads the screenshot or link, extracts the title,
+            deadline, and requirements, checks whether the student is eligible based on their profile, and
+            lets them add it straight to their roadmap. Everything flows into one progress board where they
+            drag steps from Not Started to Complete.
+          </p>
           <p className="font-medium text-foreground">
             It&apos;s the kind of clarity that used to require knowing the right person — delivered to every
             student, at every school, the moment they pick a destination.

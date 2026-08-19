@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Map, KanbanSquare, FileText, User, ChevronDown as ChevronDownIcon, RotateCcw, Sparkles, Info } from "lucide-react";
+import { Map, KanbanSquare, User, ChevronDown as ChevronDownIcon, RotateCcw, Sparkles, Info, MapPin, Search } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { SyloMark } from "@/components/SyloMark";
@@ -10,8 +10,8 @@ import type { StepStatus } from "@/lib/wayfind-data";
 const NAV = [
   { to: "/paths", label: "Success Maps", icon: Sparkles },
   { to: "/dashboard", label: "Roadmap", icon: Map },
-  { to: "/progress", label: "Progress", icon: KanbanSquare },
-  { to: "/opportunity-details", label: "Opportunities", icon: FileText },
+  { to: "/pin", label: "Pin Drop", icon: MapPin },
+  { to: "/progress", label: "Progress Board", icon: KanbanSquare },
   { to: "/profile", label: "Profile", icon: User },
   { to: "/about", label: "About", icon: Info },
 ] as const;
@@ -41,6 +41,22 @@ export function Workspace({ children, wide = false }: { children: ReactNode; wid
               {item.label}
             </Link>
           ))}
+
+          {/* Divider + extra section */}
+          <div className="my-3 border-t border-border/60" />
+          <p className="px-3 pb-1 text-[11px] font-medium text-muted-foreground">For when you just want to scroll (the database you didn't ask for).</p>
+          <Link
+            to="/opportunity-details"
+            search={{ id: undefined }}
+            className={cn(
+              "nav-item tap",
+              pathname === "/opportunity-details" &&
+                "bg-secondary text-foreground font-semibold",
+            )}
+          >
+            <Search className="h-4 w-4" strokeWidth={1.75} />
+            Opportunities
+          </Link>
         </nav>
         <div className="mt-auto px-3 pb-1">
           <Link to="/roadmap-builder" className="nav-item tap px-0 text-xs text-muted-foreground hover:text-foreground">
@@ -108,7 +124,7 @@ export function PageHeader({
 }: {
   icon: ReactNode;
   title: string;
-  subtitle?: string;
+  subtitle?: ReactNode;
   meta?: string[];
 }) {
   return (
@@ -237,6 +253,15 @@ export function OwnGoalBadge() {
   return (
     <span className="tag border border-dashed border-foreground/25 bg-transparent text-muted-foreground">
       Added by you
+    </span>
+  );
+}
+
+/** Marker for steps that originated from Pin Drop (screenshot/link capture). */
+export function PinDropBadge() {
+  return (
+    <span className="tag border border-solid border-purple-400/40 bg-purple-500/[0.08] text-purple-700 dark:border-purple-600/40 dark:text-purple-300">
+      From Pin Drop
     </span>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Pin, PinOff, SlidersHorizontal, Search, MessageCircle, Plus, Check } from "lucide-react";
+import { Heart, Pin, PinOff, SlidersHorizontal, Search, Plus, Check } from "lucide-react";
 import { Tag, FoundViaSearchBadge } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
@@ -127,10 +127,10 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          Pinned{pinnedCount ? ` (${pinnedCount})` : ""}
+          Saved{pinnedCount ? ` (${pinnedCount})` : ""}
         </button>
       </div>
-        <button
+        {/* <button
           type="button"
           onClick={() => {
             window.dispatchEvent(new CustomEvent("open-ask-sylo", { detail: { query: "" } }));
@@ -139,7 +139,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
         >
           <MessageCircle className="h-3.5 w-3.5" />
           Ask Sylo for more opportunities
-        </button>
+        </button> */}
       </div>
 
       {/* Search bar */}
@@ -234,10 +234,10 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
         {view === "pinned"
           ? "Things you saved. Pinning is your own shortlist — it never changes what Sylo ranks as your next move."
           : view === "all"
-            ? `${shown.length} programs, fellowships, and pipeline deadlines across all tracks. Pin the ones you don't want to miss.`
+            ? `${shown.length} programs, fellowships, and pipeline deadlines across all tracks. Save the ones you don't want to miss.`
             : pool.some((op) => op.origin === "live")
-              ? "Verified opportunities on this track, plus what search turned up for you. Pin the ones you want to keep close. Opportunities already on your roadmap are marked."
-              : "Every verified opportunity on this track. Pin the ones you want to keep close. Opportunities already on your roadmap are marked."}
+              ? "Verified opportunities on this track, plus what search turned up for you. Save the ones you want to keep close. Opportunities already on your roadmap are marked."
+              : "Every verified opportunity on this track. Save the ones you want to keep close. Opportunities already on your roadmap are marked."}
       </p>
 
       {/* Empty state */}
@@ -318,9 +318,9 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                       }`}
                     >
                       {pinned ? (
-                        <Pin className="h-4 w-4" fill="currentColor" />
+                        <Heart className="h-4 w-4" fill="currentColor" />
                       ) : (
-                        <PinOff className="h-4 w-4" />
+                        <Heart className="h-4 w-4" />
                       )}
                     </button>
                   </div>

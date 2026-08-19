@@ -15,6 +15,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as OpportunityDetailsRouteImport } from './routes/opportunity-details'
 import { Route as PathsRouteImport } from './routes/paths'
+import { Route as PinRouteImport } from './routes/pin'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as RoadmapBuilderRouteImport } from './routes/roadmap-builder'
@@ -49,6 +50,11 @@ const PathsRoute = PathsRouteImport.update({
   path: '/paths',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PinRoute = PinRouteImport.update({
+  id: '/pin',
+  path: '/pin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/opportunities': typeof OpportunitiesRoute
   '/opportunity-details': typeof OpportunityDetailsRoute
   '/paths': typeof PathsRoute
+  '/pin': typeof PinRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/roadmap-builder': typeof RoadmapBuilderRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/opportunities': typeof OpportunitiesRoute
   '/opportunity-details': typeof OpportunityDetailsRoute
   '/paths': typeof PathsRoute
+  '/pin': typeof PinRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/roadmap-builder': typeof RoadmapBuilderRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/opportunities': typeof OpportunitiesRoute
   '/opportunity-details': typeof OpportunityDetailsRoute
   '/paths': typeof PathsRoute
+  '/pin': typeof PinRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/roadmap-builder': typeof RoadmapBuilderRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/opportunity-details'
     | '/paths'
+    | '/pin'
     | '/profile'
     | '/progress'
     | '/roadmap-builder'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/opportunity-details'
     | '/paths'
+    | '/pin'
     | '/profile'
     | '/progress'
     | '/roadmap-builder'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/opportunity-details'
     | '/paths'
+    | '/pin'
     | '/profile'
     | '/progress'
     | '/roadmap-builder'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   OpportunitiesRoute: typeof OpportunitiesRoute
   OpportunityDetailsRoute: typeof OpportunityDetailsRoute
   PathsRoute: typeof PathsRoute
+  PinRoute: typeof PinRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   RoadmapBuilderRoute: typeof RoadmapBuilderRoute
@@ -191,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pin': {
+      id: '/pin'
+      path: '/pin'
+      fullPath: '/pin'
+      preLoaderRoute: typeof PinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesRoute: OpportunitiesRoute,
   OpportunityDetailsRoute: OpportunityDetailsRoute,
   PathsRoute: PathsRoute,
+  PinRoute: PinRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   RoadmapBuilderRoute: RoadmapBuilderRoute,

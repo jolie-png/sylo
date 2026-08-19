@@ -18,6 +18,7 @@ import {
   type StepStatus,
 } from "./wayfind-data";
 import { getOpportunityById, getOpportunityByName, searchOpportunities } from "./opportunities-db";
+import { MAYA_PINS, ALEX_PINS } from "./pin-demo-data";
 import type { GeneratedRoadmap } from "./roadmap.functions";
 
 export type Profile = {
@@ -58,6 +59,10 @@ export type Step = {
   status: StepStatus;
   /** ISO timestamp of when status was last changed. Used for progress decay nudges. */
   statusChangedAt?: string;
+  /** If true, this step is a personal action item from gap analysis, not an external opportunity. */
+  isGapAction?: boolean;
+  /** For gap action steps: the title/action text. */
+  gapActionTitle?: string;
 };
 
 export type Roadmap = {
@@ -93,6 +98,8 @@ export type CustomStep = {
   note?: string;
   targetDate?: string;
   status: StepStatus;
+  /** Where this step originated from. */
+  source?: "pin-drop" | "manual" | "link";
 };
 
 type State = {
@@ -123,7 +130,7 @@ type State = {
   setStatus: (opportunityId: string, status: StepStatus) => void;
   toggleComplete: (opportunityId: string) => void;
   loadPersona: (personaId: string) => void;
-  addCustomStep: (input: { title: string; note?: string; targetDate?: string }) => void;
+  addCustomStep: (input: { title: string; note?: string; targetDate?: string; source?: "pin-drop" | "manual" | "link" }) => void;
   updateCustomStep: (id: string, patch: Partial<Omit<CustomStep, "id">>) => void;
   removeCustomStep: (id: string) => void;
   /** Promote a custom step into the main roadmap list. */
@@ -234,18 +241,31 @@ export function personaRoadmap(persona: Persona): Roadmap {
       title: b.name,
       detail: `${b.sponsor} — ${b.note}. Not available at ${persona.school}, so Sylo routed you to the local equivalent instead.`,
     })),
-    steps: pool.map((o, i) => {
-      // Personalized reasoning for instant demos — mimics what the AI prompt generates
-      const demoReasoning = getDemoReasoning(persona.id, o.id) || o.leverage;
-      return {
-        id: o.id,
-        opportunityId: o.id,
-        reasoning: demoReasoning,
-        // Demo feel: top step is "in-progress" (the current focus), the last
-        // rolling-deadline step is "complete" (low-barrier thing already done).
-        status: (i === 0 ? "in-progress" : i === pool.length - 1 ? "complete" : "not-started") as StepStatus,
-      };
-    }),
+    steps: (() => {
+      const opportunitySteps = pool.map((o, i) => {
+        const demoReasoning = getDemoReasoning(persona.id, o.id) || o.leverage;
+        return {
+          id: o.id,
+          opportunityId: o.id,
+          reasoning: demoReasoning,
+          status: (i === 0 ? "in-progress" : i === pool.length - 1 ? "complete" : "not-started") as StepStatus,
+        };
+      });
+
+      // Insert gap action steps after the top opportunity
+      const gapSteps: Step[] = gapAnalysis.gaps.map((g, i) => ({
+        id: `gap-action-${i}`,
+        opportunityId: `gap-action-${i}`,
+        reasoning: g.why,
+        status: "not-started" as StepStatus,
+        isGapAction: true,
+        gapActionTitle: g.action,
+      }));
+
+      return opportunitySteps.length > 0
+        ? [opportunitySteps[0], ...gapSteps, ...opportunitySteps.slice(1)]
+        : [...gapSteps, ...opportunitySteps];
+    })(),
   };
 }
 
@@ -348,6 +368,9 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     setStepNotes({});
     setStepReasoningOverrides({});
     setPinnedIds([]);
+    // Clear any leftover demo pin data so Pin Drop starts fresh for a real user
+    try { localStorage.removeItem("catch:state:v1"); } catch { /* no-op */ }
+    window.dispatchEvent(new CustomEvent("pin-store-updated"));
   }, []);
 
   const resolveOpportunity = useCallback(
@@ -545,10 +568,15 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
         ? ["op-gt-createx-learn", "op-gt-coop", "op-gt-grip"]
         : ["op-ucla-bisep", "op-ucla-hhmi-pathways", "op-ucla-mcdb-research"],
     );
+    // Seed Pin Drop with demo data
+    const demoPins = persona.id === "maya" ? MAYA_PINS : ALEX_PINS;
+    localStorage.setItem("catch:state:v1", JSON.stringify({ items: demoPins }));
+    // Force PinProvider to re-hydrate by dispatching a storage event
+    window.dispatchEvent(new CustomEvent("pin-store-updated"));
   }, []);
 
   const addCustomStep = useCallback(
-    (input: { title: string; note?: string; targetDate?: string }) => {
+    (input: { title: string; note?: string; targetDate?: string; source?: "pin-drop" | "manual" | "link" }) => {
       setCustomSteps((prev) => [
         ...prev,
         {
@@ -557,6 +585,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
           note: input.note?.trim() || undefined,
           targetDate: input.targetDate?.trim() || undefined,
           status: "not-started" as StepStatus,
+          source: input.source,
         },
       ]);
     },

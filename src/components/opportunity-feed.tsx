@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Pin, PinOff, Search } from "lucide-react";
+import { Heart, Pin, PinOff, Search } from "lucide-react";
 import { Tag, FoundViaSearchBadge } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
 import { Input } from "@/components/ui/input";
@@ -86,7 +86,7 @@ export function OpportunityFeed() {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {f === "pinned" ? `Pinned${pinnedIds.length ? ` (${pinnedIds.length})` : ""}` : "All"}
+                {f === "pinned" ? `Saved${pinnedIds.length ? ` (${pinnedIds.length})` : ""}` : "All"}
               </button>
             ))}
           </div>
@@ -133,15 +133,15 @@ export function OpportunityFeed() {
       {/* Helper text */}
       <p className="mt-4 text-xs text-muted-foreground">
         {filter === "pinned"
-          ? "Your saved programs. Pinning is your own shortlist — it never changes what Sylo ranks as your next move."
-          : `${shown.length} programs, fellowships, and pipelines. Pin the deadlines you don't want to miss.`}
+          ? "Your saved programs. Saving is your own shortlist — it never changes what Sylo ranks as your next move."
+          : `${shown.length} programs, fellowships, and pipelines. Save the deadlines you don't want to miss.`}
       </p>
 
       {/* Empty state */}
       {shown.length === 0 ? (
         <p className="mt-8 rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">
           {filter === "pinned"
-            ? "Nothing pinned yet. Tap the pin on any card to save it here."
+            ? "Nothing saved yet. Tap the heart on any card to save it here."
             : "No opportunities match your current filters. Try a different search or track."}
         </p>
       ) : (
@@ -169,7 +169,7 @@ export function OpportunityFeed() {
                   <p className="text-sm font-semibold leading-snug tracking-tight">{op.name}</p>
                   <button
                     type="button"
-                    aria-label={pinned ? `Unpin ${op.name}` : `Pin ${op.name}`}
+                    aria-label={pinned ? `Unsave ${op.name}` : `Save ${op.name}`}
                     aria-pressed={pinned}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -180,9 +180,9 @@ export function OpportunityFeed() {
                     }`}
                   >
                     {pinned ? (
-                      <Pin className="h-4 w-4" fill="currentColor" />
+                      <Heart className="h-4 w-4" fill="currentColor" />
                     ) : (
-                      <PinOff className="h-4 w-4" />
+                      <Heart className="h-4 w-4" />
                     )}
                   </button>
                 </div>
@@ -216,7 +216,7 @@ export function OpportunityFeed() {
                 {!pinned && full?.leverage &&
                   shown.filter((o) => !pinnedIds.includes(o.id)).indexOf(op) === 0 ? (
                   <p className="mt-3 border-t pt-3 text-[11px] text-muted-foreground/60">
-                    <Pin className="mr-1 inline h-3 w-3" />Pin to see why this matters
+                    <Heart className="mr-1 inline h-3 w-3" />Save to see why this matters
                   </p>
                 ) : null}
 

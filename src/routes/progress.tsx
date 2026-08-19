@@ -22,6 +22,7 @@ import {
   NotionCheckbox,
   Tag,
   OwnGoalBadge,
+  PinDropBadge,
   FoundViaSearchBadge,
 } from "@/components/workspace";
 import { LongViewBoard } from "@/components/long-view-board";
@@ -33,17 +34,19 @@ import { AcademicTermSelector } from "@/components/academic-term-selector";
 import { InlineNoteEditor } from "@/components/inline-note-editor";
 import { NoteIndicator } from "@/components/note-indicator";
 import { CalendarButton } from "@/components/calendar-button";
+import { usePin, type PinItem } from "@/lib/pin-store";
+import { MapPin, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({
     meta: [
-      { title: "Progress Tracker — Sylo" },
+      { title: "Progress Board — Sylo" },
       {
         name: "description",
         content:
           "Board and list views of your roadmap steps. Drag a step between Not started, In progress, and Complete.",
       },
-      { property: "og:title", content: "Progress Tracker — Sylo" },
+      { property: "og:title", content: "Progress Board — Sylo" },
       {
         property: "og:description",
         content: "Honest counts, never a score. Your roadmap steps as a live database view.",
@@ -93,6 +96,7 @@ function Progress() {
     stepNotes,
     stepReasoningOverrides,
   } = useWayfind();
+  const { items: pinItems, linkToRoadmap } = usePin();
   const navigate = useNavigate();
   const { burst, ConfettiContainer } = useConfettiBurst();
   const [view, setView] = useState<"board" | "list" | "long view">("board");
@@ -125,8 +129,8 @@ function Progress() {
       {ConfettiContainer}
       <PageHeader
         icon={<KanbanSquare className="h-5 w-5" />}
-        title="Progress Tracker"
-        subtitle="Board and list views of every step on your roadmap."
+        title="Progress Board"
+        subtitle="Drag steps between Not Started, In Progress, and Complete. Add notes, set deadlines, and see exactly where you stand."
       />
 
       <div className="mt-6 flex items-baseline gap-2.5">
@@ -320,7 +324,60 @@ function Progress() {
           school={profile.school}
         />
       ) : view === "board" ? (
-        <div className="mt-6 grid items-start gap-4 sm:grid-cols-3">
+        <div className="mt-6 grid items-start gap-4 sm:grid-cols-4">
+
+          {/* Pinned column — unlinked Pin Drop items */}
+          <div className="column-tray flex min-h-[220px] flex-col p-2">
+            <div className="flex items-center justify-between gap-2 px-1 pb-2.5">
+              <span className="flex items-center gap-2">
+                
+                <span className="text-sm font-semibold tracking-tight">From Pin Drop</span>
+                <span className="tag bg-tag-gray text-tag-gray-foreground tabular-nums">
+                  {pinItems.filter((p) => !p.linkedStepId).length}
+                </span>
+              </span>
+            </div>
+            <div className="space-y-2">
+              {pinItems.filter((p) => !p.linkedStepId).map((pin) => (
+                <div
+                  key={pin.id}
+                  draggable
+                  onDragStart={() => setDrag({ id: pin.id, custom: false })}
+                  onDragEnd={() => { setDrag(null); setOverCol(null); }}
+                  title="Drag to Not Started to add to your roadmap"
+                  className="relative cursor-grab rounded-xl px-3 py-3 pl-4 active:cursor-grabbing card-tonal"
+                >
+                  <div className="absolute inset-y-0 left-0 w-1 rounded-l-xl bg-primary/60" />
+                  <p className="text-sm font-semibold leading-snug tracking-tight">
+                    {pin.opportunityDetails?.name || pin.title}
+                  </p>
+                  {pin.isOpportunityLike && (
+                    <div className="mt-1.5">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                        Opportunity
+                      </span>
+                    </div>
+                  )}
+                  {pin.detectedDate && (
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      {relativeDue(pin.detectedDate)?.text}
+                    </p>
+                  )}
+                  <div className="mt-1.5 flex flex-wrap gap-1">
+                    {pin.tags.slice(0, 2).map((t) => (
+                      <span key={t} className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {pinItems.filter((p) => !p.linkedStepId).length === 0 && (
+                <p className="px-2 py-4 text-center text-xs text-muted-foreground">
+                  Drop a pin to see it here
+                </p>
+              )}
+            </div>
+          </div>
+
           {COLUMNS.map((col) => {
             const items = roadmap.steps.filter((s) => s.status === col.key);
             const mine = customSteps.filter((s) => s.status === col.key);
@@ -337,12 +394,24 @@ function Progress() {
                 onDrop={(e) => {
                   e.preventDefault();
                   if (drag) {
-                    if (col.key === "complete") {
-                      // Fire confetti toward the right side where the Complete column is
-                      burst({ x: 85, y: 30 });
+                    // Check if a pinned item is being promoted to the board
+                    const pinnedItem = pinItems.find((p) => p.id === drag.id && !p.linkedStepId);
+                    if (pinnedItem) {
+                      const title = pinnedItem.opportunityDetails?.name || pinnedItem.title;
+                      const noteLines: string[] = [];
+                      if (pinnedItem.opportunityDetails) {
+                        if (pinnedItem.opportunityDetails.description) noteLines.push(pinnedItem.opportunityDetails.description);
+                        if (pinnedItem.opportunityDetails.requirements.length > 0) noteLines.push("Requirements: " + pinnedItem.opportunityDetails.requirements.join(", "));
+                      }
+                      addCustomStep({ title, note: noteLines.join("\n") || undefined, targetDate: pinnedItem.detectedDate || undefined });
+                      linkToRoadmap(pinnedItem.id, "custom-" + Date.now());
+                    } else {
+                      if (col.key === "complete") {
+                        burst({ x: 85, y: 30 });
+                      }
+                      if (drag.custom) updateCustomStep(drag.id, { status: col.key });
+                      else setStatus(drag.id, col.key);
                     }
-                    if (drag.custom) updateCustomStep(drag.id, { status: col.key });
-                    else setStatus(drag.id, col.key);
                   }
                   setDrag(null);
                   setOverCol(null);
@@ -589,7 +658,7 @@ function Progress() {
                               </div>
                             </div>
                             <div className="mt-2">
-                              <OwnGoalBadge />
+                              {s.source === "pin-drop" ? <PinDropBadge /> : <OwnGoalBadge />}
                             </div>
                             <div className="mt-2 flex items-center gap-2">
                               {s.note ? (
@@ -723,7 +792,7 @@ function Progress() {
                 )}
               >
                 <span className="truncate">{s.title}</span>
-                <OwnGoalBadge />
+                {s.source === "pin-drop" ? <PinDropBadge /> : <OwnGoalBadge />}
               </span>
               <span className="w-28">
                 <StatusTag status={s.status} />

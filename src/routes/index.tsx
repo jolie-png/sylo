@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, AlertTriangle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { TypingHero } from "@/components/TypingHero";
 import { RoadmapWorkspacePreview } from "@/components/roadmap-workspace-preview";
+import { PinDropDemo } from "@/components/pin-drop-demo";
 import { WavyRouteLine } from "@/components/wavy-route-line";
 import { getOpportunity } from "@/lib/wayfind-data";
 import { useWayfind } from "@/lib/sylo-store";
@@ -50,7 +51,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-canvas">
       {/* Compact workspace chrome: 44px bar, hairline border, solid card surface. */}
-      <header className="sticky top-0 z-40 h-11 border-b bg-card/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-40 h-11 border-b border-border/40 bg-background">
         <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <SyloMark className="h-6 w-6" animated={true} />
@@ -68,8 +69,7 @@ function Landing() {
           {/* Sticky stage: hero follows the scroll for a longer distance, then releases. */}
           <div className="relative h-[100vh]">
             <div className="sticky top-11 z-10 flex h-[calc(100vh-2.75rem)] w-full flex-col items-center justify-center text-center">
-              <p className="text-[13px] font-medium text-primary/80">Real guidance, crafted for your path.</p>
-              <div className="mt-6">
+              <div>
                 <TypingHero />
               </div>
               <p className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-muted-foreground sm:text-lg">
@@ -118,7 +118,34 @@ function Landing() {
 
           {/* Workspace preview sits in normal flow below the sticky stage so it can never overlap the hero. */}
           <div className="relative z-20 pt-10">
+            <div className="mx-auto max-w-2xl text-center mb-10">
+              <h2 className="text-[24px] font-bold leading-snug tracking-tight sm:text-[32px]">
+                One destination. Every step to get there.
+              </h2>
+              <p className="mx-auto mt-4 max-w-lg text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
+                Sylo finds the programs, deadlines, and sequence at your school —
+                so you never have to figure out what comes next.
+              </p>
+            </div>
             <RoadmapWorkspacePreview />
+          </div>
+
+          {/* Wavy connector */}
+          <div className="relative z-20 flex justify-center py-6">
+            <div className="flex flex-col items-center">
+              <WavyRouteLine height={144} duration={3.3} className="text-primary/60" />
+              <WavyRouteLine height={144} duration={3.3} className="text-primary/60" />
+            </div>
+          </div>
+
+          {/* Pin Drop micro-demo */}
+          <div className="relative z-20">
+            <div className="mx-auto max-w-xl text-center mb-8">
+              <p className="text-[17px] leading-relaxed text-muted-foreground sm:text-lg">
+                Drop a pin on anything you find.
+              </p>
+            </div>
+            <PinDropDemo />
           </div>
         </section>
 
@@ -130,8 +157,8 @@ function Landing() {
           )}
         >
           <div className="flex flex-col items-center">
-            <WavyRouteLine height={144} className="text-primary/60" />
-            <WavyRouteLine height={144} className="text-primary/60" />
+            <WavyRouteLine height={144} duration={3.3} className="text-primary/60" />
+            <WavyRouteLine height={144} duration={3.3} className="text-primary/60" />
           </div>
         </div>
 
@@ -143,18 +170,18 @@ function Landing() {
           )}
         >
           <div className="grid gap-4 sm:grid-cols-3">
-            {/* 01 */}
+            {/* 01 — Roadmap generation */}
             <div className="flex flex-col rounded-xl border bg-card p-5">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">01</p>
               <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight">
-                One next move, not twenty.
+                A full roadmap in seconds.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                No dashboard to learn. Just the single highest-leverage thing to do right now, and why it matters this week.
+                Tell Sylo your goal, school, major, and year. It builds a sequenced plan — every step ranked by leverage, with deadlines attached.
               </p>
 
               <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
-                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground animate-pulse">
                   1
                 </span>
                 <div>
@@ -164,45 +191,59 @@ function Landing() {
               </div>
             </div>
 
-            {/* 02 */}
+            {/* 02 — Pin Drop */}
             <div className="flex flex-col rounded-xl border bg-card p-5">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">02</p>
               <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight">
-                Your school, not a generic list.
+                Pin anything you find.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                Sylo searches real programs at your specific school — fellowships, research labs, pipeline programs — not a one-size-fits-all database.
+                Screenshot a flyer or paste a link. Sylo extracts the opportunity, deadline, and requirements.
               </p>
 
-              <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
-                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-blue text-[10px] font-semibold text-tag-blue-foreground">
-                  ✓
-                </span>
-                <div>
-                  <span className="text-sm font-medium tracking-tight">Found 5 programs at UCLA</span>
-                  <p className="mt-1 text-xs text-primary">BISEP, URFP, PMSS, HHMI Pathways, MCDB Research</p>
+              <div className="field-tonal mt-4 rounded-lg p-3">
+                <div className="flex items-start gap-2.5">
+                  <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-blue text-[10px] font-semibold text-tag-blue-foreground">
+                    <svg viewBox="0 0 12 12" className="h-2.5 w-2.5" aria-hidden="true">
+                      <path d="M6 1v6M6 7l-2-2M6 7l2-2M3 10h6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                  <div>
+                    <span className="text-sm font-medium tracking-tight">Screenshot pinned</span>
+                    <p className="mt-1 text-xs text-primary">→ BISEP Fellowship · Due Nov 1</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* 03 */}
+            {/* 03 — Progress tracking */}
             <div className="flex flex-col rounded-xl border bg-card p-5">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">03</p>
               <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight">
-                See what&apos;s actually blocking you.
+                Track it all in one place.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                Your biggest gap, stated plainly, with the deadline attached — not buried three clicks deep.
+                Drag steps between Not Started, In Progress, and Complete. Add notes, set deadlines, and see exactly where you stand.
               </p>
 
-              <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
-                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-amber text-tag-amber-foreground">
-                  <AlertTriangle className="h-3 w-3" />
-                </span>
-                <div>
-                  <span className="text-sm font-medium tracking-tight">No faculty mentor identified</span>
-                  <p className="mt-1 text-xs text-primary">→ URFP requires one before you apply — find a PI this quarter or miss the Nov 15 deadline.</p>
+              <div className="field-tonal mt-4 rounded-lg p-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+                    <span className="text-[9px] text-muted-foreground">3</span>
+                  </div>
+                  <div className="h-[2px] flex-1 rounded-full bg-border" />
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="h-2.5 w-2.5 rounded-full bg-tag-blue-foreground/60 animate-pulse" />
+                    <span className="text-[9px] text-muted-foreground">2</span>
+                  </div>
+                  <div className="h-[2px] flex-1 rounded-full bg-border" />
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="h-2.5 w-2.5 rounded-full bg-tag-green-foreground/70" />
+                    <span className="text-[9px] text-muted-foreground">4</span>
+                  </div>
                 </div>
+                <p className="mt-2 text-center text-[11px] font-medium text-muted-foreground">4 of 9 steps complete</p>
               </div>
             </div>
           </div>
@@ -218,8 +259,8 @@ function Landing() {
           )}
         >
           <div className="flex flex-col items-center">
-            <WavyRouteLine height={144} className="text-primary/60" />
-            <WavyRouteLine height={144} className="text-primary/60" />
+            <WavyRouteLine height={144} duration={3.3} className="text-primary/60" />
+            <WavyRouteLine height={144} duration={3.3} className="text-primary/60" />
           </div>
         </div>
 

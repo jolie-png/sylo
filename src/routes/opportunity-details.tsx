@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Check, ChevronLeft, ExternalLink, FileText, MessageCircle, Pin, PinOff, Plus } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, ExternalLink, FileText, Heart, MessageCircle, Pin, PinOff, Plus } from "lucide-react";
 import {
   Workspace,
   PageHeader,
@@ -62,12 +62,32 @@ function Details() {
   const [justAdded, setJustAdded] = useState(false);
 
   useEffect(() => {
-    // Only redirect if there's no id — viewing a specific opportunity should always work
-    if (hydrated && !id && (!profile || !roadmap)) navigate({ to: "/roadmap-builder" });
+    // No redirect — show a helpful message instead
   }, [hydrated, id, profile, roadmap, navigate]);
 
-  // No-id browse mode requires profile+roadmap
-  if (!id && (!profile || !roadmap)) return null;
+  // No-id browse mode requires profile+roadmap — show a CTA instead of blank page
+  if (!id && (!profile || !roadmap)) {
+    return (
+      <Workspace wide>
+        <PageHeader
+          icon={<FileText className="h-5 w-5" />}
+          title="Opportunities"
+          subtitle="Fellowships, insight days, diversity cohorts, scholarships, and early-ID deadlines you don't want to miss."
+        />
+        <div className="mt-10 flex flex-col items-center text-center">
+          <p className="text-sm text-muted-foreground">
+            Build your roadmap first — Sylo uses your major, year, and school to show you the right opportunities.
+          </p>
+          <Link
+            to="/roadmap-builder"
+            className="tap mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+          >
+            Build my roadmap <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </Workspace>
+    );
+  }
 
   // When id is present, allow viewing even without roadmap
 
@@ -78,7 +98,7 @@ function Details() {
         <PageHeader
           icon={<FileText className="h-5 w-5" />}
           title="Opportunities"
-          subtitle="Fellowships, insight days, diversity cohorts, scholarships, and early-ID deadlines you don't want to miss. Pin the ones that matter to you."
+          subtitle="Fellowships, insight days, diversity cohorts, scholarships, and early-ID deadlines you don't want to miss. Save the ones that matter to you."
         />
         <OpportunityBrowser trackId={profile!.trackId} />
       </Workspace>
@@ -305,12 +325,12 @@ function Details() {
             className={cn(
               "tap inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm",
               pinnedIds.includes(op.id)
-                ? "border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
+                ? "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100"
                 : "border-muted-foreground/30 text-muted-foreground hover:bg-muted/50"
             )}
           >
-            {pinnedIds.includes(op.id) ? <Pin className="h-4 w-4 fill-current" /> : <Pin className="h-4 w-4" />}
-            {pinnedIds.includes(op.id) ? "Pinned" : "Pin"}
+            {pinnedIds.includes(op.id) ? <Heart className="h-4 w-4 fill-current" /> : <Heart className="h-4 w-4" />}
+            {pinnedIds.includes(op.id) ? "Saved" : "Save"}
           </button>
         </div>
 
@@ -451,12 +471,12 @@ function Details() {
             className={cn(
               "tap inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm",
               pinnedIds.includes(op.id)
-                ? "border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
+                ? "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100"
                 : "border-muted-foreground/30 text-muted-foreground hover:bg-muted/50"
             )}
           >
-            {pinnedIds.includes(op.id) ? <Pin className="h-4 w-4 fill-current" /> : <Pin className="h-4 w-4" />}
-            {pinnedIds.includes(op.id) ? "Pinned" : "Pin"}
+            {pinnedIds.includes(op.id) ? <Heart className="h-4 w-4 fill-current" /> : <Heart className="h-4 w-4" />}
+            {pinnedIds.includes(op.id) ? "Saved" : "Save"}
           </button>
         </div>
         ) : (
@@ -471,12 +491,12 @@ function Details() {
             className={cn(
               "tap inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm",
               pinnedIds.includes(op.id)
-                ? "border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
+                ? "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100"
                 : "border-muted-foreground/30 text-muted-foreground hover:bg-muted/50"
             )}
           >
-            {pinnedIds.includes(op.id) ? <Pin className="h-4 w-4 fill-current" /> : <Pin className="h-4 w-4" />}
-            {pinnedIds.includes(op.id) ? "Pinned" : "Pin"}
+            {pinnedIds.includes(op.id) ? <Heart className="h-4 w-4 fill-current" /> : <Heart className="h-4 w-4" />}
+            {pinnedIds.includes(op.id) ? "Saved" : "Save"}
           </button>
         </div>
         );

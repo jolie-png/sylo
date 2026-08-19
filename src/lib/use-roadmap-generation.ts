@@ -77,7 +77,7 @@ export function useRoadmapGeneration() {
 }
 
 const PHASES = [
-  "Searching for real opportunities…",
+  "Updating…",
   "Cross-checking sources…",
   "Sequencing your roadmap…",
   "Almost there — assembling your path…",

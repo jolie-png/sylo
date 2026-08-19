@@ -458,8 +458,9 @@ function Builder() {
             <ResumeUpload
               onParsed={(data) => {
                 if (data.name?.trim()) setResumeName(data.name);
-                if (data.school?.trim()) setSchool(data.school);
-                if (data.year?.trim()) setYear(data.year);
+                // Only auto-fill school/year if user hasn't already selected them
+                if (data.school?.trim() && !school) setSchool(data.school);
+                if (data.year?.trim() && !year) setYear(data.year);
                 if (data.experience?.trim()) setExperience(data.experience);
                 if (data.skills?.trim()) setSkills(data.skills);
                 if (data.priorWork?.trim()) setPriorWork(data.priorWork);

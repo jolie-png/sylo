@@ -1,10 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 
 const PHRASES = [
-  "physician-scientist.",
-  "product manager.",
-  "software engineer.",
-  "investment banker.",
+  "a research fellowship.",
+  "a summer\nanalyst program.",
+  "a sophomore insight day.",
+  "medicine.",
+  "becoming a product manager.",
+  "becoming a software engineer.",
 ];
 
 const TYPE_MS = 55;
@@ -47,8 +49,8 @@ export function TypingHero() {
 
   return (
     <h1 className="mx-auto max-w-3xl pb-4 text-center text-[40px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[56px]">
-      Your roadmap to becoming a{" "}
-      <span className="text-primary">
+      <span>Your roadmap to </span>
+      <span className="text-primary whitespace-pre-wrap">
         {text}
         <span
           aria-hidden="true"

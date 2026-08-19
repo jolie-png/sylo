@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { WayfindProvider } from "../lib/sylo-store";
+import { PinProvider } from "../lib/pin-store";
 
 import { AskSylo } from "../components/ask-sylo";
 
@@ -137,8 +138,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <WayfindProvider>
-        <Outlet />
-        <AskSylo />
+        <PinProvider>
+          <Outlet />
+          {/* <AskSylo /> */}
+        </PinProvider>
       </WayfindProvider>
     </QueryClientProvider>
   );

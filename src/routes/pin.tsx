@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, ImagePlus, MapPin, Pencil, Check, ArrowRight } from "lucide-react";
 import { Workspace, PageHeader } from "@/components/workspace";
@@ -33,9 +33,8 @@ export const Route = createFileRoute("/pin")({
 });
 
 function PinPage() {
-  const { items, addItem, updateItem, deleteItem, seedItems } = usePin();
-  const { profile } = useWayfind();
-  const navigate = useNavigate();
+  const { items, addItem, updateItem, deleteItem, seedItems, linkToRoadmap } = usePin();
+  const { profile, addCustomStep } = useWayfind();
   const [collapsedTopics, setCollapsedTopics] = useState<Record<string, boolean>>({});
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [editingTopic, setEditingTopic] = useState<string | null>(null);
@@ -53,16 +52,38 @@ function PinPage() {
     if (pins.length > 0) seedItems(pins);
   }, [profile?.personaName, items.length, seedItems]);
 
-  // "Add to roadmap" sends the pin to the Progress board's "From Pin Drop" tray
-  // rather than creating a Not Started step directly. A saved pin is already
-  // unlinked, so it shows in that tray automatically — the student then drags it
-  // into Not Started / In Progress / Complete, which is where it becomes a
-  // tracked step (and picks up the "From Pin Drop" label).
+  // "Add to roadmap" creates a roadmap addition from the pin (a "pin-drop" custom
+  // step, which shows in the dashboard's "Your additions" section and on the
+  // progress board), then links the pin to that step so the button flips to
+  // "Added to roadmap" and the pin leaves the "From Pin Drop" tray.
   const handleAddToRoadmap = useCallback(
-    (_item: PinItem) => {
-      navigate({ to: "/progress" });
+    (item: PinItem) => {
+      const title = item.opportunityDetails?.name || item.title;
+      const noteLines: string[] = [];
+      if (item.opportunityDetails) {
+        if (item.opportunityDetails.description) noteLines.push(item.opportunityDetails.description);
+        if (item.opportunityDetails.requirements.length > 0) {
+          noteLines.push(`Requirements: ${item.opportunityDetails.requirements.join(", ")}`);
+        }
+        if (item.opportunityDetails.contact) noteLines.push(`Contact: ${item.opportunityDetails.contact}`);
+      }
+      // Fall back to the text Sylo already extracted from the screenshot/link so
+      // the step still carries context when there are no structured details
+      // (e.g. a resource list or a reminder with no description). It's line-based,
+      // so render each line as a bullet for readability.
+      const extractedBullets = item.extractedText
+        ? item.extractedText.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 12).map((l) => `• ${l}`).join("\n")
+        : "";
+      const note = noteLines.join("\n").trim() || extractedBullets || undefined;
+      const step = addCustomStep({
+        title,
+        note,
+        targetDate: item.opportunityDetails?.deadline || item.detectedDate || undefined,
+        source: "pin-drop",
+      });
+      linkToRoadmap(item.id, step.id);
     },
-    [navigate],
+    [addCustomStep, linkToRoadmap],
   );
 
   // Group items by topic

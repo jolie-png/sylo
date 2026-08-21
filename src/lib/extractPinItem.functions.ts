@@ -12,31 +12,46 @@ const Input = z.object({
   filename: z.string().min(1),
 });
 
+const CATEGORIES = ["Research", "Internship", "Fellowship", "Club", "Funding", "Advising", "Course"] as const;
+
+/** Coerce any loosely-typed model output into a string. */
+const toStr = (v: unknown): string => (typeof v === "string" ? v : v == null ? "" : String(v));
+
+/** Normalize a value into a string array (model sometimes returns a string or null). */
+const toStrArray = (v: unknown): string[] => {
+  if (Array.isArray(v)) return v.map(toStr).map((s) => s.trim()).filter(Boolean);
+  if (typeof v === "string" && v.trim()) return [v.trim()];
+  return [];
+};
+
+// Lenient details schema: the model is told to use "" for unknown fields and
+// often returns an empty/invalid `category`. Coerce everything to a safe value
+// (with a `category` fallback) so a real extraction isn't rejected over one field.
 const OpportunityDetailsSchema = z.object({
-  name: z.string(),
-  deadline: z.string(),
-  requirements: z.array(z.string()),
-  description: z.string(),
-  category: z.enum([
-    "Research",
-    "Internship",
-    "Fellowship",
-    "Club",
-    "Funding",
-    "Advising",
-    "Course",
-  ]),
-  timeframe: z.string(),
-  contact: z.string(),
+  name: z.preprocess(toStr, z.string()),
+  deadline: z.preprocess(toStr, z.string()),
+  requirements: z.preprocess(toStrArray, z.array(z.string())),
+  description: z.preprocess(toStr, z.string()),
+  category: z.preprocess(
+    (v) => (typeof v === "string" && (CATEGORIES as readonly string[]).includes(v) ? v : "Research"),
+    z.enum(CATEGORIES),
+  ),
+  timeframe: z.preprocess(toStr, z.string()),
+  contact: z.preprocess(toStr, z.string()),
 });
 
 const ExtractionOutputSchema = z.object({
-  title: z.string(),
-  extractedText: z.string(),
-  topic: z.string(),
-  tags: z.array(z.string()).min(1).max(6),
+  title: z.preprocess(toStr, z.string()),
+  extractedText: z.preprocess(toStr, z.string()),
+  topic: z.preprocess(toStr, z.string()),
+  // Allow any number of tags (clamp to 6); never fail just because the model
+  // returned zero or too many.
+  tags: z.preprocess((v) => toStrArray(v).slice(0, 6), z.array(z.string())),
   detectedDate: z.string().nullable().optional(),
-  isOpportunityLike: z.boolean(),
+  isOpportunityLike: z.preprocess(
+    (v) => (typeof v === "boolean" ? v : typeof v === "string" ? v.trim().toLowerCase() === "true" : false),
+    z.boolean(),
+  ),
   opportunityDetails: OpportunityDetailsSchema.optional().nullable(),
 });
 

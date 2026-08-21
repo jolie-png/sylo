@@ -3,6 +3,7 @@ import { CalendarPlus,
   X,
   Download,
   Trash2,
+  Sparkles,
   CheckCircle2,
   Plus,
   Tag,
@@ -120,7 +121,15 @@ export function PinItemDetail({
       {/* Panel */}
       <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border bg-card p-5 shadow-xl sm:rounded-2xl">
         {/* Header */}
-        <div className="flex items-start justify-end gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {item.isOpportunityLike && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                <Sparkles className="h-2.5 w-2.5" />
+                Opportunity
+              </span>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -264,7 +273,7 @@ export function PinItemDetail({
         )}
 
         {/* Eligibility check */}
-        {item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && (
+        {item.isOpportunityLike && item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && (
           <div className="mt-4">
             {!showEligibility ? (
               <button
@@ -331,13 +340,13 @@ export function PinItemDetail({
               )}
             >
               <Plus className="h-3.5 w-3.5" />
-              Add to roadmap
+              Add & track
             </button>
           )}
           {item.linkedStepId && (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Added to roadmap
+              Added & tracked
             </span>
           )}
           {item.detectedDate && (

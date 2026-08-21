@@ -21,9 +21,7 @@ import {
   StatusTag,
   NotionCheckbox,
   Tag,
-  OwnGoalBadge,
-  PinDropBadge,
-  FoundViaSearchBadge,
+  StepSourceBadge,
 } from "@/components/workspace";
 import { LongViewBoard } from "@/components/long-view-board";
 import { useWayfind } from "@/lib/sylo-store";
@@ -61,6 +59,8 @@ const COLUMNS: { key: StepStatus; label: string }[] = [
   { key: "in-progress", label: "In Progress" },
   { key: "complete", label: "Complete" },
 ];
+
+
 
 /** "Due in 3 days" reads faster than a raw date. Derived from data we already have. */
 function relativeDue(iso?: string) {
@@ -324,9 +324,12 @@ function Progress() {
           school={profile.school}
         />
       ) : view === "board" ? (
-        <div className="mt-6 grid items-start gap-4 sm:grid-cols-4">
+        <div className="mt-6 grid items-start gap-4 sm:grid-cols-3">
 
-          {/* Pinned column — unlinked Pin Drop items */}
+          {/* From Pin Drop tray is disabled for now. Items added via "Add & track"
+              now go straight to the Not Started column with their origin badge.
+              Re-enable by flipping this to `true`. */}
+          {false && (
           <div className="column-tray flex min-h-[220px] flex-col p-2">
             <div className="flex items-center justify-between gap-2 px-1 pb-2.5">
               <span className="flex items-center gap-2">
@@ -373,6 +376,7 @@ function Progress() {
               )}
             </div>
           </div>
+          )}
 
           {COLUMNS.map((col) => {
             const items = roadmap.steps.filter((s) => s.status === col.key);
@@ -398,9 +402,18 @@ function Progress() {
                       if (pinnedItem.opportunityDetails) {
                         if (pinnedItem.opportunityDetails.description) noteLines.push(pinnedItem.opportunityDetails.description);
                         if (pinnedItem.opportunityDetails.requirements.length > 0) noteLines.push("Requirements: " + pinnedItem.opportunityDetails.requirements.join(", "));
+                        if (pinnedItem.opportunityDetails.contact) noteLines.push("Contact: " + pinnedItem.opportunityDetails.contact);
                       }
-                      addCustomStep({ title, note: noteLines.join("\n") || undefined, targetDate: pinnedItem.detectedDate || undefined, source: "pin-drop" });
-                      linkToRoadmap(pinnedItem.id, "custom-" + Date.now());
+                      // Fall back to the text Sylo already extracted from the screenshot/link
+                      // so the step still carries context when there's no structured
+                      // description. It's line-based, so render each line as a bullet.
+                      const extractedBullets = pinnedItem.extractedText
+                        ? pinnedItem.extractedText.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 12).map((l) => `• ${l}`).join("\n")
+                        : "";
+                      const note = noteLines.join("\n").trim() || extractedBullets || undefined;
+                      const step = addCustomStep({ title, note, targetDate: pinnedItem.detectedDate || undefined, source: "pin-drop" });
+                      updateCustomStep(step.id, { status: col.key });
+                      linkToRoadmap(pinnedItem.id, step.id);
                     } else {
                       if (col.key === "complete") {
                         burst({ x: 85, y: 30 });
@@ -475,11 +488,13 @@ function Progress() {
                             {op.name}
                           </Link>
                         </p>
+                        {/* Found via search badge hidden on the progress board for now.
                         {op.origin === "live" ? (
                           <div className="mt-2">
                             <FoundViaSearchBadge />
                           </div>
                         ) : null}
+                        */}
                         <div className="mt-2 flex items-center gap-2">
                           <button
                             type="button"
@@ -654,7 +669,7 @@ function Progress() {
                               </div>
                             </div>
                             <div className="mt-2">
-                              {s.source === "pin-drop" ? <PinDropBadge /> : <OwnGoalBadge />}
+                              <StepSourceBadge source={s.source} />
                             </div>
                             <div className="mt-2 flex items-center gap-2">
                               {s.note ? (
@@ -753,7 +768,9 @@ function Progress() {
                   >
                     {op.name}
                   </Link>
+                  {/* Found via search badge hidden on the progress board for now.
                   {op.origin === "live" ? <FoundViaSearchBadge /> : null}
+                  */}
                 </span>
                 <span className="w-28">
                   <StatusTag status={s.status} />
@@ -788,7 +805,7 @@ function Progress() {
                 )}
               >
                 <span className="truncate">{s.title}</span>
-                {s.source === "pin-drop" ? <PinDropBadge /> : <OwnGoalBadge />}
+                <StepSourceBadge source={s.source} />
               </span>
               <span className="w-28">
                 <StatusTag status={s.status} />

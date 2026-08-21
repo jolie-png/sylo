@@ -1,4 +1,4 @@
-import { CheckCircle2, Plus, ShieldCheck } from "lucide-react";
+import { Sparkles, CheckCircle2, Plus, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DeadlinePill } from "@/components/deadline-badges";
 import type { PinItem } from "@/lib/pin-store";
@@ -23,7 +23,9 @@ export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility
   // notes, so reminders/deadlines are just as valid as programs.
   const showAddButton = !item.linkedStepId && onAddToRoadmap;
   const showLinkedLabel = !!item.linkedStepId;
-  const showEligibility = item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && onCheckEligibility;
+  // The eligibility check only makes sense for actual opportunities that list
+  // requirements to check against.
+  const showEligibility = item.isOpportunityLike && item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && onCheckEligibility;
 
   return (
     <div
@@ -64,6 +66,12 @@ export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility
             <h3 className="line-clamp-2 text-sm font-semibold leading-tight">
               {item.title}
             </h3>
+            {item.isOpportunityLike && (
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                <Sparkles className="h-2.5 w-2.5" />
+                Opportunity
+              </span>
+            )}
           </div>
 
           {/* Tags */}
@@ -105,7 +113,7 @@ export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility
               )}
             >
               <Plus className="h-3 w-3" />
-              Add to roadmap
+              Add & track
             </button>
           )}
           {showEligibility && (
@@ -124,7 +132,7 @@ export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility
           {showLinkedLabel && (
             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="h-3 w-3" />
-              Added to roadmap
+              Added & tracked
             </span>
           )}
         </div>

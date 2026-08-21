@@ -24,6 +24,7 @@ import {
   Tag,
   NotionCheckbox,
   OwnGoalBadge,
+  StepSourceBadge,
   CuratedBadge,
 } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
@@ -485,6 +486,7 @@ function Dashboard() {
                           {s.title}
                         </span>
                         <StatusTag status={s.status} onChange={(st) => updateCustomStep(s.id, { status: st })} />
+                        <StepSourceBadge source={s.source} />
                         {s.targetDate ? (
                           <span className="text-xs text-muted-foreground">{formatTargetDate(s.targetDate)}</span>
                         ) : null}

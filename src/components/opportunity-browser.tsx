@@ -293,6 +293,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                             title: op.name,
                             note: `${full?.leverage || op.leverage || ""}\n\nLink: ${op.link}`,
                             targetDate: op.deadline || undefined,
+                            source: "opportunity",
                           });
                         }}
                         className="tap rounded-full p-1.5 text-muted-foreground hover:text-foreground"
@@ -306,8 +307,8 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                     )}
                     <button
                       type="button"
-                      aria-label={pinned ? `Unpin ${op.name}` : `Pin ${op.name}`}
-                      title={pinned ? "Unpin" : "Pin"}
+                      aria-label={pinned ? `Unsave ${op.name}` : `Save ${op.name}`}
+                      title={pinned ? "Saved" : "Save"}
                       aria-pressed={pinned}
                       onClick={(e) => {
                         e.stopPropagation();

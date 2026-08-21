@@ -100,7 +100,7 @@ export type CustomStep = {
   targetDate?: string;
   status: StepStatus;
   /** Where this step originated from. */
-  source?: "pin-drop" | "manual" | "link";
+  source?: "pin-drop" | "manual" | "link" | "opportunity";
 };
 
 type State = {
@@ -133,7 +133,7 @@ type State = {
   setStatus: (opportunityId: string, status: StepStatus) => void;
   toggleComplete: (opportunityId: string) => void;
   loadPersona: (personaId: string) => void;
-  addCustomStep: (input: { title: string; note?: string; targetDate?: string; source?: "pin-drop" | "manual" | "link" }) => void;
+  addCustomStep: (input: { title: string; note?: string; targetDate?: string; source?: "pin-drop" | "manual" | "link" | "opportunity" }) => CustomStep;
   updateCustomStep: (id: string, patch: Partial<Omit<CustomStep, "id">>) => void;
   removeCustomStep: (id: string) => void;
   /** Promote a custom step into the main roadmap list. */
@@ -603,18 +603,17 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addCustomStep = useCallback(
-    (input: { title: string; note?: string; targetDate?: string; source?: "pin-drop" | "manual" | "link" }) => {
-      setCustomSteps((prev) => [
-        ...prev,
-        {
-          id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          title: input.title,
-          note: input.note?.trim() || undefined,
-          targetDate: input.targetDate?.trim() || undefined,
-          status: "not-started" as StepStatus,
-          source: input.source,
-        },
-      ]);
+    (input: { title: string; note?: string; targetDate?: string; source?: "pin-drop" | "manual" | "link" | "opportunity" }) => {
+      const step: CustomStep = {
+        id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        title: input.title,
+        note: input.note?.trim() || undefined,
+        targetDate: input.targetDate?.trim() || undefined,
+        status: "not-started" as StepStatus,
+        source: input.source,
+      };
+      setCustomSteps((prev) => [...prev, step]);
+      return step;
     },
     [],
   );

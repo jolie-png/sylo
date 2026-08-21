@@ -266,6 +266,22 @@ export function PinDropBadge() {
   );
 }
 
+/** Marker for steps the student added from the Opportunities browser. */
+export function FromOpportunitiesBadge() {
+  return (
+    <span className="tag border border-solid border-sky-400/40 bg-sky-500/[0.08] text-sky-700 dark:border-sky-600/40 dark:text-sky-300">
+      From Opportunities
+    </span>
+  );
+}
+
+/** Picks the origin badge for a user-added step based on where it came from. */
+export function StepSourceBadge({ source }: { source?: "pin-drop" | "manual" | "link" | "opportunity" }) {
+  if (source === "pin-drop") return <PinDropBadge />;
+  if (source === "opportunity") return <FromOpportunitiesBadge />;
+  return <OwnGoalBadge />;
+}
+
 
 export function NotionCheckbox({
   checked,

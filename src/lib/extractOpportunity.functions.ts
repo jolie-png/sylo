@@ -10,14 +10,31 @@ const Input = z.object({
   url: z.string().url(),
 });
 
+const CATEGORIES = ["Research", "Internship", "Fellowship", "Club", "Funding", "Advising", "Course"] as const;
+
+/** Coerce any loosely-typed model output into a string. */
+const toStr = (v: unknown): string => (typeof v === "string" ? v : v == null ? "" : String(v));
+
+// Lenient schema: the model is told to use "" for unknown fields, and it often
+// returns an empty/invalid `category` or omits keys entirely. Rather than reject
+// the whole extraction when a single field is missing, we coerce every field to a
+// safe value so a real (if partial) program still comes through. Meaningfulness is
+// checked after parsing (must have at least a name or description).
 const ProgramDetailsSchema = z.object({
-  name: z.string(),
-  deadline: z.string(), // YYYY-MM-DD or empty string
-  requirements: z.array(z.string()),
-  description: z.string(),
-  category: z.enum(["Research", "Internship", "Fellowship", "Club", "Funding", "Advising", "Course"]),
-  timeframe: z.string(),
-  contact: z.string(),
+  name: z.preprocess(toStr, z.string()),
+  deadline: z.preprocess(toStr, z.string()), // YYYY-MM-DD or empty string
+  requirements: z.preprocess((v) => {
+    if (Array.isArray(v)) return v.map(toStr).map((s) => s.trim()).filter(Boolean);
+    if (typeof v === "string" && v.trim()) return [v.trim()];
+    return [];
+  }, z.array(z.string())),
+  description: z.preprocess(toStr, z.string()),
+  category: z.preprocess(
+    (v) => (typeof v === "string" && (CATEGORIES as readonly string[]).includes(v) ? v : "Research"),
+    z.enum(CATEGORIES),
+  ),
+  timeframe: z.preprocess(toStr, z.string()),
+  contact: z.preprocess(toStr, z.string()),
 });
 
 export type ExtractedProgram = z.infer<typeof ProgramDetailsSchema>;
@@ -151,6 +168,13 @@ export const extractOpportunity = createServerFn({ method: "POST" })
 
       const parsed = ProgramDetailsSchema.safeParse(raw);
       if (!parsed.success) {
+        return { error: "The page didn't have enough program details to extract. Try a specific program page with deadlines and requirements." };
+      }
+
+      // Only treat it as a failure when nothing meaningful came back — a name or a
+      // description is enough to make a usable pin, even if the deadline or
+      // requirements are missing.
+      if (!parsed.data.name.trim() && !parsed.data.description.trim()) {
         return { error: "The page didn't have enough program details to extract. Try a specific program page with deadlines and requirements." };
       }
 

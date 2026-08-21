@@ -295,12 +295,13 @@ function Details() {
                   title: op.name,
                   note: `${op.leverage}\n\nLink: ${op.link}`,
                   targetDate: op.deadline || undefined,
+                  source: "opportunity",
                 });
                 setJustAdded(true);
               }}
               className="tap inline-flex items-center gap-2 rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary shadow-sm hover:bg-primary/5"
             >
-              Add to my roadmap & track
+              Add & track
               <Plus className="h-4 w-4" />
             </button>
           )}
@@ -308,14 +309,14 @@ function Details() {
           {justAdded && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-5 py-2.5 text-sm font-medium text-emerald-700">
               <Check className="h-4 w-4" />
-              Added to your roadmap & track
+              Added & tracked
             </span>
           )}
 
           {!justAdded && step === undefined && customSteps.some((s) => s.title === op.name) && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-5 py-2.5 text-sm font-medium text-emerald-700">
               <Check className="h-4 w-4" />
-              On your roadmap & track
+              Added & tracked
             </span>
           )}
 

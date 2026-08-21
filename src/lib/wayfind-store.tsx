@@ -579,34 +579,25 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
         ? ["op-gt-createx-learn", "op-gt-coop", "op-gt-grip"]
         : ["op-ucla-bisep", "op-ucla-hhmi-pathways", "op-ucla-mcdb-research"],
     );
-    // Seed Pin Drop with demo data, PRE-CONNECTED to the roadmap. Each real
-    // opportunity pin is linked to a matching "pin-drop" roadmap step (the same
-    // shape produced when a student clicks "Add to roadmap"), so the progress
-    // board shows them as From-Pin-Drop step cards — consistent with the manual
-    // flow — instead of leaving them stranded in the staging column. Reference
-    // pins (resource hubs, program lists) stay unlinked so they remain in the
-    // staging column and the board isn't cluttered with non-actionable items.
+    // Seed Pin Drop with demo data, seeded UNLINKED so the pins land in the
+    // progress board's "From Pin Drop" tray — matching the real flow: a pin sits
+    // in the tray, and dragging it into a status column is what turns it into a
+    // tracked "From Pin Drop" step. We drop any pin that duplicates a program
+    // already in the curated roadmap (e.g. URFP / PURA) so the same opportunity
+    // never shows twice.
     const demoPins = persona.id === "maya" ? MAYA_PINS : ALEX_PINS;
-    const pinSteps: CustomStep[] = [];
-    const linkedPins = demoPins.map((p, i) => {
-      if (!p.isOpportunityLike) return p; // stays unlinked → shows in the staging column
-      const stepId = `custom-pin-${persona.id}-${i}`;
-      const noteLines: string[] = [];
-      if (p.opportunityDetails?.description) noteLines.push(p.opportunityDetails.description);
-      if (p.opportunityDetails?.requirements?.length) noteLines.push(`Requirements: ${p.opportunityDetails.requirements.join(", ")}`);
-      if (p.opportunityDetails?.contact) noteLines.push(`Contact: ${p.opportunityDetails.contact}`);
-      pinSteps.push({
-        id: stepId,
-        title: p.opportunityDetails?.name || p.title,
-        note: noteLines.length ? noteLines.join("\n") : undefined,
-        targetDate: p.opportunityDetails?.deadline || p.detectedDate || undefined,
-        status: "not-started" as StepStatus,
-        source: "pin-drop",
-      });
-      return { ...p, linkedStepId: stepId };
-    });
-    setCustomSteps((prev) => [...prev, ...pinSteps]);
-    localStorage.setItem("catch:state:v1", JSON.stringify({ items: linkedPins }));
+    const normName = (s: string) =>
+      s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\b(ucla|gt|georgia tech)\b/g, " ").replace(/\s+/g, " ").trim();
+    const roadmapNames = demoRoadmap.steps
+      .map((s) => OPPORTUNITIES.find((o) => o.id === s.opportunityId)?.name)
+      .filter((n): n is string => !!n)
+      .map(normName);
+    const dupOfRoadmap = (pinName: string) => {
+      const n = normName(pinName);
+      return n.length > 0 && roadmapNames.some((rn) => rn === n || rn.includes(n) || n.includes(rn));
+    };
+    const demoPinsDeduped = demoPins.filter((p) => !dupOfRoadmap(p.opportunityDetails?.name || p.title));
+    localStorage.setItem("catch:state:v1", JSON.stringify({ items: demoPinsDeduped }));
     // Force PinProvider to re-hydrate by dispatching a storage event
     window.dispatchEvent(new CustomEvent("pin-store-updated"));
   }, []);

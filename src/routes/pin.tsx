@@ -9,6 +9,7 @@ import { ScreenshotUploader } from "@/components/screenshot-uploader";
 import { PinItemCard } from "@/components/pin-item-card";
 import { PinLinkExtractor } from "@/components/pin-link-extractor";
 import { PinItemDetail } from "@/components/pin-item-detail";
+import { PinEligibilityPopup } from "@/components/pin-eligibility-popup";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/pin")({
@@ -41,6 +42,7 @@ function PinPage() {
   const [movingItemId, setMovingItemId] = useState<string | null>(null);
   const [draggingPinId, setDraggingPinId] = useState<string | null>(null);
   const [dropTargetTopic, setDropTargetTopic] = useState<string | null>(null);
+  const [eligibilityItemId, setEligibilityItemId] = useState<string | null>(null);
 
   // Seed demo pins when persona is loaded and pin store is empty
   useEffect(() => {
@@ -137,7 +139,7 @@ function PinPage() {
         title="Pin Drop"
         subtitle={
           <>
-            Screenshot or paste a link to anything you find. Sylo extracts the title, deadline, and details — then you can add it to your{" "}
+            Screenshot or paste a link to anything — a program, a deadline, a reminder. Sylo extracts the title, deadline, and details, and when the item lists requirements it checks whether you&apos;re eligible. Add any of it to your{" "}
             <Link to="/dashboard" className="font-medium text-primary underline-offset-4 hover:underline">roadmap</Link>
             {" "}and track it in your{" "}
             <Link to="/progress" className="font-medium text-primary underline-offset-4 hover:underline">progress board</Link>.
@@ -259,7 +261,7 @@ function PinPage() {
                           item={item}
                           onSelect={(id) => setSelectedItemId(id)}
                           onAddToRoadmap={handleAddToRoadmap}
-                          onCheckEligibility={(i) => setSelectedItemId(i.id)}
+                          onCheckEligibility={(i) => setEligibilityItemId(i.id)}
                         />
                       </div>
                     ))}
@@ -282,6 +284,19 @@ function PinPage() {
           onAddToRoadmap={handleAddToRoadmap}
         />
       )}
+
+      {/* Eligibility popup */}
+      {eligibilityItemId && (() => {
+        const eligItem = items.find((i) => i.id === eligibilityItemId);
+        if (!eligItem) return null;
+        return (
+          <PinEligibilityPopup
+            item={eligItem}
+            profile={profile}
+            onClose={() => setEligibilityItemId(null)}
+          />
+        );
+      })()}
     </Workspace>
   );
 }

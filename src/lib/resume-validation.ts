@@ -7,7 +7,7 @@ export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 export type ParsedResumeData = {
   name?: string;
   school?: string;
-  year?: string;
+  gpa?: string;
   experience?: string;
   skills?: string;
   priorWork?: string;

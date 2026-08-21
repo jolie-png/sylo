@@ -15,7 +15,7 @@ export const MAYA_PINS: PinItem[] = [
     opportunityDetails: {
       name: "Jane Street Software Engineering Internship",
       deadline: "",
-      requirements: ["Interest in software engineering", "Strong problem-solving skills", "Willingness to learn OCaml"],
+      requirements: ["Available for a full-time summer internship", "Comfortable in a fast-paced environment", "Willingness to learn OCaml"],
       description: "Summer internship at Jane Street in NYC. Paired with full-time mentors on real production projects ranging from trading systems to programming language design. Uses OCaml and Python.",
       category: "Internship",
       timeframe: "May–August (summer)",
@@ -36,7 +36,7 @@ export const MAYA_PINS: PinItem[] = [
     opportunityDetails: {
       name: "GT PURA Salary Award",
       deadline: "2026-10-01",
-      requirements: ["Georgia Tech undergraduate", "Faculty research mentor", "Active research project"],
+      requirements: ["Computer Science major", "Freshman standing or above", "Faculty research mentor", "3.5 GPA or higher"],
       description: "$1,500 salary award for undergraduates conducting research with GT faculty. 200-300 awards given per year.",
       category: "Research",
       timeframe: "Fall 2026 semester",
@@ -68,7 +68,7 @@ export const MAYA_PINS: PinItem[] = [
     opportunityDetails: {
       name: "CREATE-X Startup Lab",
       deadline: "",
-      requirements: ["Enrolled GT student", "Any major, any year", "No business experience needed"],
+      requirements: ["Freshman or above", "A project or idea to work on", "No business experience needed"],
       description: "Zero-risk class to examine startup ideas and learn evidence-based entrepreneurship. Applications on rolling basis.",
       category: "Course",
       timeframe: "Fall 2026 semester",
@@ -108,7 +108,7 @@ export const ALEX_PINS: PinItem[] = [
     opportunityDetails: {
       name: "UCLA Undergraduate Research Fellows Program (URFP)",
       deadline: "2026-11-01",
-      requirements: ["UCLA undergraduate", "STEM major", "Faculty research mentor", "Early in research experience"],
+      requirements: ["Biology or related STEM major", "Sophomore standing or above", "Current research involvement", "3.5 GPA or higher"],
       description: "Two-quarter fellowship supporting STEM undergrads conducting research with UCLA faculty. Includes professional development seminar and financial support.",
       category: "Research",
       timeframe: "Winter-Spring 2027",
@@ -128,7 +128,7 @@ export const ALEX_PINS: PinItem[] = [
     opportunityDetails: {
       name: "UCLA Pre-Med Enrichment Program (PREP)",
       deadline: "",
-      requirements: ["Third or fourth-year undergraduate or recent graduate", "Pre-medical track", "Educationally/economically disadvantaged background"],
+      requirements: ["Third or fourth-year standing or recent graduate", "Pre-medical track", "From an underrepresented background"],
       description: "Free 6-week intensive summer program at David Geffen School of Medicine. Strengthens academic readiness and professional development for aspiring physicians.",
       category: "Research",
       timeframe: "Summer 2027 — 6 weeks",
@@ -148,7 +148,7 @@ export const ALEX_PINS: PinItem[] = [
     opportunityDetails: {
       name: "NIH MSTP Dual-Degree Training Program",
       deadline: "",
-      requirements: ["U.S. citizen or permanent resident", "Enrolled in eligible domestic institution", "Pursuing dual clinical + research degrees"],
+      requirements: ["U.S. citizen or permanent resident", "Enrolled in an eligible institution", "Pursuing dual clinical and research degrees"],
       description: "NIH-funded program training future dual-degree clinician-scientists (MD-PhD). Covers stipends, tuition, fees, and health insurance for five years, renewable.",
       category: "Research",
       timeframe: "5+ years (dual-degree program)",

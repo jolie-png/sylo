@@ -17,6 +17,8 @@ export type PublishedStep = {
   timing: string;
   action: string;
   category: StepCategory;
+  /** Optional: custom label used when category is "other". */
+  customCategory?: string;
   /** Optional: what this step unlocked or made possible. */
   unlocked?: string;
 };
@@ -65,6 +67,12 @@ export function getCategoryStyle(category: StepCategory): string {
 
 export function getCategoryLabel(category: StepCategory): string {
   return STEP_CATEGORIES.find((c) => c.value === category)?.label ?? "Other";
+}
+
+/** Label for a step, preferring a custom "Other" label when present. */
+export function getStepCategoryLabel(step: { category: StepCategory; customCategory?: string }): string {
+  if (step.category === "other" && step.customCategory?.trim()) return step.customCategory.trim();
+  return getCategoryLabel(step.category);
 }
 
 // ---------------------------------------------------------------------------
@@ -436,8 +444,12 @@ export const PUBLISHED_MAPS: PublishedMap[] = [
 // Query helpers
 // ---------------------------------------------------------------------------
 
-export function getPublishedMaps(filters?: { track?: string; school?: string; query?: string }): PublishedMap[] {
-  let maps = PUBLISHED_MAPS;
+export function getPublishedMaps(
+  filters?: { track?: string; school?: string; query?: string },
+  /** Extra maps to merge in (e.g. the user's own posted maps from the store). */
+  extra?: PublishedMap[],
+): PublishedMap[] {
+  let maps = extra?.length ? [...extra, ...PUBLISHED_MAPS] : PUBLISHED_MAPS;
   if (filters?.track) {
     maps = maps.filter((m) => m.track === filters.track);
   }

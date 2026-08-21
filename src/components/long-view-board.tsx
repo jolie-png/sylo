@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { termFor, termsFromDeadlines, type Term } from "@/lib/terms";
 import {
   milestonesForTrack,
+  opportunityReach,
   POST_GRAD_YEARS,
   YEARS,
   type Milestone,
@@ -30,12 +31,11 @@ export function LongViewBoard({
   trackId,
   steps,
   studentYear,
-  school,
 }: {
   trackId: string;
   steps: Step[];
   studentYear: string;
-  school: string;
+  school?: string;
 }) {
   const { resolveOpportunity, profile } = useWayfind();
   const postGrad = usePostGradProjections(profile);
@@ -98,7 +98,7 @@ export function LongViewBoard({
                   </p>
                   {termIndex === 0 ? (
                     <p className="px-1 pb-3 text-xs text-muted-foreground">
-                      Verified openings at your school.
+                      Open near-term programs matched to your goal.
                     </p>
                   ) : null}
                   <div className="space-y-3">
@@ -128,6 +128,13 @@ export function LongViewBoard({
                             <p className="text-sm font-semibold leading-snug tracking-tight">
                               {op.name}
                             </p>
+                            <div className="mt-2">
+                              {opportunityReach(op) === "school" ? (
+                                <Tag tone="green">{op.school}</Tag>
+                              ) : (
+                                <Tag tone="blue">National</Tag>
+                              )}
+                            </div>
                             <div className="mt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2 text-[11px] text-muted-foreground">
                               <StatusDot status={step.status} withLabel />
                               <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap tabular-nums">
@@ -242,7 +249,9 @@ export function LongViewBoard({
                   <Tag>{selected.op.category}</Tag>
                 </InspectorField>
                 <InspectorField label="Student">{studentYear}</InspectorField>
-                <InspectorField label="School">{school}</InspectorField>
+                <InspectorField label="Reach">
+                  {opportunityReach(selected.op) === "school" ? selected.op.school : "Open nationally"}
+                </InspectorField>
               </div>
               {selected.reasoning ? (
                 <p className="mt-3 text-xs leading-relaxed text-muted-foreground">

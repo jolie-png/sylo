@@ -52,6 +52,20 @@ const CATEGORY_VALUES = [
   "Course",
 ] as const;
 
+/**
+ * Tags that mark a program as identity- or diversity-based. When a student has
+ * NOT opted into identity-based programs, any record carrying one of these is
+ * excluded. The dataset uses several spellings ("diversity", "women",
+ * "diversity-cohort", …), so we match against the whole set rather than a
+ * single literal tag.
+ */
+const IDENTITY_TAGS = new Set([
+  "diversity-cohort", "diversity", "women", "woman", "underrepresented", "urm",
+  "first-gen", "first-generation", "lgbtq", "lgbtq+", "bipoc", "black-in-tech",
+  "latinx", "latino", "latina", "hispanic", "indigenous", "native-american",
+  "veteran", "veterans", "disability", "minority",
+]);
+
 export const OpportunityRecordSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1).max(200),
@@ -289,10 +303,12 @@ export function searchOpportunities(filters: OpportunityFilters = {}): Opportuni
       if (hasExcluded) continue;
     }
 
-    // Women-tagged programs also excluded unless diversity opt-in is active
-    // (since excludeTags only contains "diversity-cohort", we separately check "women")
-    if (excludeTags && excludeTags.includes("diversity-cohort") && LOWER_TAGS[i].includes("women")) {
-      continue;
+    // Identity/diversity-based programs are excluded unless the student opted in.
+    // Callers signal "opted out" by including "diversity-cohort" in excludeTags;
+    // we then drop any program flagged with ANY identity marker, since the
+    // dataset tags these inconsistently (diversity, women, underrepresented, …).
+    if (excludeTags && excludeTags.includes("diversity-cohort")) {
+      if (LOWER_TAGS[i].some((t) => IDENTITY_TAGS.has(t))) continue;
     }
 
     // Deadline window filter

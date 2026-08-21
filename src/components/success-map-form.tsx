@@ -10,6 +10,7 @@ type FormStep = {
   timing: string;
   action: string;
   category: StepCategory;
+  customCategory: string;
   unlocked: string;
 };
 
@@ -34,10 +35,39 @@ const INITIAL_STEP: () => FormStep = () => ({
   timing: "",
   action: "",
   category: "other",
+  customCategory: "",
   unlocked: "",
 });
 
-function createInitialState(prefill?: { school?: string; major?: string; track?: string; year?: string }): FormState {
+function createInitialState(
+  prefill?: { school?: string; major?: string; track?: string; year?: string },
+  initialMap?: PublishedMap,
+): FormState {
+  // Editing an existing map: hydrate the form from it.
+  if (initialMap) {
+    return {
+      author: initialMap.author === "Anonymous" ? "" : initialMap.author,
+      anonymous: initialMap.author === "Anonymous",
+      linkedin: initialMap.linkedin ?? "",
+      school: initialMap.school,
+      major: initialMap.major,
+      startYear: initialMap.startYear === "Unknown" ? "" : initialMap.startYear,
+      track: initialMap.track,
+      outcome: initialMap.outcome,
+      timeline: initialMap.timeline,
+      steps: initialMap.steps.map((s, i) => ({
+        id: `step-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 6)}`,
+        timing: s.timing,
+        action: s.action,
+        category: s.category,
+        customCategory: s.customCategory ?? "",
+        unlocked: s.unlocked ?? "",
+      })),
+      turningPoint: initialMap.turningPoint,
+      wouldSkip: initialMap.wouldSkip,
+      advice: initialMap.advice,
+    };
+  }
   return {
     author: "",
     anonymous: true,
@@ -61,15 +91,19 @@ function createInitialState(prefill?: { school?: string; major?: string; track?:
  */
 export function SuccessMapForm({
   prefill,
+  initialMap,
   onSubmit,
   onCancel,
 }: {
   prefill?: { school?: string; major?: string; track?: string; year?: string };
+  /** When provided, the form edits this existing map instead of creating a new one. */
+  initialMap?: PublishedMap;
   onSubmit: (map: Omit<PublishedMap, "id" | "publishedAt">) => void;
   onCancel: () => void;
 }) {
-  const [form, setForm] = useState<FormState>(() => createInitialState(prefill));
+  const [form, setForm] = useState<FormState>(() => createInitialState(prefill, initialMap));
   const [view, setView] = useState<"form" | "preview">("form");
+  const isEditing = Boolean(initialMap);
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -109,6 +143,7 @@ export function SuccessMapForm({
         timing: s.timing.trim(),
         action: s.action.trim(),
         category: s.category,
+        ...(s.category === "other" && s.customCategory.trim() ? { customCategory: s.customCategory.trim() } : {}),
         ...(s.unlocked.trim() ? { unlocked: s.unlocked.trim() } : {}),
       }));
 
@@ -144,6 +179,7 @@ export function SuccessMapForm({
         timing: s.timing || "...",
         action: s.action || "...",
         category: s.category,
+        ...(s.category === "other" && s.customCategory ? { customCategory: s.customCategory } : {}),
         ...(s.unlocked ? { unlocked: s.unlocked } : {}),
       })),
     turningPoint: form.turningPoint || "...",
@@ -171,12 +207,12 @@ export function SuccessMapForm({
             className="tap inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50"
           >
             <Send className="h-3.5 w-3.5" />
-            Submit for review
+            {isEditing ? "Save changes" : "Post my map"}
           </button>
         </div>
 
         <p className="text-[12px] text-muted-foreground">
-          This is how your path will appear to other students after review.
+          This is how your path will appear to other students once you post it.
         </p>
 
         <PublishedMapCard map={previewMap} expanded={true} onToggle={() => {}} />
@@ -207,9 +243,11 @@ export function SuccessMapForm({
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold tracking-tight">Share your roadmap</h2>
+        <h2 className="text-lg font-semibold tracking-tight">{isEditing ? "Edit your roadmap" : "Share your roadmap"}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Help future students see what actually worked. We'll review before publishing.
+          {isEditing
+            ? "Update your path. Changes go live in the community feed right away."
+            : "Help future students see what actually worked. Posts publish straight to the community feed."}
         </p>
       </div>
 
@@ -295,6 +333,9 @@ export function SuccessMapForm({
         <p className="text-[12px] text-muted-foreground">
           List the steps you took in order. Include the semester/year, what you did, and what category it falls under.
         </p>
+        <p className="text-[12px] text-muted-foreground/80">
+          Tip: link a specific phrase by writing <code className="rounded bg-muted px-1 py-0.5 text-[11px]">[the words to link](https://the-url.com)</code> — it&apos;ll show up as a clickable link in your posted map.
+        </p>
 
         <div className="space-y-4">
           {form.steps.map((step, i) => (
@@ -329,6 +370,14 @@ export function SuccessMapForm({
                   ))}
                 </select>
               </div>
+              {step.category === "other" && (
+                <input
+                  value={step.customCategory}
+                  onChange={(e) => updateStep(step.id, { customCategory: e.target.value })}
+                  placeholder="Name this category (e.g., Research, Volunteering)"
+                  className="mt-2 w-full rounded-xl border bg-background px-3 py-2 text-xs outline-none focus:border-primary/40"
+                />
+              )}
               <textarea
                 value={step.action}
                 onChange={(e) => updateStep(step.id, { action: e.target.value })}
@@ -363,6 +412,9 @@ export function SuccessMapForm({
         <legend className="px-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
           Reflections
         </legend>
+        <p className="text-[12px] text-muted-foreground/80">
+          You can link a phrase here too — write <code className="rounded bg-muted px-1 py-0.5 text-[11px]">[text](https://link.com)</code>.
+        </p>
 
         <Field label="Turning point — the one thing that mattered most" required>
           <textarea
@@ -463,7 +515,7 @@ export function SuccessMapForm({
             className="tap inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50"
           >
             <Send className="h-3.5 w-3.5" />
-            Submit for review
+            {isEditing ? "Save changes" : "Post my map"}
           </button>
         </div>
       </div>

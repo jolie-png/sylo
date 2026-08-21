@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
-import { TRACKS } from "./wayfind-data";
-import { OPPORTUNITIES } from "./opportunities-db";
+import { TRACKS, type TrackId } from "./wayfind-data";
+import { searchOpportunities } from "./opportunities-db";
 
 const Input = z.object({
   trackId: z.string(),
@@ -50,12 +50,21 @@ export const generateRoadmap = createServerFn({ method: "POST" })
     const key = process.env.LOVABLE_API_KEY;
 
     const track = TRACKS.find((t) => t.id === data.trackId) ?? TRACKS[0];
-    const pool = OPPORTUNITIES.filter((o) => {
-      if (o.track !== track.id) return false;
-      // Exclude diversity-cohort programs unless the student has opted in
-      if (!data.diversitySelfId && o.tags?.includes("diversity-cohort")) return false;
-      return true;
-    });
+    // Route the fallback through the same query layer the live path uses, so it
+    // applies identical filtering: year (drops programs a senior has aged out
+    // of), school (drops other schools' internal programs), and identity/
+    // diversity gating (excluded unless the student opted in). This keeps the
+    // fallback's quality on par with the live generation.
+    const pool =
+      track.id === "something-else"
+        ? []
+        : searchOpportunities({
+            track: track.id as TrackId,
+            school: data.school,
+            year: data.year,
+            excludeTags: data.diversitySelfId ? undefined : ["diversity-cohort"],
+            limit: 12,
+          });
 
     // "Something else" (or any track with no verified dataset): stay honest —
     // no AI call, no invented programs, just the student's own words.

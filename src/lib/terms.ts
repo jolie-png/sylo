@@ -110,7 +110,11 @@ export function formatTargetDate(value: string | undefined): string {
     return d.toLocaleDateString();
   }
 
-  // Academic term string — append "Year" if not already present
+  // Only canonical academic-term values (e.g. "Fall Junior", "Spring Graduate
+  // student") get " Year" appended. A free-text custom value the user typed via
+  // "Other" (e.g. "January 2026", "After graduation") is shown exactly as typed.
+  const isAcademicTerm = /^(Fall|Spring|Summer)\s+(Freshman|Sophomore|Junior|Senior|Graduate)/.test(value);
+  if (!isAcademicTerm) return value;
   if (value.endsWith("Year")) return value;
   return `${value} Year`;
 }

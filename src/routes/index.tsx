@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Map, MapPin } from "lucide-react";
 import { SyloMark } from "@/components/SyloMark";
 import { TypingHero } from "@/components/TypingHero";
 import { RoadmapWorkspacePreview } from "@/components/roadmap-workspace-preview";
@@ -174,15 +174,15 @@ function Landing() {
             <div className="flex flex-col rounded-xl border bg-card p-5">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">01</p>
               <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight">
-                A full roadmap in seconds.
+                Your path, mapped in seconds.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                Tell Sylo your goal, school, major, and year. It builds a sequenced plan — every step ranked by leverage, with deadlines attached.
+                Tell Sylo your goal, school, major, and year. It builds a sequenced plan ranked by leverage — modeled on the real paths that got other students there.
               </p>
 
               <div className="field-tonal mt-4 flex items-start gap-2.5 rounded-lg p-3">
-                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground animate-pulse">
-                  1
+                <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Map className="h-3 w-3" />
                 </span>
                 <div>
                   <span className="text-sm font-medium tracking-tight">{dashboardOp.name}</span>
@@ -195,22 +195,20 @@ function Landing() {
             <div className="flex flex-col rounded-xl border bg-card p-5">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">02</p>
               <h2 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight">
-                Pin anything you find.
+                Never lose a deadline again.
               </h2>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                Screenshot a flyer or paste a link. Sylo extracts the opportunity, deadline, and requirements.
+                Screenshot a flyer or paste a link. Sylo reads it, sorts it by topic, and even checks if you're eligible — no more scattered screenshots.
               </p>
 
               <div className="field-tonal mt-4 rounded-lg p-3">
                 <div className="flex items-start gap-2.5">
-                  <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-tag-blue text-[10px] font-semibold text-tag-blue-foreground">
-                    <svg viewBox="0 0 12 12" className="h-2.5 w-2.5" aria-hidden="true">
-                      <path d="M6 1v6M6 7l-2-2M6 7l2-2M3 10h6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <MapPin className="h-3 w-3" />
                   </span>
                   <div>
-                    <span className="text-sm font-medium tracking-tight">Screenshot pinned</span>
-                    <p className="mt-1 text-xs text-primary">→ BISEP Fellowship · Due Nov 1</p>
+                    <span className="text-sm font-medium tracking-tight">BISEP Fellowship · Due Nov 1</span>
+                    <p className="mt-1 text-xs text-primary">✓ Sophomore standing · ✓ Research experience</p>
                   </div>
                 </div>
               </div>
@@ -273,12 +271,11 @@ function Landing() {
         >
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-[28px] font-bold leading-[1.15] tracking-tight text-foreground sm:text-[38px]">
-              The invisible advisor every{" "}
-              <span className="whitespace-nowrap">well-connected</span> student already has.
+              A path you couldn&apos;t see.
             </h2>
-            <p className="mt-3 text-[28px] font-bold tracking-tight text-primary sm:text-[38px]">Now it&apos;s yours.</p>
+            <p className="mt-3 text-[28px] font-bold tracking-tight text-primary sm:text-[38px]">Now one you can follow.</p>
             <p className="mx-auto mt-5 max-w-md text-base text-muted-foreground text-balance">
-              No sign-up required. Real roadmaps in seconds.{" "}
+              No sign-up required. Real roadmaps in minutes.{" "}
               <Link to="/about" className="font-medium text-primary underline-offset-4 hover:underline">
                 Learn more.
               </Link>

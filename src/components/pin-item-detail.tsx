@@ -3,7 +3,6 @@ import { CalendarPlus,
   X,
   Download,
   Trash2,
-  Sparkles,
   CheckCircle2,
   Plus,
   Tag,
@@ -15,73 +14,7 @@ import { DeadlinePill } from "@/components/deadline-badges";
 import type { PinItem } from "@/lib/pin-store";
 import type { Profile } from "@/lib/wayfind-store";
 import { cn } from "@/lib/utils";
-
-// ---------------------------------------------------------------------------
-// Eligibility matching — simple heuristic, no AI call needed
-// ---------------------------------------------------------------------------
-
-const YEAR_ORDER = ["freshman", "sophomore", "junior", "senior", "graduate"];
-
-function checkRequirement(
-  requirement: string,
-  profile: Profile | null,
-): "yes" | "no" | "unknown" {
-  if (!profile) return "unknown";
-
-  const req = requirement.toLowerCase();
-  const year = profile.year?.toLowerCase() ?? "";
-  const major = profile.major?.toLowerCase() ?? "";
-  const gpa = profile.gpa ? parseFloat(profile.gpa) : null;
-  const allText = [
-    profile.experience,
-    profile.priorWork,
-    profile.clubs,
-    profile.skills,
-    profile.alreadyDone,
-  ].filter(Boolean).join(" ").toLowerCase();
-
-  // GPA checks
-  const gpaMatch = req.match(/(\d\.\d+)\+?\s*gpa|gpa\s*(?:of\s*)?(\d\.\d+)/);
-  if (gpaMatch) {
-    const required = parseFloat(gpaMatch[1] || gpaMatch[2]);
-    if (gpa !== null) return gpa >= required ? "yes" : "no";
-    return "unknown";
-  }
-
-  // Year/standing checks
-  for (const y of YEAR_ORDER) {
-    if (req.includes(y)) {
-      const reqIdx = YEAR_ORDER.indexOf(y);
-      const userIdx = YEAR_ORDER.indexOf(year);
-      if (userIdx >= 0) {
-        // "sophomore or above" / "at least sophomore"
-        if (req.includes("or above") || req.includes("or higher") || req.includes("at least")) {
-          return userIdx >= reqIdx ? "yes" : "no";
-        }
-        // Exact year match
-        return userIdx === reqIdx ? "yes" : "unknown";
-      }
-      return "unknown";
-    }
-  }
-
-  // Major checks
-  if (req.includes("major") || req.includes("majoring")) {
-    if (major && req.includes(major)) return "yes";
-    return "unknown";
-  }
-
-  // Keyword matching against profile text (faculty, research, leadership, etc.)
-  const keywords = ["faculty", "research", "mentor", "recommendation", "letter", "leadership", "internship", "volunteer"];
-  for (const kw of keywords) {
-    if (req.includes(kw)) {
-      if (allText.includes(kw)) return "yes";
-      return "unknown";
-    }
-  }
-
-  return "unknown";
-}
+import { checkRequirement } from "@/lib/check-eligibility";
 
 interface PinItemDetailProps {
   item: PinItem;
@@ -108,7 +41,9 @@ export function PinItemDetail({
   const [tagInput, setTagInput] = useState("");
   const [showEligibility, setShowEligibility] = useState(false);
 
-  const showAddButton = item.isOpportunityLike && !item.linkedStepId;
+  // Any pinned item can be added to the roadmap (roadmap steps carry notes), so
+  // this is no longer gated on whether the item looks like a formal opportunity.
+  const showAddButton = !item.linkedStepId;
 
   function handleAddToCalendar() {
     if (!item.detectedDate) return;
@@ -185,15 +120,7 @@ export function PinItemDetail({
       {/* Panel */}
       <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border bg-card p-5 shadow-xl sm:rounded-2xl">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2">
-            {item.isOpportunityLike && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
-                <Sparkles className="h-2.5 w-2.5" />
-                Opportunity
-              </span>
-            )}
-          </div>
+        <div className="flex items-start justify-end gap-3">
           <button
             onClick={onClose}
             className="rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -337,7 +264,7 @@ export function PinItemDetail({
         )}
 
         {/* Eligibility check */}
-        {item.isOpportunityLike && item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && (
+        {item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && (
           <div className="mt-4">
             {!showEligibility ? (
               <button

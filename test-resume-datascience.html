@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sofia Martinez — Resume</title>
+<style>
+  /* Print-friendly single-page resume. Open in a browser, then
+     File → Print → Save as PDF (Letter, margins: Default/None). */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Times New Roman", Georgia, serif;
+    color: #111;
+    line-height: 1.32;
+    font-size: 10.6pt;
+  }
+  .page { max-width: 8.5in; margin: 0 auto; padding: 0.55in 0.7in; }
+  header { text-align: center; margin-bottom: 6px; }
+  header h1 { font-size: 19pt; margin: 0 0 2px; letter-spacing: .3px; }
+  header .contact { font-size: 10pt; }
+  header .contact a { color: #111; text-decoration: none; }
+  h2 {
+    font-size: 10.5pt; text-transform: uppercase; letter-spacing: .6px;
+    margin: 12px 0 2px; padding-bottom: 2px; border-bottom: 1px solid #111;
+  }
+  .row { display: flex; justify-content: space-between; gap: 12px; }
+  .row .left { font-weight: bold; }
+  .row .right { font-weight: bold; white-space: nowrap; }
+  .subrow { display: flex; justify-content: space-between; gap: 12px; font-style: italic; }
+  ul { margin: 3px 0 6px; padding-left: 18px; }
+  li { margin: 1.5px 0; }
+  .skills p { margin: 2px 0; }
+  @media print { .page { padding: 0.5in 0.65in; } body { font-size: 10.4pt; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Sofia Martinez</h1>
+    <div class="contact">
+      smartinez@asu.edu &nbsp;|&nbsp; (480) 555-0173 &nbsp;|&nbsp; Tempe, AZ &nbsp;|&nbsp; github.com/sofiamartinez &nbsp;|&nbsp; linkedin.com/in/sofiamartinez-ds
+    </div>
+  </header>
+
+  <h2>Education</h2>
+  <div class="row">
+    <span class="left">Arizona State University</span>
+    <span class="right">Tempe, AZ</span>
+  </div>
+  <div class="subrow">
+    <span>Bachelor of Science in Data Science, Minor in Statistics</span>
+    <span>Expected: May 2027</span>
+  </div>
+  <ul>
+    <li><strong>Relevant Coursework:</strong> Machine Learning, Data Structures &amp; Algorithms, Probability &amp; Statistics, Databases, Data Visualization, Linear Algebra</li>
+    <li><strong>Awards:</strong> Dean's List (all semesters), New American University Scholar, first-generation college student</li>
+    <li><strong>GPA:</strong> 3.7 / 4.0</li>
+  </ul>
+
+  <h2>Experience</h2>
+
+  <div class="row">
+    <span class="left">Vantage Health (Series A health-tech startup)</span>
+    <span class="right">Remote</span>
+  </div>
+  <div class="subrow">
+    <span>Data Science Intern</span>
+    <span>June 2025 - August 2025</span>
+  </div>
+  <ul>
+    <li>Built a patient-churn prediction model (gradient-boosted trees) that improved retention-flagging precision by 22% over the prior heuristic, deployed to the care-management team's dashboard.</li>
+    <li>Wrote reproducible data pipelines in Python (pandas, scikit-learn) and documented model assumptions and evaluation metrics for non-technical stakeholders.</li>
+    <li>Partnered with product and clinical staff to translate messy operational data into features the model could actually use.</li>
+  </ul>
+
+  <div class="row">
+    <span class="left">ASU School of Computing &amp; AI — NLP Research Lab</span>
+    <span class="right">Tempe, AZ</span>
+  </div>
+  <div class="subrow">
+    <span>Undergraduate Research Assistant</span>
+    <span>January 2025 - Present</span>
+  </div>
+  <ul>
+    <li>Fine-tune and evaluate transformer models for clinical-text classification; run ablation studies and report results to the PI in weekly lab meetings.</li>
+    <li>Co-authored a poster accepted to ASU's undergraduate research symposium on bias in medical NLP datasets.</li>
+  </ul>
+
+  <div class="row">
+    <span class="left">City of Tempe — Office of Analytics</span>
+    <span class="right">Tempe, AZ</span>
+  </div>
+  <div class="subrow">
+    <span>Data Analyst Intern</span>
+    <span>June 2024 - August 2024</span>
+  </div>
+  <ul>
+    <li>Built Tableau dashboards tracking public-transit ridership; findings informed a route-frequency pilot adopted by the transit department.</li>
+    <li>Cleaned and joined 5+ municipal datasets in SQL to produce a single source of truth for quarterly reporting.</li>
+  </ul>
+
+  <h2>Leadership &amp; Campus Involvement</h2>
+
+  <div class="row">
+    <span class="left">Women in Data Science @ ASU</span>
+    <span class="right">Tempe, AZ</span>
+  </div>
+  <div class="subrow">
+    <span>Vice President</span>
+    <span>September 2024 - Present</span>
+  </div>
+  <ul>
+    <li>Grew the chapter to 120+ active members; organize monthly technical workshops and an annual datathon with industry mentors.</li>
+  </ul>
+
+  <div class="row">
+    <span class="left">Sun Devil Hacks</span>
+    <span class="right">Tempe, AZ</span>
+  </div>
+  <div class="subrow">
+    <span>Hackathon Participant — 2nd Place, Social Impact Track</span>
+    <span>March 2025</span>
+  </div>
+  <ul>
+    <li>Built a food-bank demand forecasting tool in 24 hours; placed 2nd of 40 teams and presented to community-partner judges.</li>
+  </ul>
+
+  <h2>Skills &amp; Interests</h2>
+  <div class="skills">
+    <p><strong>Data &amp; ML:</strong> Python (pandas, NumPy, scikit-learn), R, SQL, TensorFlow/PyTorch (basics), model evaluation, A/B testing, statistics</p>
+    <p><strong>Tools:</strong> Tableau, Jupyter, Git, AWS (S3, SageMaker basics), Snowflake, Excel</p>
+    <p><strong>Interests:</strong> Civic tech, salsa dancing, mentoring first-gen STEM students</p>
+  </div>
+</div>
+</body>
+</html>

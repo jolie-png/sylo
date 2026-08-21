@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { ChevronRight, Lightbulb, SkipForward, MessageCircle, Sparkles } from "lucide-react";
+import { ChevronRight, Lightbulb, SkipForward, MessageCircle, Sparkles, Trash2, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getCategoryStyle, getCategoryLabel, type PublishedMap } from "@/lib/published-maps";
-import { ProgramLinkedText } from "@/components/program-linker";
+import { getCategoryStyle, getStepCategoryLabel, type PublishedMap } from "@/lib/published-maps";
+import { MapRichText } from "@/components/map-rich-text";
+// Sharing is disabled for now. Re-enable by uncommenting this import and the
+// Share block below (component lives in share-map-button.tsx / share-map.ts).
+// import { ShareMapButton } from "@/components/share-map-button";
 
 /**
  * Displays a single published success map as an expandable card
@@ -12,11 +15,18 @@ export function PublishedMapCard({
   map,
   expanded,
   onToggle,
+  onEdit,
+  onDelete,
 }: {
   map: PublishedMap;
   expanded: boolean;
   onToggle: () => void;
+  /** When provided, shows an Edit action (only pass this for the user's own maps). */
+  onEdit?: () => void;
+  /** When provided, shows a Delete action (only pass this for the user's own maps). */
+  onDelete?: () => void;
 }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   return (
     <div className="rounded-2xl border bg-card shadow-sm transition-shadow hover:shadow-md">
       {/* Header — always visible */}
@@ -88,15 +98,15 @@ export function PublishedMapCard({
                         getCategoryStyle(step.category),
                       )}
                     >
-                      {getCategoryLabel(step.category)}
+                      {getStepCategoryLabel(step)}
                     </span>
                   </div>
                   <p className="mt-1 text-sm leading-relaxed text-foreground/90">
-                    <ProgramLinkedText text={step.action} />
+                    <MapRichText text={step.action} />
                   </p>
                   {step.unlocked && (
                     <p className="mt-1.5 text-[12px] leading-relaxed text-primary/80">
-                      → <ProgramLinkedText text={step.unlocked} />
+                      → <MapRichText text={step.unlocked} />
                     </p>
                   )}
                 </div>
@@ -113,7 +123,7 @@ export function PublishedMapCard({
               </p>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-foreground/85">
-              <ProgramLinkedText text={map.turningPoint} />
+              <MapRichText text={map.turningPoint} />
             </p>
           </div>
 
@@ -126,7 +136,7 @@ export function PublishedMapCard({
               </p>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-foreground/75">
-              <ProgramLinkedText text={map.wouldSkip} />
+              <MapRichText text={map.wouldSkip} />
             </p>
           </div>
 
@@ -139,7 +149,7 @@ export function PublishedMapCard({
               </p>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-foreground/75">
-              <ProgramLinkedText text={map.advice} />
+              <MapRichText text={map.advice} />
             </p>
           </div>
 
@@ -158,6 +168,60 @@ export function PublishedMapCard({
             >
               Connect on LinkedIn →
             </a>
+          )}
+
+          {/* Sharing disabled for now — re-enable alongside the import above.
+          {map.id !== "preview" && (
+            <div className="mt-5 border-t pt-4">
+              <ShareMapButton map={map} label="Share this map" />
+            </div>
+          )}
+          */}
+
+          {(onEdit || onDelete) && (
+            <div className="mt-5 flex flex-wrap items-center gap-3 border-t pt-4">
+              {onEdit && !confirmDelete && (
+                <button
+                  type="button"
+                  onClick={onEdit}
+                  className="tap inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-primary/40 hover:text-primary"
+                >
+                  <PenLine className="h-3.5 w-3.5" />
+                  Edit my map
+                </button>
+              )}
+              {onDelete && (confirmDelete ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    Delete this map? This can&apos;t be undone.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={onDelete}
+                    className="tap inline-flex items-center gap-1.5 rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Delete
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDelete(false)}
+                    className="tap rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  className="tap inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-red-300 hover:text-red-600"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Delete my map
+                </button>
+              ))}
+            </div>
           )}
         </div>
       )}

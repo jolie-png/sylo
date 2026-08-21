@@ -15,6 +15,7 @@ import { WayfindProvider } from "../lib/sylo-store";
 import { PinProvider } from "../lib/pin-store";
 
 import { AskSylo } from "../components/ask-sylo";
+import { ConfigDiagnostic } from "../components/config-diagnostic";
 
 function NotFoundComponent() {
   return (
@@ -141,6 +142,7 @@ function RootComponent() {
         <PinProvider>
           <Outlet />
           {/* <AskSylo /> */}
+          <ConfigDiagnostic />
         </PinProvider>
       </WayfindProvider>
     </QueryClientProvider>

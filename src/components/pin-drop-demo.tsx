@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
  */
 
 const DEMO_DATA = {
-  screenshotLabel: "Instagram story",
   title: "UCLA Undergraduate Research Fellows Program",
   tags: ["Research", "Fellowship", "Faculty Mentor"],
   deadline: "Nov 15",
@@ -76,9 +75,6 @@ export function PinDropDemo() {
                 <div className="h-5 w-14 rounded-full bg-primary/10" />
                 <div className="h-5 w-10 rounded-full bg-primary/10" />
               </div>
-              <p className="mt-3 text-[10px] font-medium text-primary/50">
-                {DEMO_DATA.screenshotLabel}
-              </p>
             </div>
 
             {/* Processing shimmer overlay */}

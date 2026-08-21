@@ -23,9 +23,11 @@ export function trimAtWord(s: string, max: number): string {
     lastSentenceEnd = match.index + 1; // Include the punctuation
   }
 
-  // If we found a sentence boundary in the last 40% of the text, cut there
-  // (don't cut too aggressively — we want to keep most of the content)
-  if (lastSentenceEnd > max * 0.6) {
+  // If we found a sentence boundary in the back half of the text, cut there —
+  // dropping an incomplete trailing sentence reads far better than keeping a
+  // mid-thought fragment. We keep the threshold high enough to retain most of
+  // the content rather than collapsing to a single short opening sentence.
+  if (lastSentenceEnd > max * 0.5) {
     return cleaned.slice(0, lastSentenceEnd).trimEnd();
   }
 
@@ -58,7 +60,10 @@ export function sanitizeGenerated(s: string): string {
   const lastSpaceIdx = text.lastIndexOf(" ");
   if (lastSpaceIdx > 0) {
     const lastWord = text.slice(lastSpaceIdx + 1).replace(/[.,;:!?'")\]]+$/, "").toLowerCase();
-    if (lastWord.length > 0 && lastWord.length <= 2 && !validShortWords.has(lastWord)) {
+    // Never strip a trailing number — it almost always completes a phrase
+    // ("Day 1", "Tier 2", "top 5") rather than being a truncated fragment.
+    const isNumber = /^\d+$/.test(lastWord);
+    if (lastWord.length > 0 && lastWord.length <= 2 && !validShortWords.has(lastWord) && !isNumber) {
       // Likely a truncated word — remove it
       text = text.slice(0, lastSpaceIdx).trimEnd();
     }
@@ -76,19 +81,58 @@ export function sanitizeGenerated(s: string): string {
     "because", "since", "although", "though", "whether", "unless", "until",
     "can", "will", "would", "could", "should", "shall", "may", "might",
     "must", "has", "have", "had", "was", "were", "been", "being",
+    // Common prepositions/connectors that are dangling when they end a
+    // truncated fragment (this branch only runs on non-terminated text).
+    "in", "on", "at", "to", "of", "by", "as", "or", "up", "per", "via", "off",
+    "out",
   ]);
 
-  // Check if the text ends with a dangling word (with or without period)
-  const trailingMatch = text.match(/\s(\w+)[.]?$/);
-  if (trailingMatch) {
-    const candidate = trailingMatch[1].toLowerCase();
-    if (danglingEnders.has(candidate)) {
-      // Remove the dangling ending — cut back to the previous sentence or clause
-      const cutPoint = text.lastIndexOf(" ", text.length - trailingMatch[0].length);
-      if (cutPoint > text.length * 0.5) {
-        text = text.slice(0, cutPoint).trimEnd();
+  // A sentence can never validly end with the article "a"/"an" (with or without
+  // a trailing period) — if it does, the noun it introduced was truncated away.
+  // Remove the stranded article so we don't emit "...you need a."
+  text = text.replace(/\s+an?(\.)?$/i, "").trimEnd();
+
+  // Repair trailing fragments left by hard truncation. Only act when the text
+  // does NOT already end with sentence punctuation — a properly terminated
+  // sentence from the model is left untouched. This targets artifacts like
+  // "...companies are looking for in Day" where the "1 of a rotation..." tail
+  // was severed mid-sentence, leaving a stranded noun.
+  const endsWithPunctuation = /[.!?]["'”’)\]]?$/.test(text);
+  if (!endsWithPunctuation) {
+    // Count-nouns that get stranded when a phrase like "Day 1" / "Phase 3" is
+    // truncated after the noun ("...looking for in Day"). We only treat these
+    // as stranded when they are NOT preceded by a number or quantity word —
+    // otherwise "90 days" or "two quarters" is a valid ending and must be kept.
+    const orphanCountNouns = new Set([
+      "day", "days", "year", "years", "week", "weeks", "month", "months",
+      "quarter", "quarters", "phase", "phases", "step", "steps", "round",
+      "rounds", "level", "levels", "tier", "tiers", "chapter",
+    ]);
+    const quantityWords = new Set([
+      "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+      "ten", "eleven", "twelve", "few", "several", "many", "couple", "multiple",
+      "various", "dozen", "dozens", "hundreds", "thousands", "first", "next",
+      "last", "past", "coming", "final",
+    ]);
+    // Strip up to a few trailing dangling tokens (connectors or stranded
+    // count-nouns); the ending-punctuation pass below re-terminates cleanly.
+    const tokens = text.split(/\s+/);
+    for (let i = 0; i < 6 && tokens.length > 1; i++) {
+      const last = tokens[tokens.length - 1].toLowerCase().replace(/[.,;:!?'"()[\]]+$/, "");
+      const prev = tokens[tokens.length - 2].toLowerCase().replace(/[.,;:!?'"()[\]]+$/, "");
+      const isDangling = danglingEnders.has(last);
+      // Treat plain numbers, decimals, and ranges ("2", "2.5", "2-3", "2–3") as
+      // numeric — so a count-noun that correctly follows one ("2–3 years") is kept.
+      const prevIsNumeric = /^\d+([.\-–—/]\d+)?$/.test(prev);
+      const isStrandedNoun =
+        orphanCountNouns.has(last) && !prevIsNumeric && !quantityWords.has(prev);
+      if (isDangling || isStrandedNoun) {
+        tokens.pop();
+      } else {
+        break;
       }
     }
+    text = tokens.join(" ").replace(/[,;:\-–—]\s*$/, "").trimEnd();
   }
 
   // Remove trailing punctuation fragments (comma, semicolon, dash at the very end with no following text)

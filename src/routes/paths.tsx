@@ -6,6 +6,9 @@ import { SUCCESS_STORIES, type SuccessStory } from "@/lib/success-stories";
 import { getPublishedMaps, type PublishedMap } from "@/lib/published-maps";
 import { PublishedMapCard } from "@/components/published-map-card";
 import { SuccessMapForm } from "@/components/success-map-form";
+// Sharing is disabled for now. Re-enable by uncommenting this import and the
+// ShareMapButton usage in the "posted" banner below.
+// import { ShareMapButton } from "@/components/share-map-button";
 import { TRACKS } from "@/lib/wayfind-data";
 import { useWayfind } from "@/lib/sylo-store";
 import { cn } from "@/lib/utils";
@@ -24,26 +27,52 @@ export const Route = createFileRoute("/paths")({
 function PathsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [editingMap, setEditingMap] = useState<PublishedMap | null>(null);
   const [trackFilter, setTrackFilter] = useState<string>("");
-  const [submitted, setSubmitted] = useState(false);
-  const { profile } = useWayfind();
+  const [justPosted, setJustPosted] = useState<PublishedMap | null>(null);
+  const { profile, communityMaps, addCommunityMap, updateCommunityMap, removeCommunityMap } = useWayfind();
 
-  const publishedMaps = getPublishedMaps(trackFilter ? { query: trackFilter } : undefined);
+  const publishedMaps = getPublishedMaps(trackFilter ? { query: trackFilter } : undefined, communityMaps);
+  // Only the user's own posted maps are deletable.
+  const ownMapIds = new Set(communityMaps.map((m) => m.id));
 
-  const handleSubmit = (map: Omit<PublishedMap, "id" | "publishedAt">) => {
-    // MVP: log to console (operator would copy this to the static JSON)
-    console.log("[SUCCESS MAP SUBMISSION]", JSON.stringify({ ...map, id: `pub-${Date.now()}`, publishedAt: new Date().toISOString().slice(0, 10) }, null, 2));
-    setShowForm(false);
-    setSubmitted(true);
+  const handleDelete = (id: string) => {
+    removeCommunityMap(id);
+    if (justPosted?.id === id) setJustPosted(null);
+    if (expanded === id) setExpanded(null);
   };
 
-  if (showForm) {
+  const handleSubmit = (map: Omit<PublishedMap, "id" | "publishedAt">) => {
+    if (editingMap) {
+      // Save edits to an existing map, keeping its id + publish date.
+      updateCommunityMap(editingMap.id, map);
+      setEditingMap(null);
+      setExpanded(editingMap.id);
+      return;
+    }
+    // Post immediately — persisted to the store and shown in the community feed.
+    const created = addCommunityMap(map);
+    setShowForm(false);
+    setJustPosted(created);
+    setExpanded(created.id);
+  };
+
+  const startEditing = (map: PublishedMap) => {
+    setEditingMap(map);
+    setShowForm(false);
+  };
+
+  if (showForm || editingMap) {
     return (
       <Workspace wide>
         <SuccessMapForm
           prefill={profile ? { school: profile.school, major: profile.major, track: profile.trackId, year: profile.year } : undefined}
+          initialMap={editingMap ?? undefined}
           onSubmit={handleSubmit}
-          onCancel={() => setShowForm(false)}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingMap(null);
+          }}
         />
       </Workspace>
     );
@@ -89,7 +118,7 @@ function PathsPage() {
             />
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            Roadmaps shared by students who completed their journey. Reviewed before publishing.
+            Roadmaps shared by students who completed their journey — including the ones you post.
           </p>
 
           <div className="mt-5 space-y-4">
@@ -99,6 +128,8 @@ function PathsPage() {
                 map={map}
                 expanded={expanded === map.id}
                 onToggle={() => setExpanded(expanded === map.id ? null : map.id)}
+                onEdit={ownMapIds.has(map.id) ? () => startEditing(map) : undefined}
+                onDelete={ownMapIds.has(map.id) ? () => handleDelete(map.id) : undefined}
               />
             ))}
           </div>
@@ -107,12 +138,29 @@ function PathsPage() {
 
       {/* Share your path CTA */}
       <div className="mt-10 rounded-2xl border border-dashed border-foreground/20 bg-muted/30 p-6 text-center">
-        {submitted ? (
+        {justPosted ? (
           <>
-            <p className="text-sm font-medium text-foreground">Thanks for sharing your path!</p>
+            <p className="text-sm font-medium text-foreground">Your map is posted!</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              We'll review it and publish it so future students can see what worked.
+              It&apos;s live in the community feed above. You can remove it there anytime.
             </p>
+            <div className="mt-4 flex flex-col items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowForm(true)}
+                className="tap inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10"
+              >
+                <PenLine className="h-4 w-4" />
+                Post another
+              </button>
+              <button
+                type="button"
+                onClick={() => setJustPosted(null)}
+                className="tap text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                Dismiss
+              </button>
+            </div>
           </>
         ) : (
           <>

@@ -351,13 +351,6 @@ function Progress() {
                   <p className="text-sm font-semibold leading-snug tracking-tight">
                     {pin.opportunityDetails?.name || pin.title}
                   </p>
-                  {pin.isOpportunityLike && (
-                    <div className="mt-1.5">
-                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
-                        Opportunity
-                      </span>
-                    </div>
-                  )}
                   {pin.detectedDate && (
                     <p className="mt-1 text-[11px] text-muted-foreground">
                       {relativeDue(pin.detectedDate)?.text}

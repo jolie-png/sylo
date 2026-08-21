@@ -123,7 +123,7 @@ export type Preferences = {
   style: "Discussion" | "Independent";
 };
 
-export const YEARS = ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"];
+export const YEARS = ["Freshman", "Sophomore", "Junior", "Senior", "Graduate student"];
 
 export const MAJORS = [
   "Biology",
@@ -1425,4 +1425,13 @@ export const GRAD_YEARS: MilestoneYear[] = ["Graduate Year 1", "Graduate Years 2
 /** Whether the given year string indicates a graduate student. */
 export function isGradStudent(year: string): boolean {
   return year === "Graduate" || year.toLowerCase().includes("grad") || year.toLowerCase().includes("phd") || year.toLowerCase().includes("mba") || year.toLowerCase().includes("master");
+}
+
+/**
+ * Classify an opportunity's reach: "school" when it's tied to one seeded
+ * campus, or "national" when it's open to students anywhere ("any").
+ */
+export function opportunityReach(op: { school?: string }): "school" | "national" {
+  const s = (op.school ?? "").trim().toLowerCase();
+  return s && s !== "any" ? "school" : "national";
 }

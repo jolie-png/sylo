@@ -1,6 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { createAnthropicClient, hashKey } from "./anthropic.server";
+import { createAnthropicClient, hashKey, CLAUDE_SONNET } from "./anthropic.server";
+
+// The roadmap analysis leans on Claude for judgment (naming real programs,
+// honest ranking, personalized reasoning), so it runs on Sonnet rather than
+// Haiku. Swap to CLAUDE_HAIKU here to cut cost ~3x if needed.
+const ANALYSIS_MODEL = CLAUDE_SONNET;
 import { TRACKS, type Opportunity, type OpportunitySource, isGradStudent } from "./wayfind-data";
 import type { GapAnalysis } from "./wayfind-store";
 import { searchOpportunities, type OpportunityRecord } from "./opportunities-db";
@@ -32,37 +37,51 @@ const CATEGORIES = [
   "Course",
 ] as const;
 
-const SourceSchema = z.object({ title: z.string(), url: z.string() });
+// LLMs frequently emit `null` for absent fields instead of omitting them.
+// These helpers accept string|null|undefined and normalize so a single stray
+// null doesn't fail the whole parse (and discard an otherwise-good roadmap).
+const strOrEmpty = z.string().nullish().transform((v) => v ?? "");
+const strArrayOrEmpty = z.array(z.string()).nullish().transform((v) => v ?? []);
+
+const SourceSchema = z.object({ title: strOrEmpty, url: z.string() });
 
 const LiveOpportunitySchema = z.object({
   name: z.string(),
   category: z.enum(CATEGORIES),
-  deadline: z.string(),
-  timeframe: z.string(),
-  requirements: z.array(z.string()),
-  contact: z.string(),
+  deadline: strOrEmpty,
+  timeframe: strOrEmpty,
+  requirements: strArrayOrEmpty,
+  contact: strOrEmpty,
   link: z.string(),
-  timeline: z.string(),
-  leverage: z.string(),
-  reasoning: z.string(),
-  sources: z.array(SourceSchema),
-  courseCode: z.string().optional(),
-  gapLabel: z.string().optional(),
-  upstream: z.string().optional(),
-  unlocks: z.array(z.string()).optional(),
-  window: z.string().optional(),
+  timeline: strOrEmpty,
+  leverage: strOrEmpty,
+  reasoning: strOrEmpty,
+  sources: z.array(SourceSchema).nullish().transform((v) => v ?? []),
+  courseCode: z.string().nullish(),
+  gapLabel: z.string().nullish(),
+  upstream: z.string().nullish(),
+  unlocks: z.array(z.string()).nullish(),
+  window: z.string().nullish(),
 });
 
 const LiveResponseSchema = z.object({
   found: z.boolean(),
-  summary: z.string(),
-  opportunities: z.array(LiveOpportunitySchema),
-  alternates: z.array(z.object({ title: z.string(), detail: z.string() })).optional(),
-  gapAnalysis: z.object({
-    strengths: z.array(z.string()),
-    gaps: z.array(z.object({ gap: z.string(), why: z.string(), action: z.string() })),
-    bottomLine: z.string(),
-  }).optional(),
+  summary: strOrEmpty,
+  opportunities: z.array(LiveOpportunitySchema).nullish().transform((v) => v ?? []),
+  alternates: z
+    .array(z.object({ title: strOrEmpty, detail: strOrEmpty }))
+    .nullish()
+    .transform((v) => v ?? []),
+  gapAnalysis: z
+    .object({
+      strengths: strArrayOrEmpty,
+      gaps: z
+        .array(z.object({ gap: strOrEmpty, why: strOrEmpty, action: strOrEmpty }))
+        .nullish()
+        .transform((v) => v ?? []),
+      bottomLine: strOrEmpty,
+    })
+    .nullish(),
 });
 
 export type LiveRoadmap = {
@@ -76,7 +95,10 @@ export type LiveRoadmap = {
 
 // --- Rate limiting & caching ------------------------------------------------
 
-const TIMEOUT_MS = 60_000;
+// The Sonnet advisor writes 6 full cards + gap analysis, which can take longer
+// than a minute. A 60s cap was aborting the call mid-generation and silently
+// dropping every request to the raw-search fallback, so give it real headroom.
+const TIMEOUT_MS = 150_000;
 const PER_SESSION_LIMIT = 6;
 const GLOBAL_LIMIT = 120;
 const RATE_WINDOW_MS = 60 * 60 * 1000;
@@ -159,10 +181,14 @@ function curatedRecordToOpportunity(rec: OpportunityRecord): Opportunity {
 
 /** Query the curated opportunity database for matches relevant to this student. */
 function queryCuratedOpportunities(data: z.infer<typeof Input>): OpportunityRecord[] {
-  return searchOpportunities({
-    // "something-else" track means the user's goal doesn't map to a specific track —
-    // search across ALL tracks using their goal text as a keyword instead.
-    track: data.trackId === "something-else" ? undefined : data.trackId as any,
+  // An "Other" goal doesn't map to a curated track. A loose keyword search across
+  // ALL tracks produces off-target matches — e.g. "data scientist" pulling in
+  // physician-SCIENTIST pipelines or evolutionary-biology REUs — so we skip the
+  // curated DB entirely and let live web search handle the free-text goal.
+  if (data.trackId === "something-else") return [];
+
+  const results = searchOpportunities({
+    track: data.trackId as any,
     school: data.school,
     year: data.year,
     query: data.goalText || undefined,
@@ -170,6 +196,55 @@ function queryCuratedOpportunities(data: z.infer<typeof Input>): OpportunityReco
     excludeTags: data.diversitySelfId ? undefined : ["diversity-cohort"],
     limit: 10,
   });
+  return prioritizeForCareerStage(results, data);
+}
+
+/**
+ * Turn a free-text goal into a clean searchable phrase by stripping
+ * conversational lead-ins ("I want to be a data scientist" -> "data scientist").
+ */
+function normalizeGoal(goal: string): string {
+  const cleaned = goal
+    .trim()
+    .replace(
+      /^(i\s+(really\s+)?want\s+to\s+(be|become|work\s+(as|in))|i'?d\s+like\s+to\s+(be|become)|my\s+goal\s+is\s+to\s+(be|become)|i'?m\s+aiming\s+to\s+(be|become)|aspiring|i\s+want)\s+(an?\s+)?/i,
+      "",
+    )
+    .replace(/[.!?]+$/, "")
+    .trim();
+  return cleaned || goal.trim();
+}
+
+/**
+ * A senior (or grad student) with substantial prior experience is usually
+ * choosing a full-time / next-step move — not hunting for a summer internship.
+ * Preserve the DB's relevance order, but float full-time / rotational / new-grad
+ * programs above summer-internship-style entries so the roadmap doesn't lead a
+ * graduating senior with offers toward underclassman-style summer programs.
+ */
+function prioritizeForCareerStage(
+  records: OpportunityRecord[],
+  data: z.infer<typeof Input>,
+): OpportunityRecord[] {
+  const isLateStage = data.year.toLowerCase() === "senior" || isGradStudent(data.year);
+  const hasExtensiveExp =
+    (data.priorWork?.split(/[,;]/).length ?? 0) >= 2 || (data.priorWork?.length ?? 0) > 100;
+  if (!isLateStage || !hasExtensiveExp) return records;
+
+  const bucketOf = (rec: OpportunityRecord): number => {
+    const hay = `${rec.name} ${rec.tags.join(" ")} ${rec.timeframe} ${rec.timeline} ${rec.leverage}`.toLowerCase();
+    const fullTime = /full-?time|new-?grad|rotational|\bapm\b|\brpm\b/.test(hay);
+    if (fullTime) return 0; // full-time / next-step programs first
+    const summerIntern = /\bsummer\b|\b\d+\s*weeks?\b|internship/.test(hay);
+    if (summerIntern) return 2; // summer-internship-style entries last
+    return 1; // everything else keeps its middle spot
+  };
+
+  // Stable sort by bucket — preserves the DB's relevance order within each tier.
+  return records
+    .map((rec, i) => ({ rec, i, b: bucketOf(rec) }))
+    .sort((a, b) => a.b - b.b || a.i - b.i)
+    .map((x) => x.rec);
 }
 
 /** Build a LiveRoadmap from curated DB results alone, with optional AI gap analysis. */
@@ -188,7 +263,7 @@ async function buildCuratedRoadmap(
   let gapAnalysis: LiveRoadmap["gapAnalysis"] | undefined;
   if (anthropicKey) {
     const track = TRACKS.find((t) => t.id === data.trackId);
-    const destination = data.goalText?.trim() || track?.label || "their goal";
+    const destination = normalizeGoal(data.goalText) || track?.label || "their goal";
     const opList = opportunities.slice(0, 10).map((o, i) => `${i + 1}. ${o.name} — ${o.leverage.slice(0, 80)}`).join("\n");
 
     const contextParts = [
@@ -213,7 +288,7 @@ async function buildCuratedRoadmap(
       const client = createAnthropicClient(anthropicKey);
 
       const gapResponse = await client.messages.create({
-        model: "claude-haiku-4-5-20251001",
+        model: ANALYSIS_MODEL,
         max_tokens: 1800,
         system: `You produce a personalized gap analysis for a student using CAUSALITY reasoning. Return ONLY a JSON object:
 {"strengths":["string","string"],"gaps":[{"gap":"string","why":"string","action":"string"}],"bottomLine":"string"}
@@ -225,7 +300,9 @@ Rules:
 - CRITICAL: Every string in your response must be a complete thought ending with proper punctuation. Never cut off mid-sentence.
 - When referencing diversity/identity programs, frame them as investments in the student's growth (e.g. 'leadership development program', 'career accelerator') — never as backdoors, shortcuts, or ways to bypass normal hiring.
 - Think like an advisor who's seen 100 students make this exact transition. What did the ones who succeeded all have in common? What's this student missing from that pattern?
-- Never invent URLs or program names.`,
+- Never invent URLs or program names.
+- FACTUAL ATTRIBUTION (do not misattribute): Only tie a skill, project, or accomplishment to a specific company, team, or program if the profile EXPLICITLY links them. If the student lists a type of work (e.g. "LLM-powered features", "AI/ML evaluation") without stating where it happened, describe it generically — do NOT attach it to a different employer they listed for a separate role. Example: given "SDE Intern at AWS", "worked on LLM features", and "AI Fellow at Handshake AI", NEVER write "your LLM work at AWS" — that link was never stated; attribute it only as generally described or to the org actually tied to it. Never fabricate the employer, product, team, or context of an experience.
+- NO PROBABILITY CLAIMS: Never forecast the student's odds of admission, an offer, or acceptance. Do not use "likely", "guaranteed", "you'll get in", "high chance", or parenthetical tags like "(likely)". Frame outcomes as what an opportunity can open, conditional on their performance — not as a prediction you are making.`,
         messages: [{
           role: "user",
           content: `${contextParts.join("\n")}\n\nOpportunities available: ${opList}\n\nReturn JSON.`,
@@ -253,13 +330,13 @@ Rules:
         }
         if (parsed?.strengths && parsed?.gaps && parsed?.bottomLine) {
           gapAnalysis = {
-            strengths: parsed.strengths.map((s: string) => cleanText(s.replace(/https?:\/\/[^\s)]+/g, ""), 350)),
+            strengths: parsed.strengths.map((s: string) => cleanText(s.replace(/https?:\/\/[^\s)]+/g, ""), 600)),
             gaps: parsed.gaps.map((g: any) => ({
-              gap: cleanText(g.gap?.replace(/https?:\/\/[^\s)]+/g, "") || "", 300),
-              why: cleanText(g.why?.replace(/https?:\/\/[^\s)]+/g, "") || "", 350),
-              action: cleanText(g.action?.replace(/https?:\/\/[^\s)]+/g, "") || "", 350),
+              gap: cleanText(g.gap?.replace(/https?:\/\/[^\s)]+/g, "") || "", 400),
+              why: cleanText(g.why?.replace(/https?:\/\/[^\s)]+/g, "") || "", 600),
+              action: cleanText(g.action?.replace(/https?:\/\/[^\s)]+/g, "") || "", 600),
             })),
-            bottomLine: cleanText(parsed.bottomLine.replace(/https?:\/\/[^\s)]+/g, ""), 450),
+            bottomLine: cleanText(parsed.bottomLine.replace(/https?:\/\/[^\s)]+/g, ""), 550),
           };
         }
       }
@@ -274,7 +351,7 @@ Rules:
       const opListShort = top5.map((o) => `${o.name} (deadline: ${o.deadline || "rolling"})`).join(", ");
 
       const reasoningResponse = await client.messages.create({
-        model: "claude-haiku-4-5-20251001",
+        model: ANALYSIS_MODEL,
         max_tokens: 4000,
         system: `Given a student profile and a list of programs, return ONLY a JSON object where each key is a program name and each value is an object with these fields:
 
@@ -294,15 +371,19 @@ CRITICAL LENGTH RULE: Each "reasoning" field must be 2-3 COMPLETE sentences. Nev
 
 For "upstream": Reference what the student ALREADY has that makes them ready for this step. Name specific companies, courses, or experiences. If no prerequisite, write "None — open to all eligible students."
 
-For "unlocks": List 1-3 SPECIFIC things this step opens. Not generic benefits — actual next steps it enables. E.g. "Return offer pipeline at the company", "Faculty recommendation letter for grad school", "Access to partner company recruiting events."
+For "unlocks": List 1-3 SPECIFIC things this step opens. Not generic benefits — actual next steps it enables. E.g. "Return offer pipeline at the company", "Faculty recommendation letter for grad school", "Access to partner company recruiting events." Keep each unlock SHORT and self-contained — a complete phrase of ~15 words or fewer. Write the full thought and STOP; never trail off mid-phrase or end on a dangling word like "different"/"across" or an open quote.
 
-For "window": The timing constraint. Include the deadline if known, and any strategic timing advice. E.g. "Apply by Oct 14 — interviews start November, so prep cases by mid-October."
+For "window": Strategic timing advice ONLY. Do NOT restate a specific calendar date or year — the card already shows the authoritative deadline, and a restated date can contradict it. Use relative guidance instead. E.g. "Apply a few weeks before the deadline — interviews usually start about a month later, so prep cases ahead of time."
 
 Rules:
 - ALWAYS name their specific companies, skills, roles, and clubs.
 - The EDGE must be genuinely actionable.
 - "unlocks" should be things that are CAUSALLY downstream — not just generic benefits of any internship.
-- "upstream" should connect to their SPECIFIC prior experience, not generic prerequisites.`,
+- "upstream" should connect to their SPECIFIC prior experience, not generic prerequisites.
+- FACTUAL ATTRIBUTION (do not misattribute): Only tie a skill or project to a specific company/team/program if the profile EXPLICITLY links them. If a type of work is listed without an employer (e.g. "LLM evaluation", "full-stack tools"), keep it generic — never attach it to a different employer they named for a separate role. Example: NEVER write "your LLM work at AWS" when AWS is only tied to a separate SDE role. Never invent the employer, product, or context of an experience.
+- NO PROBABILITY CLAIMS: Never forecast odds of an offer, admission, or acceptance. Do not use "likely", "guaranteed", "you'll get", "high chance", or parenthetical tags like "(likely)". Frame "unlocks" and "leverage" as what the step CAN open or is DESIGNED to lead to, conditional on performance — e.g. "A strong showing can convert into a return offer" rather than "Return offer (likely)".
+- NO FABRICATED STATS OR MECHANICS: Never invent numbers or program mechanics you can't verify — no made-up conversion/acceptance rates (e.g. "70–80% convert"), cohort sizes, salary figures, or authority claims (e.g. "direct investment decision-making authority", "board seats", "visa sponsorship guaranteed"). Describe what a program generally offers in plain, non-numeric terms. If you don't know a specific figure or mechanic, omit it rather than guessing.
+- NO RESTATED DEADLINES: Do not write a specific calendar date or year in any field. Give relative timing ("apply a few weeks before the deadline") instead of a hard date that could contradict the deadline shown on the card.`,
         messages: [{
           role: "user",
           content: `${contextParts.join("\n")}\n\nPrograms: ${opListShort}\n\nReturn JSON.`,
@@ -333,7 +414,7 @@ Rules:
                   if (entry.reasoning) step.reasoning = cleanText(String(entry.reasoning).replace(/https?:\/\/[^\s)]+/g, ""), 700);
                   // Populate cascade fields on the opportunity if missing
                   if (!op.upstream && entry.upstream) op.upstream = cleanText(String(entry.upstream).replace(/https?:\/\/[^\s)]+/g, ""), 350);
-                  if (!op.unlocks?.length && Array.isArray(entry.unlocks)) op.unlocks = entry.unlocks.map((u: any) => cleanText(String(u).replace(/https?:\/\/[^\s)]+/g, ""), 150)).filter(Boolean).slice(0, 4);
+                  if (!op.unlocks?.length && Array.isArray(entry.unlocks)) op.unlocks = entry.unlocks.map((u: any) => cleanText(String(u).replace(/https?:\/\/[^\s)]+/g, ""), 320)).filter(Boolean).slice(0, 4);
                   if (!op.window && entry.window) op.window = cleanText(String(entry.window).replace(/https?:\/\/[^\s)]+/g, ""), 350);
                 }
               }
@@ -347,7 +428,7 @@ Rules:
   }
 
   return {
-    summary: `Based on ${data.school}'s verified pipeline for ${data.year} ${data.major} students — these are curated, deadline-checked opportunities.`,
+    summary: `These programs are matched to your profile as a ${data.year} ${data.major} student at ${data.school}. Each links to its official application page — confirm the current deadline there before you apply.`,
     topOpportunityId: opportunities[0].id,
     steps,
     alternates: [],
@@ -402,36 +483,41 @@ async function gatherSearchResults(data: z.infer<typeof Input>, serperKey: strin
   return all.map((r, i) => `[${i + 1}] "${r.title}"\n    URL: ${r.link}\n    Snippet: ${r.snippet}`).join("\n\n");
 }
 
-// --- Claude Haiku prompt ----------------------------------------------------
+// --- Claude advisor prompt (Sonnet) -----------------------------------------
 
 function buildSystemPrompt() {
   return [
-    "You are Sylo's opportunity researcher. Given a student profile and Google search results, extract and structure real opportunities into strict JSON.",
+    "You are Sylo's senior career advisor. Given a student profile and Google search results for context, produce the definitive, ranked list of REAL, NAMED opportunities this specific student should pursue next — the same caliber a world-class mentor who has placed hundreds of students would give from memory.",
     "",
-    "RULES:",
-    "1. ONLY use information from the provided search results. Never invent programs, links, or deadlines.",
-    "2. The 'link' field MUST be a URL from the search results.",
-    "3. The 'sources' array must contain URLs from the search results that mention this opportunity.",
-    "4. Prefer programs specific to the student's school, year, and major.",
-    "5. If search results don't have enough real opportunities, return found=false.",
-    "6. Return 3-6 opportunities if available, ordered by leverage. NEVER return the same program twice — even if it appears in multiple search results, include it only once.",
-    "7. ALWAYS include a 'gapAnalysis' object in your JSON response with: strengths (2-3 strings about what the student's year/major/school gives them), gaps (array of {gap, why, action} — 2-3 gaps between where they are and their goal), bottomLine (one sentence on their single biggest focus). Base this on their year, major, and goal even if no resume context is provided.",
-    "8. In the reasoning field for each opportunity, reference the student's specific gaps — explain why THIS opportunity matters given what they're missing.",
+    "HOW TO USE THE INPUTS:",
+    "- The SEARCH RESULTS are context and a freshness signal: they confirm which programs exist and are currently running, and they often contain the official application URL. Use them.",
+    "- You are NOT limited to the search results. Use your own knowledge of the landscape to name the canonical, real programs for this goal (e.g. for Product Management: Meta RPM, Google APM, Uber APM, Instacart APM, Product Buds Case Competition, Product School; for Data Science: company new-grad and rotational programs, applied-ML fellowships, analytics case competitions). Only name programs that genuinely exist.",
+    "- Treat the curated examples in the prompt as the quality bar to match, not as your only options.",
     "",
-    "RESULT FILTERING (CRITICAL — reject junk from search results):",
-    "- REJECT news articles, press releases, or blog posts that are not actionable opportunities. If a result is just announcing something happened or reporting on a program without an apply link, skip it.",
-    "- REJECT generic program listings the student is ALREADY in. If they're a PhD student, do NOT recommend 'PhD programs' or 'graduate admissions' pages — they're already admitted.",
-    "- REJECT opportunities with eligibility the student clearly doesn't meet. If the student is a graduate student, skip anything that says 'undergraduate only', 'recent graduate (within 6 months)', or 'must be enrolled as an undergraduate'.",
-    "- REJECT results that are just department homepages, faculty listings, or university news pages — these are not opportunities.",
-    "- REJECT results where the title is a sentence fragment or news headline rather than a program/opportunity name.",
-    "- REJECT programs that explicitly state applications are closed, deadlines have passed, or are no longer accepting applicants for the current cycle. Only include opportunities that are currently open or will open soon.",
-    "- REJECT generic career portals, recruiting landing pages, or 'Students & Graduates' homepages that are not a specific named program with a clear application process. If the page title is just 'Students', 'Careers', 'Early Careers', or 'Internships & Programs' without naming a specific program, it's a landing page — skip it.",
-    "- REJECT results where the snippet is just navigation text, login prompts, or boilerplate about the company — these are not opportunities.",
-    "- If after filtering fewer than 2 real opportunities remain, return found=false rather than padding with junk results.",
-    "- NEVER include a result you would advise the student NOT to pursue. If your honest assessment is 'this is redundant', 'this is below your level', 'this is a step backward', or 'this doesn't apply to you' — do NOT include it in the opportunities array at all. Only include opportunities where your reasoning is genuinely 'you should do this.' If you can't say 'yes, do this' about a result, leave it out entirely.",
-    "- REJECT generic informational resources (guides, lists, articles about the industry) that are not specific actionable programs with application processes. 'Investment Banking Target Schools: Full List' is a blog post, not an opportunity.",
-    "- Every opportunity you return MUST pass this test: 'Can the student take a concrete action (apply, register, attend, submit an application) at the provided link within the next 12 months?' If the answer is no — if the link is just information to read, a list to browse, or a resource to bookmark — it is NOT an opportunity and you MUST skip it.",
-    "- Ask yourself before including each result: 'Would I confidently tell this specific student to do this right now?' If the answer is 'maybe' or 'it depends' or 'it's just good to know about' — leave it out. Only include results where you'd say 'Yes, do this.'",
+    "WHAT TO RETURN:",
+    "- Exactly 6 opportunities, ordered by leverage. The FIRST is the single highest-leverage next move.",
+    "- Mix tiers like a real advisor would: marquee rotational/pipeline programs, fellowships, case competitions, certifications, and internships.",
+    "- EVERY card must be a confident 'yes, pursue this' for THIS student. ONLY include programs they are eligible for and that genuinely fit their stage and timeline. If a program is a poor fit — they're overqualified, underqualified, ineligible, or it clashes with their graduation timeline — DO NOT include it. Just leave it out silently.",
+    "- NEVER write conceding or self-defeating reasoning. Do not say 'this isn't for you', 'you're not yet eligible', 'this doesn't fit your timeline', 'you're beyond this', or 'this is lower-leverage'. Every reasoning is a positive case for why this specific student should pursue this specific program.",
+    "- NEVER return the same program twice.",
+    "- Set found=true whenever you can name at least 3 real programs for the goal (you almost always can). Only return found=false if the goal is empty or incoherent.",
+    "- ALWAYS include a 'gapAnalysis' object: strengths (2-3 strings citing SPECIFIC things from their profile), gaps (2-3 items of {gap, why, action} — what's actually missing given their background), bottomLine (one sentence on their single biggest focus).",
+    "- In each opportunity's reasoning, reference the student's specific background and name the gap this step fills.",
+    "",
+    "LINKS (this is what makes each card useful — do not skip):",
+    "- Every opportunity MUST have a 'link' that is the DIRECT official application or program page (the program's own page on the company/organization site) — NOT a search-result page, article, or generic careers homepage.",
+    "- Prefer an official URL present in the SEARCH RESULTS. If search doesn't contain it, use the program's real official URL from your knowledge (its canonical domain, e.g. a company's careers/programs page or the program's own site).",
+    "- Put that official link in 'link' and also list it in 'sources'. NEVER link to job boards or aggregators (Indeed, LinkedIn, ZipRecruiter, GitHub lists, Reddit, 'top 10' articles).",
+    "",
+    "PER-OPPORTUNITY FIELDS:",
+    "- name: the official program name (e.g. 'Meta Rotational Product Manager (RPM) Program').",
+    "- category: exactly one of " + CATEGORIES.join(", ") + ".",
+    "- timeframe: a stable, knowledge-based descriptor of format/length (e.g. 'Full-time rotational (2 years)', 'Summer (12 weeks)', 'Self-paced (40 hours)', 'Semester-long (team-based)'). This is NOT a calendar date.",
+    "",
+    "WHAT COUNTS AS AN OPPORTUNITY (name real programs, not noise):",
+    "- Each card must be a specific, named program, role, competition, fellowship, or certification a student can actually apply to — e.g. 'Meta RPM Program', 'Insight Data Science Fellowship', 'Kaggle competition', a named company new-grad/rotational program.",
+    "- Do NOT emit generic labels or listings as cards ('Data Scientist Jobs', 'Entry-level roles', 'Degree Search', a university news headline, a 'top 10' article). If the only thing search surfaced for a slot is a listing, name the real underlying program from your knowledge instead and link to its official page.",
+    "- Respect eligibility and stage, and SILENTLY DROP anything that doesn't fit: a graduating senior wants full-time/new-grad and rotational programs (never 'get your first internship', never 'Senior Data Scientist' roles requiring years of experience, never a summer internship that clashes with their grad date); a PhD student is already admitted, so never suggest degree admissions. Do not include a program just to then explain why it's a bad fit — if it's a bad fit, omit it entirely.",
     "",
     "PERSONALIZATION RULES (CRITICAL — every reasoning and gap must feel like it was written for THIS student, not a generic archetype):",
     "- If the student lists prior internships (e.g. 'Amazon Prime Video SDE Intern'), NAME the company in your reasoning. Example: 'Your Amazon experience gives you production-scale credibility — this role lets you apply that to a consumer product from the PM seat.'",
@@ -450,15 +536,14 @@ function buildSystemPrompt() {
     "- Connect each opportunity to the SPECIFIC gap it closes. If an opportunity doesn't close a named gap, it's lower priority.",
     "- Think like a career advisor who's seen 100 students make this transition: what did the ones who succeeded have in common? What's this student missing from that pattern?",
     "",
-    "DEADLINE RULES:",
-    "- deadline MUST be a full ISO date: YYYY-MM-DD. The year is REQUIRED.",
-    "- The year must be the CURRENT or NEXT application cycle relative to today's date (provided in the user prompt). Never use past years.",
-    "- If the search results mention a month but no year, infer the correct year: if the month is in the future relative to today, use the current year. If it's in the past, use next year.",
-    "- If no specific date is found in the search results, leave deadline as empty string. Do NOT guess dates.",
+    "DEADLINE RULES (students want a concrete date — give them one):",
+    "- Fill 'deadline' with a full ISO date (YYYY-MM-DD) for the program's typical CURRENT-cycle application deadline, using the search results and your own knowledge of how the program runs (e.g. Google APM closes in early fall, most APM cohorts recruit Aug–Oct). Relative to today's date in the user prompt, pick the next upcoming occurrence.",
+    "- It is better to give your best-estimate current-cycle date than to leave it blank. Only leave 'deadline' empty when the program is genuinely rolling/continuous — in that case set 'window' to 'Rolling'.",
+    "- Never output a date in the past relative to today, and never use a year more than ~1 cycle out.",
     "",
-    "reasoning: 2-3 COMPLETE sentences, plain second person. MUST reference something specific from the student's profile. Never leave a sentence unfinished — if you're running long, end the current sentence and stop. A complete thought is better than a truncated one.",
-    "summary: 1-2 forward-framed sentences that reference the student's specific background.",
-    "deadline: ISO YYYY-MM-DD if found in search results, otherwise empty string. MUST include year.",
+    "reasoning: 2 COMPLETE sentences, plain second person. MUST reference something specific from the student's profile. Never leave a sentence unfinished.",
+    "summary: 1-2 forward-framed sentences that reference the student's specific background. Do NOT describe the results as 'live search leads' or mention searching — write it as a confident, curated set of recommendations.",
+    "deadline: best current-cycle ISO YYYY-MM-DD (see DEADLINE RULES); empty only if truly rolling.",
     "category: exactly one of " + CATEGORIES.join(", ") + ".",
     "",
     "Chain reasoning fields: gapLabel ONLY on the first opportunity. upstream, unlocks, and window on EVERY opportunity.",
@@ -478,10 +563,24 @@ function buildSystemPrompt() {
     "- Example GOOD: 'A summer leadership program at Google focused on business roles, with mentorship from senior leaders and direct exposure to product teams.'",
     "",
     "DEPENDENCY CHAIN RULES (upstream/unlocks/window):",
-    "- upstream: What this step builds on. Reference the student's ACTUAL prior experience where relevant (e.g. 'Builds on your Amazon SDE internship experience'). Use ONLY facts from the search results or the student's profile. If nothing is required, write 'None — open to all eligible students'.",
-    "- unlocks: 1-3 things this step makes possible. Only include outcomes that are logically true (e.g. a research position unlocks a faculty rec letter). Never invent program names not in the search results.",
-    "- window: The timing constraint if a deadline exists. Copy from the deadline/timeframe info. If no hard deadline, write 'Rolling' or omit.",
-    "- NEVER invent program names, deadlines, or prerequisites that aren't stated in the search results or obvious from the opportunity type.",
+    "- upstream: What this step builds on. Reference the student's ACTUAL prior experience where relevant (e.g. 'Builds on your Amazon SDE internship experience'). If nothing is required, write 'None — open to all eligible students'.",
+    "- unlocks: 1-3 things this step makes possible. Only include outcomes that are logically true (e.g. a research position unlocks a faculty rec letter). Keep each unlock SHORT and self-contained — a complete phrase of ~15 words or fewer that ends cleanly, never trailing off mid-phrase.",
+    "- window: Relative timing advice only — do NOT restate a specific calendar date or year (the deadline is shown separately, and a restated date can contradict it). E.g. 'Apply a few weeks before the deadline; interviews usually follow about a month later.' If no hard deadline, write 'Rolling' or omit.",
+    "- Only name programs that genuinely exist. It is fine to name a real program from your own knowledge even if it is not in the search results, but never fabricate a program, a deadline, or a prerequisite.",
+    "",
+    "FACTUAL ATTRIBUTION (do not misattribute the student's background):",
+    "- Only tie a skill, project, or accomplishment to a specific company, team, or program if the student's profile EXPLICITLY links them.",
+    "- If the profile lists a type of work without saying where it happened (e.g. 'LLM-powered features', 'AI/ML evaluation'), refer to it generically — do NOT attach it to a different employer they listed for a separate role.",
+    "- Example: given 'SDE Intern at AWS', 'worked on LLM features', and 'AI Fellow at Handshake AI', NEVER write 'your LLM work at AWS' — that link was never stated. Attribute it only as generally described, or to the org actually tied to it.",
+    "- Never fabricate the employer, product, team, or context of any experience.",
+    "",
+    "OUTCOME LANGUAGE (no probability claims):",
+    "- Never forecast the student's odds of admission, an offer, or acceptance. Do not use 'likely', 'guaranteed', 'you'll get in', 'high chance', or parenthetical tags like '(likely)'.",
+    "- Frame 'unlocks' and 'leverage' as what the step CAN open or is DESIGNED to lead to, conditional on their performance — e.g. 'A strong showing can convert into a return offer' rather than 'Return offer (likely)'.",
+    "",
+    "NO FABRICATED STATS OR MECHANICS:",
+    "- Never invent numbers or program mechanics you can't verify — no made-up conversion/acceptance rates (e.g. '70–80% convert'), cohort sizes, salary figures, or authority claims (e.g. 'direct investment decision-making authority', 'board seats', 'guaranteed visa sponsorship').",
+    "- Describe what a program generally offers in plain, non-numeric terms. If you don't know a specific figure or mechanic, omit it rather than guessing.",
     "",
     "Reply with ONE JSON object matching:",
     JSON.stringify({
@@ -495,7 +594,7 @@ function buildSystemPrompt() {
 
 function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
   const track = TRACKS.find((t) => t.id === data.trackId);
-  const destination = data.goalText.trim() || (track && track.id !== "something-else" ? track.label : "") || "not yet named";
+  const destination = normalizeGoal(data.goalText) || (track && track.id !== "something-else" ? track.label : "") || "not yet named";
 
   const contextLines: string[] = [
     "STUDENT PROFILE:",
@@ -516,10 +615,10 @@ function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
   // Explicitly flag what's available for personalization
   const hasContext = !!(data.experience || data.priorWork || data.skills || data.clubs || data.alreadyDone);
 
-  // Detect advanced students who likely already have offers
+  // Graduating seniors need full-time / new-grad roles, not internships — but we
+  // do NOT assume they already have an offer (a senior with internships is
+  // usually still recruiting for full-time).
   const isSenior = data.year.toLowerCase() === "senior";
-  const hasExtensiveExperience = (data.priorWork?.split(/[,;]/).length ?? 0) >= 2 || (data.priorWork?.length ?? 0) > 100;
-  const likelyHasOffer = isSenior && hasExtensiveExperience;
 
   return [
     ...contextLines,
@@ -528,20 +627,20 @@ function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
       ? "IMPORTANT: This student has provided detailed background (experience, internships, skills, clubs). Your reasoning for EVERY opportunity MUST reference their specific background by name. Do NOT write generic reasoning. Every 'reasoning' field should read like it was written by an advisor who read their full resume."
       : "NOTE: This student has not provided detailed background yet. Base personalization on their year, major, school, and goal.",
     "",
-    ...(likelyHasOffer ? [
-      "CRITICAL CONTEXT: This is a SENIOR with extensive internship experience. They very likely already have a return offer or are in final-round recruiting. DO NOT recommend exploratory programs, freshman/sophomore pipelines, or 'getting your first internship' advice. Focus instead on: maximizing their final year, preparing for full-time transition, choosing between offers, or building skills for their first year on the job. If few programs are relevant at this stage, return fewer results rather than padding with irrelevant ones.",
+    ...(isSenior ? [
+      "CONTEXT — GRADUATING SENIOR: Prioritize full-time and new-grad roles, rotational programs, and full-time-transition steps. Do NOT recommend freshman/sophomore pipelines or 'get your first internship' advice — they're past that. IMPORTANT: New-grad rotational programs and full-time roles at named companies (e.g. a company's 'Students & Grads' program, a named 'Rotational Program', or a specific new-grad role) ARE appropriate opportunities and SHOULD be included when they fit the goal. Do NOT assume the student already has an offer — a senior with internship experience is usually still recruiting, so surfacing real full-time/new-grad programs is exactly what helps them.",
       "",
     ] : []),
-    "SEARCH RESULTS (your only source of fact):",
+    "SEARCH RESULTS (context and link source — not your only source of fact):",
     "============================================",
     searchResults,
     "============================================",
     "",
-    "Extract real opportunities from these results. Only include things the search results actually describe.",
-    "Use the student's background to rank results by relevance — prioritize opportunities that fit their current skill level and fill gaps in their experience.",
-    "For EVERY opportunity, include upstream (what it builds on — reference their prior experience where relevant), unlocks (what it opens — only logical outcomes, never invented program names), and window (timing). If no prerequisite exists, set upstream to 'None — open to all eligible students'.",
+    "Use these results to confirm which programs are live and to find official application links. Then produce the definitive ranked list of REAL, NAMED opportunities for this student — drawing on your own knowledge of the landscape, not just what appears above. Match the caliber of a curated advisor's list.",
+    "Rank by leverage and fit to their background. Include 1-2 candid lower-fit options with honest reasoning about why they rank lower.",
+    "For EVERY opportunity, give a DIRECT official application/program link (from the results if present, otherwise the program's real official URL), plus upstream (what it builds on), unlocks (what it opens), and window (timing). If no prerequisite exists, set upstream to 'None — open to all eligible students'.",
     "ALWAYS include a gapAnalysis object — strengths must cite SPECIFIC things from their profile, gaps must identify what's ACTUALLY missing given their background.",
-    "All deadlines must be YYYY-MM-DD format with a plausible year relative to today's date. If a deadline year isn't stated, infer it (future month = this year, past month = next year). If you can't determine a date, use empty string.",
+    "Only include a deadline when you're confident it's the current cycle; otherwise leave it empty and rely on timeframe. Never guess a date.",
     "Return strict JSON.",
   ].join("\n");
 }
@@ -562,14 +661,17 @@ function slug(name: string, i: number) {
 
 const trim = (s: string, max: number) => cleanText(s, max);
 
-function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof Input>, knownUrls?: Set<string>): LiveRoadmap | null {
+function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof Input>): LiveRoadmap | null {
   const track = TRACKS.find((t) => t.id === data.trackId) ?? TRACKS[0];
   const seenNames = new Set<string>();
   const opportunities: Opportunity[] = [];
   const steps: { opportunityId: string; reasoning: string }[] = [];
 
   for (const raw of parsed.opportunities) {
-    const name = trim(raw.name, 120);
+    // Strip a trailing period/whitespace from the program name — the advisor
+    // sometimes ends the name like a sentence ("...Analyst Program."), which
+    // reads oddly as a card title. Keep internal punctuation intact.
+    const name = trim(raw.name, 120).replace(/\s*\.+\s*$/, "").trim();
     const link = safeUrl(raw.link);
     if (!name || !link) continue;
 
@@ -581,23 +683,21 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     const infoSignals = /full list|complete guide|ultimate guide|how to|top \d+|ranking|what is|vs\.|overview|explained/i;
     if (infoSignals.test(name)) continue;
 
-    // Reject if reasoning explicitly calls it a generic page or not useful
-    const genericSignals = /generic (landing|careers?|recruiting) page|not a specific program|catch-all|general resource|step backward|below your level|redundant|doesn't apply|not actionable/i;
-    if (genericSignals.test(raw.reasoning)) continue;
+    // Reject only if the card itself is a junk SOURCE (a generic landing page or
+    // catch-all resource). We deliberately DO NOT reject on honest fit language
+    // like "lower-leverage for you" / "misaligns with your stage" — a candid
+    // ranked list that includes lower-fit options is exactly what we want.
+    const junkSourceSignals = /generic (landing|careers?|recruiting) page|not a specific program|catch-all|general resource/i;
+    if (junkSourceSignals.test(raw.reasoning)) continue;
 
     // Reject closed/expired programs based on text signals
     const closedSignals = /applications?\s+(are\s+)?(now\s+)?closed|no longer accepting|deadline has passed|program (is|has been) (discontinued|cancelled)/i;
     if (closedSignals.test(raw.reasoning) || closedSignals.test(raw.leverage) || closedSignals.test(raw.timeframe)) continue;
 
-    // Anti-hallucination: if we have a set of known-good URLs from search,
-    // reject any link Claude produced that wasn't in the original results.
-    // This prevents the AI from inventing plausible-looking URLs.
-    if (knownUrls && knownUrls.size > 0 && !knownUrls.has(link)) {
-      // Check if the domain at least matches a known result (looser check)
-      const linkHost = hostOf(link);
-      const hasMatchingDomain = linkHost && [...knownUrls].some((u) => hostOf(u) === linkHost);
-      if (!hasMatchingDomain) continue; // Fully hallucinated domain — skip entirely
-    }
+    // NOTE: We intentionally trust the model's 'link' here. Sylo now uses Claude
+    // as the retriever (like the pin-drop extractor): it names real programs and
+    // supplies their official application URL, which is often NOT one of the raw
+    // Serper result links. safeUrl() still guarantees a well-formed http(s) URL.
 
     const nameKey = name.toLowerCase().replace(/\d{4}[\/\-]\d{4}|\d{4}/g, "").replace(/[^a-z\s]/g, "").replace(/\s+/g, " ").trim();
     if (seenNames.has(nameKey)) continue;
@@ -608,33 +708,38 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
       const url = safeUrl(s.url);
       const host = url && hostOf(url);
       if (!url || !host || hosts.has(host)) continue;
-      // Anti-hallucination: only accept source URLs that actually came from search
-      if (knownUrls && knownUrls.size > 0 && !knownUrls.has(url)) {
-        // Allow if at least the domain appeared in search results (page might differ)
-        const domainInSearch = [...knownUrls].some((u) => hostOf(u) === host);
-        if (!domainInSearch) continue;
-      }
       hosts.add(host);
       sources.push({ title: trim(s.title, 120) || host, url });
       if (sources.length === 3) break;
     }
-    if (sources.length === 0) continue;
+    // A knowledge-named program may arrive without a separate sources array — its
+    // official 'link' is the source of truth, so synthesize one rather than drop
+    // the card.
+    if (sources.length === 0) {
+      const host = hostOf(link);
+      sources.push({ title: host || name, url: link });
+    }
 
     const isHero = opportunities.length === 0;
-    const unlocks = (raw.unlocks ?? []).map((u) => trim(u, 90)).filter(Boolean).slice(0, 4);
+    const unlocks = (raw.unlocks ?? []).map((u) => trim(u, 320)).filter(Boolean).slice(0, 4);
     seenNames.add(nameKey);
     const id = slug(name, opportunities.length);
 
     opportunities.push({
-      id, name, track: track.id, category: raw.category, access: "direct", school: data.school,
+      // Web-searched programs are national by default, not school-specific — so the
+      // Long View badges them "National" rather than falsely tagging them to the
+      // student's school.
+      id, name, track: track.id, category: raw.category, access: "direct", school: "any",
       deadline: (() => {
         const d = raw.deadline.trim();
         if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return "";
-        // Reject dates more than 18 months in the past — likely a stale or hallucinated deadline
         const deadlineDate = new Date(d);
-        const cutoff = new Date();
-        cutoff.setMonth(cutoff.getMonth() - 18);
-        if (deadlineDate < cutoff) return "";
+        // Reject PAST deadlines. A search often surfaces last cycle's date for a
+        // recurring program; showing "Deadline passed" (or ranking it) is worse
+        // than showing no date, so blank it and let the card say "check the link".
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (deadlineDate < today) return "";
         // Reject dates more than 2 years in the future — likely hallucinated
         const maxFuture = new Date();
         maxFuture.setFullYear(maxFuture.getFullYear() + 2);
@@ -664,13 +769,13 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     opportunities,
     // Sanitize gap analysis — strip any hallucinated URLs from text fields
     gapAnalysis: parsed.gapAnalysis ? {
-      strengths: parsed.gapAnalysis.strengths.map((s) => cleanText(s.replace(/https?:\/\/[^\s)]+/g, ""), 350)),
+      strengths: parsed.gapAnalysis.strengths.map((s) => cleanText(s.replace(/https?:\/\/[^\s)]+/g, ""), 600)),
       gaps: parsed.gapAnalysis.gaps.map((g) => ({
-        gap: cleanText(g.gap.replace(/https?:\/\/[^\s)]+/g, ""), 300),
-        why: cleanText(g.why.replace(/https?:\/\/[^\s)]+/g, ""), 350),
-        action: cleanText(g.action.replace(/https?:\/\/[^\s)]+/g, ""), 350),
+        gap: cleanText(g.gap.replace(/https?:\/\/[^\s)]+/g, ""), 400),
+        why: cleanText(g.why.replace(/https?:\/\/[^\s)]+/g, ""), 600),
+        action: cleanText(g.action.replace(/https?:\/\/[^\s)]+/g, ""), 600),
       })),
-      bottomLine: cleanText(parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, ""), 450),
+      bottomLine: cleanText(parsed.gapAnalysis.bottomLine.replace(/https?:\/\/[^\s)]+/g, ""), 550),
     } : undefined,
   };
 }
@@ -679,27 +784,153 @@ function extractJson(text: string): unknown | null {
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
   const candidates = [fenced?.[1], text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)];
   for (const c of candidates) { if (!c) continue; try { return JSON.parse(c); } catch { /* next */ } }
+  // Last resort: the response was likely truncated mid-object (hit the token
+  // ceiling). Try to salvage it by closing any unterminated string/brackets so
+  // we keep the complete opportunities instead of dropping to the raw fallback.
+  const repaired = repairTruncatedJson(text);
+  if (repaired) { try { return JSON.parse(repaired); } catch { /* give up */ } }
   return null;
+}
+
+/**
+ * Best-effort repair of a JSON object that was cut off mid-generation. Walks
+ * the text tracking string/escape state and bracket depth, trims any trailing
+ * partial token, then appends the closing brackets needed to balance. Returns
+ * null if there's nothing usable.
+ */
+function repairTruncatedJson(text: string): string | null {
+  const start = text.indexOf("{");
+  if (start === -1) return null;
+  const s = text.slice(start);
+
+  let inStr = false;
+  let esc = false;
+  const stack: string[] = [];
+  let lastComplete = -1; // index (exclusive) right after a top-level-safe close or comma
+
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === "\\") esc = true;
+      else if (ch === '"') inStr = false;
+      continue;
+    }
+    if (ch === '"') { inStr = true; continue; }
+    if (ch === "{" || ch === "[") stack.push(ch);
+    else if (ch === "}") { if (stack[stack.length - 1] === "{") stack.pop(); lastComplete = i + 1; }
+    else if (ch === "]") { if (stack[stack.length - 1] === "[") stack.pop(); lastComplete = i + 1; }
+  }
+
+  // If nothing ever closed, we can't safely salvage.
+  if (lastComplete === -1) return null;
+
+  // Cut back to the last structurally complete point (drops a trailing partial
+  // property/value), then re-walk to compute the still-open bracket stack.
+  let body = s.slice(0, lastComplete).replace(/,\s*$/, "");
+  const open: string[] = [];
+  inStr = false; esc = false;
+  for (let i = 0; i < body.length; i++) {
+    const ch = body[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === "\\") esc = true;
+      else if (ch === '"') inStr = false;
+      continue;
+    }
+    if (ch === '"') inStr = true;
+    else if (ch === "{" || ch === "[") open.push(ch);
+    else if (ch === "}" || ch === "]") open.pop();
+  }
+  while (open.length) {
+    body += open.pop() === "{" ? "}" : "]";
+  }
+  return body;
 }
 
 // --- Fallback: structure raw search results without an LLM ------------------
 
+// Job-board aggregators and content sites that are never a single, applyable
+// program. A card pointing at an Indeed/LinkedIn search or a "top 20" article
+// is noise, so these hosts are dropped before we build fallback cards.
+const AGGREGATOR_HOSTS = new Set([
+  "wikipedia.org", "bls.gov", "indeed.com", "glassdoor.com", "linkedin.com",
+  "ziprecruiter.com", "simplify.jobs", "github.com", "reddit.com", "builtin.com",
+  "dice.com", "monster.com", "wellfound.com", "angel.co", "levels.fyi",
+  "medium.com", "quora.com", "coursera.org", "udemy.com", "youtube.com",
+  "salary.com", "payscale.com", "teal.com", "jobright.ai",
+]);
+
+const FALLBACK_INFO_PATTERN =
+  /full list|complete guide|ultimate guide|how to|top \d+|\bbest\b|ranking|what is|vs\.|overview|explained|salary|interview (prep|questions)|reddit|\bwiki\b|cheat ?sheet|\d+\+? (jobs|roles|positions)|jobs,?\s+employment|now hiring|\$\d/i;
+
+// Titles that describe a listing/search/aggregator/article rather than a single
+// applyable program. These slip past the host denylist because they live on
+// many different domains, so we reject them by shape of the title.
+const GENERIC_LISTING_PATTERN =
+  /\broadmap\b|degree search|job (board|search)|jobs? (in|for|near|by|at)\b|entry[- ]level|recent grad|new grad(uate)? (jobs|roles|positions)|list of|directory|browse|explore|category|search tool|listings?\b|bachelor'?s|master'?s degree|master'?s program|\bdegree\b|bootcamp|graduate programs?/i;
+
+/**
+ * True when a title carries no company/program identity — it's just the role
+ * name ("Data Scientist", "DATA SCIENTISTS") or the student's goal words alone.
+ * Such a card can't be applied to, so it shouldn't appear on the board.
+ */
+function isGenericRoleTitle(name: string, goal: string): boolean {
+  const norm = name.toLowerCase().replace(/[^a-z]+/g, " ").trim();
+  const goalNorm = goal.toLowerCase().replace(/[^a-z]+/g, " ").trim();
+  if (!norm) return true;
+  if (norm === goalNorm || norm === `${goalNorm}s`) return true;
+  if (/^data scientists?$/.test(norm) || /^data science$/.test(norm)) return true;
+  return false;
+}
+
+/** Best-effort category for a raw search result, since the fallback has no LLM. */
+function inferCategory(title: string): Opportunity["category"] {
+  const t = title.toLowerCase();
+  if (/fellow|fellowship|residency/.test(t)) return "Fellowship";
+  if (/research|\blab\b|reu/.test(t)) return "Research";
+  if (/scholar|grant|funding|award/.test(t)) return "Funding";
+  // Rotational / new-grad / internship programs and named company roles.
+  return "Internship";
+}
+
+/**
+ * Last-resort structuring of raw Serper results into a roadmap when the LLM
+ * pass returns nothing (either it errored, or it flagged found:false and
+ * rejected every result). We drop aggregators and info/list articles, keep
+ * named programs and company roles, and hand the survivors to the enrichment
+ * step (Step 6) which layers on gap analysis and personalized reasoning — so
+ * these cards end up at parity with the LLM-structured path.
+ */
 function fallbackFromSearchResults(
   rawResults: SerperResult[],
   data: z.infer<typeof Input>,
 ): LiveRoadmap | null {
   const track = TRACKS.find((t) => t.id === data.trackId) ?? TRACKS[0];
-  const goal = data.goalText.trim() || "your goal";
+  const goal =
+    normalizeGoal(data.goalText) ||
+    (track.id !== "something-else" ? track.label : "") ||
+    "your goal";
 
-  // Filter to results that look like real programs/opportunities (not generic info pages)
-  const dominated = new Set(["wikipedia.org", "bls.gov", "indeed.com", "glassdoor.com", "linkedin.com"]);
-  const infoPattern = /full list|complete guide|ultimate guide|how to|top \d+|ranking|what is|vs\.|overview|explained|salary|interview prep|reddit/i;
+  // Filter to results that look like real programs/opportunities (not generic
+  // info pages or job-board aggregator searches).
+  const seenHosts = new Map<string, number>();
   const relevant = rawResults.filter((r) => {
     const host = hostOf(r.link);
-    if (!host || dominated.has(host)) return false;
-    if (infoPattern.test(r.title)) return false;
+    if (!host) return false;
+    // Drop aggregators and their subdomains (e.g. jobs.linkedin.com).
+    if ([...AGGREGATOR_HOSTS].some((h) => host === h || host.endsWith(`.${h}`))) return false;
+    if (FALLBACK_INFO_PATTERN.test(r.title)) return false;
+    // Drop listing/search/article titles and bare role labels — they aren't a
+    // single program a student can apply to.
+    if (GENERIC_LISTING_PATTERN.test(r.title)) return false;
+    if (isGenericRoleTitle(r.title, goal)) return false;
+    // Cap to 2 results per host so one company's careers site can't fill the board.
+    const count = seenHosts.get(host) ?? 0;
+    if (count >= 2) return false;
+    seenHosts.set(host, count + 1);
     return true;
-  }).slice(0, 6);
+  }).slice(0, 5);
 
   if (relevant.length < 2) return null;
 
@@ -710,22 +941,28 @@ function fallbackFromSearchResults(
     const link = safeUrl(r.link);
     if (!link) continue;
     const host = hostOf(link);
-    const name = r.title.replace(/\s*[\|–—\-]\s*[^|–—\-]*$/, "").trim().slice(0, 120) || r.title.slice(0, 120);
+    // Strip a trailing " | Site Name" / " - Site Name" suffix from the title —
+    // but if that leaves a too-generic stub (e.g. "Students and Grads"), keep the
+    // full title so the company/program context isn't lost.
+    const full = r.title.trim();
+    const stripped = full.replace(/\s*[\|·–—-]\s*[^|·–—-]*$/, "").trim();
+    const genericStub = /^(students?|grads?|students?\s+(and|&)\s+grads?|careers?|jobs?|programs?|opportunities|new grads?)$/i;
+    const name = (stripped.length >= 15 && !genericStub.test(stripped) ? stripped : full).slice(0, 120);
     const id = slug(name, opportunities.length);
 
     opportunities.push({
       id,
       name,
       track: track.id,
-      category: "Research",
+      category: inferCategory(r.title),
       access: "direct",
-      school: data.school,
+      school: "any",
       deadline: "",
       timeframe: "Check link for current dates",
       requirements: [],
       contact: "",
       link,
-      timeline: r.snippet.slice(0, 240),
+      timeline: cleanText(r.snippet, 240),
       leverage: cleanText(r.snippet, 240) || r.title,
       origin: "live",
       sources: [{ title: host || r.title.slice(0, 60), url: link }],
@@ -733,14 +970,14 @@ function fallbackFromSearchResults(
     });
     steps.push({
       opportunityId: id,
-      reasoning: cleanText(r.snippet, 280) || `Relevant result for ${goal} at ${data.school}.`,
+      reasoning: cleanText(r.snippet, 280) || `A ${goal} opening surfaced by search for a ${data.year} at ${data.school}.`,
     });
   }
 
   if (opportunities.length === 0) return null;
 
   return {
-    summary: `You're a ${data.year} ${data.major} major at ${data.school}. Sylo searched for "${goal}" and found these leads. Every link goes to the original source — tap through for the latest details.`,
+    summary: `These programs are matched to your profile as a ${data.year} ${data.major} student at ${data.school}. Each links to its official page — confirm the current deadline there before you apply.`,
     topOpportunityId: opportunities[0].id,
     steps,
     alternates: [],
@@ -752,31 +989,53 @@ function fallbackFromSearchResults(
 
 async function gatherSearchResultsRaw(data: z.infer<typeof Input>, serperKey: string): Promise<SerperResult[]> {
   const track = TRACKS.find((t) => t.id === data.trackId);
-  const goal = data.goalText.trim() || (track && track.id !== "something-else" ? track.label : "") || "career opportunities";
+  const goal = normalizeGoal(data.goalText) || (track && track.id !== "something-else" ? track.label : "") || "career opportunities";
   const isGrad = isGradStudent(data.year);
+
+  // Recruiting runs ~a year ahead. Once we're past early spring, the live cycle
+  // is NEXT year's — so bias the search toward the upcoming cycle instead of a
+  // hardcoded year that goes stale (and surfaces already-closed programs).
+  const now = new Date();
+  const cycle = now.getMonth() >= 3 ? now.getFullYear() + 1 : now.getFullYear();
+  const yr = `${cycle}`;
+  const acadYr = `${cycle} ${cycle + 1}`;
 
   let queries: string[];
 
   if (isGrad) {
     // Graduate-specific queries: focus on fellowships, residencies, funding, conferences
     queries = [
-      `${goal} fellowship residency program PhD graduate 2026 2027 apply`,
+      `${goal} fellowship residency program PhD graduate ${acadYr} apply`,
       `${goal} research funding grant PhD student application deadline`,
-      `${data.major} PhD ${goal} workshop conference call for papers 2026 2027`,
+      `${data.major} PhD ${goal} workshop conference call for papers ${acadYr}`,
     ];
     // Add school-specific query
     queries.push(`${data.school} ${data.major} PhD funding fellowship opportunity`);
     // Add goal-specific industry research query
     if (goal.toLowerCase().includes("industry") || goal.toLowerCase().includes("research scientist")) {
-      queries.push(`${goal} research intern PhD student summer 2026 2027`);
+      queries.push(`${goal} research intern PhD student summer ${acadYr}`);
     }
   } else {
-    // Undergraduate queries (existing logic)
-    queries = [
-      `${data.school} ${goal} program opportunity ${data.year} student 2025 2026`,
-      `${goal} internship fellowship for ${data.major} undergrad ${data.school}`,
-      `${data.school} ${data.major} research club career program apply deadline`,
-    ];
+    // Only GRADUATING SENIORS want full-time / new-grad roles. Juniors and below
+    // recruit for summer internships — even experienced ones — so seniority is
+    // based on class year, NOT on how much experience they have.
+    const isSenior = data.year.toLowerCase() === "senior";
+
+    if (isSenior) {
+      queries = [
+        `${goal} full-time new grad analyst rotational program ${yr} apply`,
+        `${goal} entry level new graduate role ${data.major} application deadline`,
+        `${data.school} ${goal} full-time recruiting new grad program`,
+      ];
+    } else {
+      // Underclassman / junior queries — target named programs and company
+      // internship roles with real application pages (not articles/aggregators).
+      queries = [
+        `${goal} summer ${yr} internship program apply application undergraduate`,
+        `${goal} internship for ${data.major} students application deadline ${yr}`,
+        `company ${goal} summer ${yr} internship program apply ${data.year}`,
+      ];
+    }
   }
 
   // Add a targeted query if skills or prior work provide signal
@@ -784,8 +1043,8 @@ async function gatherSearchResultsRaw(data: z.infer<typeof Input>, serperKey: st
     const topSkill = data.skills.split(/[,;]/).map((s) => s.trim()).filter(Boolean)[0];
     if (topSkill) {
       queries.push(isGrad
-        ? `${topSkill} ${goal} fellowship residency PhD 2026 2027`
-        : `${data.school} ${topSkill} ${goal} program internship 2025 2026`);
+        ? `${topSkill} ${goal} fellowship residency PhD ${acadYr}`
+        : `${data.school} ${topSkill} ${goal} summer ${yr} internship`);
     }
   }
   if (data.priorWork && !isGrad) {
@@ -816,6 +1075,16 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
 
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
     const serperKey = process.env.SERPER_API_KEY;
+
+    // Surface a config problem loudly: without Serper, any profile whose curated
+    // coverage is thin (common for arbitrary judge-submitted resumes) falls back
+    // to the empty state instead of live-searching real opportunities.
+    if (!serperKey) {
+      console.warn("[LIVE-ROADMAP] SERPER_API_KEY not set — live web search disabled; relying on curated data only.");
+    }
+    if (!anthropicKey) {
+      console.warn("[LIVE-ROADMAP] ANTHROPIC_API_KEY not set — gap analysis and personalized reasoning disabled.");
+    }
 
     const cacheKey = cacheKeyFor(data);
     const cached = readCache(cacheKey);
@@ -855,13 +1124,17 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
 
       console.error("[LIVE-ROADMAP] searching live (curated had <3 matches)...", { school: data.school, goal: data.goalText || data.trackId });
       const rawResults = await gatherSearchResultsRaw(data, serperKey);
+      console.error(
+        `[LIVE-ROADMAP] Serper returned ${rawResults.length} results. Titles:`,
+        rawResults.slice(0, 10).map((r) => r.title),
+      );
       if (rawResults.length === 0 && curatedResults.length === 0) {
         console.error("[LIVE-ROADMAP] no search results and no curated results");
         return null;
       }
 
       const searchResults = rawResults.map((r, i) => `[${i + 1}] "${r.title}"\n    URL: ${r.link}\n    Snippet: ${r.snippet}`).join("\n\n");
-      console.error("[LIVE-ROADMAP] got results, sending to Haiku...");
+      console.error("[LIVE-ROADMAP] got results, sending to Sonnet advisor...");
 
       // Step 3: Try Claude to structure the live results
       let result: LiveRoadmap | null = null;
@@ -871,13 +1144,23 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
           const client = createAnthropicClient(anthropicKey);
           const response = await client.messages.create(
             {
-              model: "claude-haiku-4-5-20251001",
-              max_tokens: 4096,
+              model: ANALYSIS_MODEL,
+              // The advisor returns 6-9 richly-detailed cards plus gap analysis
+              // in one response. Sonnet is verbose, so 4096 truncated the JSON
+              // mid-object and silently dropped us to the raw-search fallback.
+              // 8000 gives comfortable headroom for a full board.
+              max_tokens: 8000,
               system: buildSystemPrompt(),
               messages: [{ role: "user", content: buildUserPrompt(data, searchResults) }],
             },
             { signal: controller.signal },
           );
+
+          // If Claude hit the token ceiling the JSON is truncated and won't
+          // parse — surface that explicitly instead of failing mysteriously.
+          if (response.stop_reason === "max_tokens") {
+            console.error("[LIVE-ROADMAP] WARNING: advisor response hit max_tokens — JSON likely truncated. Raise max_tokens or reduce card count.");
+          }
 
           const text = response.content
             .filter((b) => b.type === "text")
@@ -891,27 +1174,36 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
               console.error("[LIVE-ROADMAP] Zod validation failed:", JSON.stringify(parsed.error.issues.slice(0, 3)));
             }
             if (parsed.success && parsed.data.found) {
-              // Pass known Serper URLs so clean() can reject hallucinated links
-              const knownUrls = new Set(rawResults.map((r) => r.link));
-              result = clean(parsed.data, data, knownUrls);
+              result = clean(parsed.data, data);
+              console.error(`[LIVE-ROADMAP] advisor produced ${result?.opportunities.length ?? 0} named programs`);
+            } else if (parsed.success) {
+              console.error(
+                `[LIVE-ROADMAP] advisor returned found:false with ${parsed.data.opportunities?.length ?? 0} opportunities`,
+              );
             } else {
-              console.error("[LIVE-ROADMAP]", parsed.success ? "found:false" : "schema error");
+              console.error("[LIVE-ROADMAP] schema error");
             }
           } else {
-            console.error("[LIVE-ROADMAP] couldn't parse JSON from Haiku. First 500 chars:", text.slice(0, 500));
+            console.error("[LIVE-ROADMAP] couldn't parse advisor JSON. stop_reason:", response.stop_reason, "| first 400 chars:", text.slice(0, 400));
           }
         } catch (llmErr) {
           console.error("[LIVE-ROADMAP] LLM failed, falling back to raw results:", llmErr instanceof Error ? llmErr.message : llmErr);
         }
       }
 
-      // Step 4: If LLM failed or wasn't available, structure results directly
+      // Step 4: If the LLM failed, wasn't available, or flagged found:false and
+      // rejected every result, structure the raw search results directly. This
+      // keeps a student on an uncovered path (no curated data, strict LLM) from
+      // hitting a dead-end empty state when search DID surface real programs.
+      // The survivors are filtered (no aggregators/articles) and then polished
+      // by the enrichment pass in Step 6, so they reach parity with LLM output.
       if (!result && rawResults.length > 0) {
-        console.error("[LIVE-ROADMAP] fallback disabled — raw search results don't meet quality bar");
-        // Fallback disabled: raw search results without AI structuring produce
-        // low-quality cards (no requirements, wrong categories, informational articles).
-        // Better to return null and let the curated DB carry the roadmap.
-        // result = fallbackFromSearchResults(rawResults, data);
+        result = fallbackFromSearchResults(rawResults, data);
+        if (result) {
+          console.error("[LIVE-ROADMAP] used raw-search fallback:", { opportunities: result.opportunities.length });
+        } else {
+          console.error("[LIVE-ROADMAP] fallback produced nothing usable from raw results");
+        }
       }
 
       // Step 5: Merge curated results into the live roadmap
@@ -919,7 +1211,7 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
         const curatedOpportunities = curatedResults.map(curatedRecordToOpportunity);
         const curatedSteps = curatedOpportunities.map((op) => ({
           opportunityId: op.id,
-          reasoning: op.leverage || `Verified opportunity for ${data.year} students.`,
+          reasoning: op.leverage || `Curated opportunity for ${data.year} students.`,
         }));
 
         // Prepend curated results (they're higher confidence)
@@ -937,12 +1229,14 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
         result = await buildCuratedRoadmap(curatedResults, data, anthropicKey);
       }
 
-      // Step 6: For live-search results, ALWAYS run the enrichment call to get
-      // gap analysis, personalized reasoning, and dependency chains at the same
-      // quality level as the curated path. This is what makes the difference
-      // between generic search snippets and deeply personalized roadmap content.
+      // Step 6: The advisor call already returns gap analysis, personalized
+      // reasoning, and dependency chains inline, so no second pass is needed for
+      // it. Only run the enrichment pass when we fell through to the raw-search
+      // fallback (bare cards with no analysis) — detected by a missing
+      // gapAnalysis. This preserves the advisor's own high-quality output and
+      // avoids paying for two extra Sonnet calls on the main path.
       const isLiveOnly = result && curatedResults.length < CURATED_THRESHOLD;
-      if (result && anthropicKey && isLiveOnly) {
+      if (result && anthropicKey && isLiveOnly && !result.gapAnalysis) {
         try {
           const enrichResult = await buildCuratedRoadmap(
             result.opportunities.map((o) => ({
@@ -958,16 +1252,10 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
             data,
             anthropicKey,
           );
-          // Always take gap analysis from enrichment (it's higher quality than inline)
-          if (enrichResult.gapAnalysis) {
-            result.gapAnalysis = enrichResult.gapAnalysis;
-          }
-          // Replace reasoning and dependency chains with enriched versions
+          if (enrichResult.gapAnalysis) result.gapAnalysis = enrichResult.gapAnalysis;
           for (const enrichedStep of enrichResult.steps) {
             const original = result.steps.find((s) => s.opportunityId === enrichedStep.opportunityId);
-            if (original && enrichedStep.reasoning.length > 50) {
-              original.reasoning = enrichedStep.reasoning;
-            }
+            if (original && enrichedStep.reasoning.length > 50) original.reasoning = enrichedStep.reasoning;
           }
           for (const enrichedOp of enrichResult.opportunities) {
             const original = result.opportunities.find((o) => o.id === enrichedOp.id);

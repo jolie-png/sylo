@@ -9,8 +9,14 @@ export type DeadlineState = "urgent" | "soon" | "open" | "expired" | "recurring"
 
 export function getDeadlineStatus(deadline: string, recurring = false) {
   if (!deadline) return { label: "Rolling", state: "open" as const };
-  const dl = new Date(deadline);
-  const now = new Date();
+  // Parse a date-only string ("YYYY-MM-DD") as LOCAL midnight. `new Date("YYYY-MM-DD")`
+  // parses as UTC, so in most timezones the displayed day lands one day off. Compare
+  // against today's local midnight so the day count reflects calendar days.
+  const dl = /^\d{4}-\d{2}-\d{2}$/.test(deadline)
+    ? new Date(`${deadline}T00:00:00`)
+    : new Date(deadline);
+  const nowExact = new Date();
+  const now = new Date(nowExact.getFullYear(), nowExact.getMonth(), nowExact.getDate());
   if (dl < now) {
     if (recurring) {
       const next = new Date(dl);
@@ -22,7 +28,7 @@ export function getDeadlineStatus(deadline: string, recurring = false) {
     }
     return { label: "Deadline passed", state: "expired" as const };
   }
-  const days = Math.ceil((dl.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const days = Math.round((dl.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   if (days <= 14) return { label: `Due in ${days}d`, state: "urgent" as const };
   if (days <= 30) return { label: `Due in ${days}d`, state: "soon" as const };
   // Show month and day only — the year is implicit from context

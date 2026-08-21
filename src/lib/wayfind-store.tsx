@@ -20,6 +20,7 @@ import {
 import { getOpportunityById, getOpportunityByName, searchOpportunities } from "./opportunities-db";
 import { MAYA_PINS, ALEX_PINS } from "./pin-demo-data";
 import type { GeneratedRoadmap } from "./roadmap.functions";
+import type { PublishedMap } from "./published-maps";
 
 export type Profile = {
   major: string;
@@ -117,6 +118,8 @@ type State = {
   stepNotes: Record<string, string>;
   /** User overrides for Sylo_Step reasoning, keyed by opportunityId. */
   stepReasoningOverrides: Record<string, string>;
+  /** Success maps the user has created/posted. Persisted, shown in the community feed. */
+  communityMaps: PublishedMap[];
   loading: boolean;
   hydrated: boolean;
   setProfile: (p: Profile) => void;
@@ -151,6 +154,12 @@ type State = {
   setStepNote: (opportunityId: string, note: string | null) => void;
   /** Set or remove a reasoning override for a Sylo_Step. Null/empty removes it. */
   setStepReasoning: (opportunityId: string, reasoning: string | null) => void;
+  /** Create/post a success map. Assigns an id + publishedAt and returns the stored map. */
+  addCommunityMap: (map: Omit<PublishedMap, "id" | "publishedAt">) => PublishedMap;
+  /** Update an existing user-created community map by id, preserving id + publishedAt. */
+  updateCommunityMap: (id: string, map: Omit<PublishedMap, "id" | "publishedAt">) => void;
+  /** Remove a user-created community map by id. */
+  removeCommunityMap: (id: string) => void;
 };
 
 const Ctx = createContext<State | null>(null);
@@ -300,6 +309,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   const [pinnedIds, setPinnedIds] = useState<string[]>([]);
   const [stepNotes, setStepNotes] = useState<Record<string, string>>({});
   const [stepReasoningOverrides, setStepReasoningOverrides] = useState<Record<string, string>>({});
+  const [communityMaps, setCommunityMaps] = useState<PublishedMap[]>([]);
   const [loading, setLoading] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -338,6 +348,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
         setPinnedIds(Array.isArray(parsed.pinnedIds) ? parsed.pinnedIds : []);
         setStepNotes(parsed.stepNotes && typeof parsed.stepNotes === "object" ? parsed.stepNotes : {});
         setStepReasoningOverrides(parsed.stepReasoningOverrides && typeof parsed.stepReasoningOverrides === "object" ? parsed.stepReasoningOverrides : {});
+        setCommunityMaps(Array.isArray(parsed.communityMaps) ? parsed.communityMaps : []);
       }
     } catch {
       /* ignore */
@@ -346,16 +357,16 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!profile && !roadmap && customSteps.length === 0 && pinnedIds.length === 0 && Object.keys(stepNotes).length === 0 && Object.keys(stepReasoningOverrides).length === 0) return;
+    if (!profile && !roadmap && customSteps.length === 0 && pinnedIds.length === 0 && Object.keys(stepNotes).length === 0 && Object.keys(stepReasoningOverrides).length === 0 && communityMaps.length === 0) return;
     try {
       localStorage.setItem(
         KEY,
-        JSON.stringify({ profile, roadmap, liveOpportunities, customSteps, pinnedIds, stepNotes, stepReasoningOverrides }),
+        JSON.stringify({ profile, roadmap, liveOpportunities, customSteps, pinnedIds, stepNotes, stepReasoningOverrides, communityMaps }),
       );
     } catch {
       /* ignore */
     }
-  }, [profile, roadmap, liveOpportunities, customSteps, pinnedIds, stepNotes, stepReasoningOverrides]);
+  }, [profile, roadmap, liveOpportunities, customSteps, pinnedIds, stepNotes, stepReasoningOverrides, communityMaps]);
 
 
   const setProfile = useCallback((p: Profile) => setProfileState(p), []);
@@ -767,6 +778,30 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const addCommunityMap = useCallback((map: Omit<PublishedMap, "id" | "publishedAt">) => {
+    const stored: PublishedMap = {
+      ...map,
+      id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      publishedAt: new Date().toISOString().slice(0, 10),
+    };
+    setCommunityMaps((prev) => {
+      // De-dupe if the exact same map object is re-added (e.g. saving a shared link twice).
+      if (prev.some((m) => m.id === stored.id)) return prev;
+      return [stored, ...prev];
+    });
+    return stored;
+  }, []);
+
+  const updateCommunityMap = useCallback((id: string, map: Omit<PublishedMap, "id" | "publishedAt">) => {
+    setCommunityMaps((prev) =>
+      prev.map((m) => (m.id === id ? { ...map, id: m.id, publishedAt: m.publishedAt } : m)),
+    );
+  }, []);
+
+  const removeCommunityMap = useCallback((id: string) => {
+    setCommunityMaps((prev) => prev.filter((m) => m.id !== id));
+  }, []);
+
   const value = useMemo(
     () => ({
       profile,
@@ -776,6 +811,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       pinnedIds,
       stepNotes,
       stepReasoningOverrides,
+      communityMaps,
       loading,
       hydrated,
       setProfile,
@@ -798,6 +834,9 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       addLiveOpportunity,
       setStepNote,
       setStepReasoning,
+      addCommunityMap,
+      updateCommunityMap,
+      removeCommunityMap,
     }),
     [
       profile,
@@ -807,6 +846,7 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       pinnedIds,
       stepNotes,
       stepReasoningOverrides,
+      communityMaps,
       loading,
       hydrated,
       setProfile,
@@ -828,6 +868,9 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
       addLiveOpportunity,
       setStepNote,
       setStepReasoning,
+      addCommunityMap,
+      updateCommunityMap,
+      removeCommunityMap,
     ],
   );
 
@@ -852,7 +895,7 @@ export function mergeResumeData(
     ...existing,
     name: parsed.name?.trim() || existing.name,
     school: parsed.school?.trim() || existing.school,
-    year: parsed.year?.trim() || existing.year,
+    // Year is intentionally not merged from the resume — the student selects it.
     experience: parsed.experience?.trim() || existing.experience,
     skills: parsed.skills?.trim() || existing.skills,
     priorWork: parsed.priorWork?.trim() || existing.priorWork,

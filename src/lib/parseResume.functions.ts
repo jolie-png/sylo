@@ -14,7 +14,7 @@ const Input = z.object({
 const ProfileFieldsSchema = z.object({
   name: z.string().optional().default(""),
   school: z.string().optional().default(""),
-  year: z.string().optional().default(""),
+  gpa: z.string().optional().default(""),
   experience: z.string().optional().default(""),
   skills: z.string().optional().default(""),
   priorWork: z.string().optional().default(""),
@@ -32,7 +32,7 @@ const RESUME_SYSTEM_PROMPT = `You are a resume parser. Given the text content of
 
 - name: The student's full name (usually at the top of the resume)
 - school: The university or college name (e.g. "University of Washington", "Columbia University"). Extract exactly as written.
-- year: The student's class year or academic standing. If an expected graduation date is given (e.g. "Expected Graduation: June 2028"), convert it to a standing like "Junior" or "Senior" based on how far they are from graduation. If current year is provided, map it: Freshman (3+ years to grad), Sophomore (2-3 years), Junior (1-2 years), Senior (<1 year). If a class standing is explicitly stated (e.g. "Junior"), use that directly.
+- gpa: The student's GPA if stated (e.g. "3.8" from "GPA: 3.8/4.0" or "3.8 / 4.0"). Return just the number as written (e.g. "3.8"). If no GPA appears anywhere on the resume, use an empty string "".
 - experience: A brief summary of their background, projects, and relevant experience (1-3 sentences)
 - skills: Comma-separated list of technical skills, tools, and languages they know
 - priorWork: Prior internships, jobs, or research positions (brief, comma-separated or short descriptions)
@@ -46,10 +46,10 @@ Rules:
 4. Use natural, conversational language (this fills a student profile).
 5. The name field should be the person's first and last name as written on the resume.
 6. For school, extract the full university name exactly as written on the resume.
-7. For year, today's date is ${new Date().toISOString().slice(0, 10)}. Use this to calculate standing from graduation dates.
+7. Do NOT infer or return the student's year/class standing — the student selects that themselves.
 
 Example output:
-{"name":"Jordan Chen","school":"University of Washington","year":"Junior","experience":"Built a full-stack React app for a class project, contributed to an open-source CLI tool","skills":"Python, JavaScript, React, SQL, Git, Figma","priorWork":"Software intern at Acme Corp (Summer 2024), campus IT help desk","clubs":"ACM chapter, hackathon team","alreadyDone":"Applied to Google STEP, completed Coursera ML specialization"}`;
+{"name":"Jordan Chen","school":"University of Washington","gpa":"3.7","experience":"Built a full-stack React app for a class project, contributed to an open-source CLI tool","skills":"Python, JavaScript, React, SQL, Git, Figma","priorWork":"Software intern at Acme Corp (Summer 2024), campus IT help desk","clubs":"ACM chapter, hackathon team","alreadyDone":"Applied to Google STEP, completed Coursera ML specialization"}`;
 
 // --- Text extraction --------------------------------------------------------
 

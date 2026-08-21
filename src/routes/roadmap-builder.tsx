@@ -368,7 +368,10 @@ function Builder() {
           {/* "Something else" — standalone option */}
           {(() => {
             const t = TRACKS.find((t) => t.id === "something-else")!;
-            const selected = trackId === t.id;
+            // "Other in [field]" also uses the "something-else" trackId, but with
+            // a customCategory set. The standalone catch-all is only selected when
+            // NO field was chosen — otherwise both cards would highlight at once.
+            const selected = trackId === t.id && customCategory === null;
             return (
               <div
                 className={cn(
@@ -458,9 +461,10 @@ function Builder() {
             <ResumeUpload
               onParsed={(data) => {
                 if (data.name?.trim()) setResumeName(data.name);
-                // Only auto-fill school/year if user hasn't already selected them
+                // Auto-fill school if the user hasn't picked one. Year is
+                // intentionally NOT auto-filled — the student selects it themselves.
                 if (data.school?.trim() && !school) setSchool(data.school);
-                if (data.year?.trim() && !year) setYear(data.year);
+                if (data.gpa?.trim()) setGpa(data.gpa);
                 if (data.experience?.trim()) setExperience(data.experience);
                 if (data.skills?.trim()) setSkills(data.skills);
                 if (data.priorWork?.trim()) setPriorWork(data.priorWork);
@@ -471,6 +475,7 @@ function Builder() {
               onStatusChange={setResumeParsing}
               onRemove={() => {
                 setResumeName("");
+                setGpa("");
                 setExperience("");
                 setSkills("");
                 setPriorWork("");

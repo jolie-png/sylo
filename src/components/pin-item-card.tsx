@@ -1,4 +1,4 @@
-import { Sparkles, CheckCircle2, Plus, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Plus, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DeadlinePill } from "@/components/deadline-badges";
 import type { PinItem } from "@/lib/pin-store";
@@ -19,9 +19,11 @@ interface PinItemCardProps {
 // ---------------------------------------------------------------------------
 
 export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility }: PinItemCardProps) {
-  const showAddButton = item.isOpportunityLike && !item.linkedStepId && onAddToRoadmap;
-  const showLinkedLabel = item.isOpportunityLike && !!item.linkedStepId;
-  const showEligibility = item.isOpportunityLike && item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && onCheckEligibility;
+  // Any pinned item can be added to the roadmap — roadmap steps support free-form
+  // notes, so reminders/deadlines are just as valid as programs.
+  const showAddButton = !item.linkedStepId && onAddToRoadmap;
+  const showLinkedLabel = !!item.linkedStepId;
+  const showEligibility = item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && onCheckEligibility;
 
   return (
     <div
@@ -62,12 +64,6 @@ export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility
             <h3 className="line-clamp-2 text-sm font-semibold leading-tight">
               {item.title}
             </h3>
-            {item.isOpportunityLike && (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
-                <Sparkles className="h-2.5 w-2.5" />
-                Opportunity
-              </span>
-            )}
           </div>
 
           {/* Tags */}

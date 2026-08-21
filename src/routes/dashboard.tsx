@@ -24,11 +24,10 @@ import {
   Tag,
   NotionCheckbox,
   OwnGoalBadge,
-  FoundViaSearchBadge,
   CuratedBadge,
 } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
-import { getTrack, milestonesForTrack, POST_GRAD_YEARS, GRAD_YEARS, YEARS, isGradStudent } from "@/lib/wayfind-data";
+import { getTrack, milestonesForTrack, POST_GRAD_YEARS, GRAD_YEARS, YEARS, isGradStudent, opportunityReach } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
 import { formatTargetDate } from "@/lib/terms";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
@@ -145,6 +144,22 @@ function Dashboard() {
   if (!profile || !roadmap) return null;
 
   const track = getTrack(profile.trackId);
+  // For the catch-all "something-else" track, the track label is literally
+  // "Something else" — show the student's actual goal in the header instead.
+  // The builder can store a verbose goal (e.g. "I want to become a Research
+  // Scientist (field: Engineering). ..."), so clean it down to a short label.
+  const goalLabel = (() => {
+    if (track && track.id !== "something-else") return track.label;
+    const raw = profile.goalText?.trim();
+    if (!raw) return "Your goal";
+    const cleaned = raw
+      .replace(/^i\s+(really\s+)?want\s+to\s+(be|become|work\s+(as|in))\s+(an?\s+)?/i, "")
+      .replace(/^my\s+goal\s+is\s+(in\s+the\s+.*?\s+field\.?\s*)?/i, "")
+      .replace(/\s*\(field:[^)]*\)\.?/i, "")
+      .split(/[.!?\n]/)[0]
+      .trim();
+    return cleaned.slice(0, 60) || "Your goal";
+  })();
   const top = roadmap.steps.find((s) => s.opportunityId === roadmap.topOpportunityId) ?? roadmap.steps[0];
   const topOp = top ? resolveOpportunity(top.opportunityId) : undefined;
   // No verified opportunity dataset for this goal (e.g. the "Something else" track).
@@ -180,7 +195,7 @@ function Dashboard() {
       <PageHeader
         icon={<Map className="h-5 w-5" />}
         title="Your Roadmap"
-        subtitle={`${profile.major} Major → ${track?.label ?? "Your goal"}`}
+        subtitle={`${profile.major} Major → ${goalLabel}`}
         meta={[profile.major, profile.year, profile.school]}
       />
 
@@ -209,7 +224,9 @@ function Dashboard() {
                 <div key={i} className="rounded-xl border bg-card p-3.5">
                   <p className="text-sm font-semibold tracking-tight">{g.gap}</p>
                   <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{g.why}</p>
-                  <p className="mt-1.5 text-[13px] font-medium text-primary">→ {g.action}</p>
+                  {g.action?.trim() ? (
+                    <p className="mt-1.5 text-[13px] font-medium text-primary">→ {g.action}</p>
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -219,48 +236,7 @@ function Dashboard() {
 
       {noDataset ? (
         <NoDatasetState profile={profile} track={track} />
-      ) : (() => {
-        const curatedCount = roadmap.steps.filter((s) => {
-          const o = resolveOpportunity(s.opportunityId);
-          return o && o.origin !== "live";
-        }).length;
-        const liveCount = roadmap.steps.filter((s) => {
-          const o = resolveOpportunity(s.opportunityId);
-          return o && o.origin === "live";
-        }).length;
-        const totalCount = roadmap.steps.length;
-
-        // Only show the data source banner when there's a mix or all-live results
-        if (liveCount === 0) return null;
-
-        return (
-          <div className="mt-4 rounded-xl border bg-muted/50 px-4 py-3">
-            <div className="flex flex-wrap items-center gap-3 text-[13px]">
-              <span className="font-semibold text-foreground">
-                {totalCount} step{totalCount !== 1 ? "s" : ""} in your roadmap
-              </span>
-              <span className="text-muted-foreground/50">&middot;</span>
-              {curatedCount > 0 ? (
-                <span className="inline-flex items-center gap-1.5 text-green-700 dark:text-green-400">
-                  <span className="inline-block h-2 w-2 rounded-full bg-green-500/60" />
-                  {curatedCount} verified
-                </span>
-              ) : null}
-              {liveCount > 0 ? (
-                <span className="inline-flex items-center gap-1.5 text-primary/80">
-                  <span className="inline-block h-2 w-2 rounded-full bg-primary/50" />
-                  {liveCount} found via search
-                </span>
-              ) : null}
-            </div>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-              {curatedCount > 0
-                ? "Curated steps come from Sylo\u2019s verified database. Live results were searched in real time and cross-checked before appearing here."
-                : "Searched live for your goal and school, then cross-checked each result before showing it to you."}
-            </p>
-          </div>
-        );
-      })()}
+      ) : null}
 
 
       {/* <ProgressStrip
@@ -597,7 +573,7 @@ function Dashboard() {
         <div className={cn("mt-5 grid gap-5", gridCols)}>
           <div className="rounded-2xl border border-primary/12 bg-primary/[0.04] p-5">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-primary/70">This term</p>
-            <p className="mt-1 text-[13px] text-muted-foreground">Verified openings at your school.</p>
+            <p className="mt-1 text-[13px] text-muted-foreground">Open near-term programs matched to your goal.</p>
             <ul className="mt-4 space-y-3.5">
               {termOps.length ? (
                 termOps.map((op) => (
@@ -609,8 +585,13 @@ function Dashboard() {
                     >
                       {op.name}
                     </Link>
-                    <div className="mt-1.5">
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                       <Tag tone="amber">{op.timeframe}</Tag>
+                      {opportunityReach(op) === "school" ? (
+                        <Tag tone="green">{op.school}</Tag>
+                      ) : (
+                        <Tag tone="blue">National</Tag>
+                      )}
                     </div>
                   </li>
                 ))
@@ -751,6 +732,7 @@ function Dashboard() {
       </section>
       */}
 
+{/*
       <section className="mt-10 border-t pt-5">
         <Link
           to="/opportunity-details"
@@ -781,7 +763,9 @@ function Dashboard() {
         </Link>
       </section>
 
-      <section className="mt-8 border-t pt-5">
+*/}
+
+      <section className="mt-10 border-t pt-5">
         <Link
           to="/paths"
           className="tap inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
@@ -947,7 +931,6 @@ function SortableStep({
               <DeadlinePill deadline={op.deadline} recurring={false} />
               <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={op.link} compact />
               <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
-              {op.origin === "live" ? <FoundViaSearchBadge /> : null}
               {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}
             </div>
             <button
@@ -1036,9 +1019,9 @@ function DependencyChain({
         className="tap flex w-full items-center gap-2 text-left"
       >
         <GitBranch className="h-3 w-3 shrink-0 text-primary/60" aria-hidden="true" />
-        <span className="flex-1 text-[12px] font-medium text-primary/80">
+        <span className="flex-1 truncate text-[12px] font-medium text-primary/80">
           {unlocks?.length
-            ? `Opens doors to ${unlocks.length} opportunity${unlocks.length > 1 ? " pathways" : " pathway"}`
+            ? `Unlocks: ${unlocks[0]}${unlocks.length > 1 ? ` +${unlocks.length - 1} more` : ""}`
             : "Context"}
         </span>
         {expanded ? (
@@ -1282,7 +1265,9 @@ function NoDatasetState({ profile, track }: { profile: NonNullable<ReturnType<ty
   const [failed, setFailed] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const busyLabel = useSearchProgressLabel(searching);
-  const hasGoal = Boolean(profile.goalText?.trim());
+  // A career goal is present if they typed one OR picked a known track.
+  const hasGoal = Boolean(profile.goalText?.trim() || (profile.trackId && profile.trackId !== "something-else"));
+  const displayGoal = profile.goalText?.trim() || track?.label || "your goal";
 
   async function retrySearch() {
     setSearching(true);
@@ -1294,6 +1279,14 @@ function NoDatasetState({ profile, track }: { profile: NonNullable<ReturnType<ty
         major: profile.major,
         year: profile.year,
         school: profile.school,
+        // Pass the full resume context so the retry search is as personalized
+        // (and seniority-aware) as the original generation.
+        experience: profile.experience,
+        gpa: profile.gpa,
+        skills: profile.skills,
+        priorWork: profile.priorWork,
+        clubs: profile.clubs,
+        alreadyDone: profile.alreadyDone,
         diversitySelfId: profile.diversitySelfId,
       });
       if (roadmap.steps.length > 0) {
@@ -1348,7 +1341,7 @@ function NoDatasetState({ profile, track }: { profile: NonNullable<ReturnType<ty
       {failed ? (
         <>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Sylo searched for &ldquo;{profile.goalText}&rdquo; at {profile.school} and only shows
+            Sylo searched for &ldquo;{displayGoal}&rdquo; at {profile.school} and only shows
             results it can verify. Nothing passed the bar this time{attempts > 1 ? ` (${attempts} attempts)` : ""}
             &mdash; try again or add your own steps below.
           </p>

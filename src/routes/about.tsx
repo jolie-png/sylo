@@ -96,7 +96,7 @@ function AboutPage() {
             step, one deadline, one reason why it matters right now.
           </p>
           <p>
-            Under the hood: 125+ verified pipeline programs — fellowships, insight days, diversity cohorts,
+            Under the hood: 125+ curated programs — fellowships, insight days, diversity cohorts,
             research funding — filtered to what&apos;s open to that student right now, sequenced by leverage
             and deadline, with direct links to the actual application page.
           </p>

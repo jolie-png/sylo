@@ -102,8 +102,16 @@ function ProfilePage() {
     { label: "Major", key: "major", options: MAJORS, allowOther: true },
     { label: "Year", key: "year", options: YEARS, allowOther: true },
     { label: "University", key: "school", options: [], allowOther: true, combobox: true },
-    { label: "Career goal", key: "trackId", options: TRACKS.filter((t) => t.id !== "something-else").map((t) => t.id), allowOther: true },
   ];
+
+  // Career goal is typed freely (like Name) rather than picked from pills. A typed
+  // value that matches a known track label maps to that track so curated
+  // opportunity filtering still works; anything else falls back to cross-track
+  // search via goalText.
+  const isKnownTrack = draft.trackId !== "something-else" && TRACKS.some((t) => t.id === draft.trackId);
+  const careerGoalValue = isKnownTrack
+    ? TRACKS.find((t) => t.id === draft.trackId)?.label ?? ""
+    : draft.goalText ?? "";
 
   return (
     <Workspace wide>
@@ -234,11 +242,18 @@ function ProfilePage() {
           );
         })}
         <div className="flex items-start justify-between gap-6 py-3 text-sm first:pt-0 last:pb-0">
-          <span className="w-36 shrink-0 pt-1.5 text-muted-foreground">In your own words</span>
+          <span className="w-36 shrink-0 pt-1.5 text-muted-foreground">Career goal</span>
           <input
-            value={draft.goalText}
-            onChange={(e) => updateDraft({ goalText: e.target.value })}
-            placeholder="Optional"
+            value={careerGoalValue}
+            onChange={(e) => {
+              const text = e.target.value;
+              const match = TRACKS.find(
+                (t) => t.id !== "something-else" && t.label.toLowerCase() === text.trim().toLowerCase(),
+              );
+              if (match) updateDraft({ trackId: match.id, goalText: "" });
+              else updateDraft({ trackId: "something-else", goalText: text });
+            }}
+            placeholder="e.g. Product Manager"
             className="flex-1 rounded-xl border bg-background px-3 py-1.5 text-right text-sm outline-none transition-colors focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
           />
         </div>
@@ -257,7 +272,8 @@ function ProfilePage() {
               updateDraft({
                 name: data.name?.trim() || draft!.name,
                 school: data.school?.trim() || draft!.school,
-                year: data.year?.trim() || draft!.year,
+                // Year is intentionally not auto-filled — the student selects it.
+                gpa: data.gpa?.trim() || draft!.gpa,
                 experience: data.experience?.trim() || draft!.experience,
                 skills: data.skills?.trim() || draft!.skills,
                 priorWork: data.priorWork?.trim() || draft!.priorWork,

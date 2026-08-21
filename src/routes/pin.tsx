@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, ImagePlus, MapPin, Pencil, Check, ArrowRight } from "lucide-react";
 import { Workspace, PageHeader } from "@/components/workspace";
 import { usePin, type PinItem } from "@/lib/pin-store";
@@ -33,8 +33,9 @@ export const Route = createFileRoute("/pin")({
 });
 
 function PinPage() {
-  const { items, addItem, updateItem, deleteItem, linkToRoadmap, seedItems } = usePin();
-  const { customSteps, addCustomStep, profile } = useWayfind();
+  const { items, addItem, updateItem, deleteItem, seedItems } = usePin();
+  const { profile } = useWayfind();
+  const navigate = useNavigate();
   const [collapsedTopics, setCollapsedTopics] = useState<Record<string, boolean>>({});
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [editingTopic, setEditingTopic] = useState<string | null>(null);
@@ -52,40 +53,16 @@ function PinPage() {
     if (pins.length > 0) seedItems(pins);
   }, [profile?.personaName, items.length, seedItems]);
 
-  // Track pending links
-  const pendingLinksRef = useRef<Map<string, string>>(new Map());
-
-  useEffect(() => {
-    if (pendingLinksRef.current.size === 0) return;
-    for (const [pinItemId, stepTitle] of pendingLinksRef.current.entries()) {
-      const matchingStep = [...customSteps].reverse().find((s) => s.title === stepTitle);
-      if (matchingStep) {
-        linkToRoadmap(pinItemId, matchingStep.id);
-        pendingLinksRef.current.delete(pinItemId);
-      }
-    }
-  }, [customSteps, linkToRoadmap]);
-
+  // "Add to roadmap" sends the pin to the Progress board's "From Pin Drop" tray
+  // rather than creating a Not Started step directly. A saved pin is already
+  // unlinked, so it shows in that tray automatically — the student then drags it
+  // into Not Started / In Progress / Complete, which is where it becomes a
+  // tracked step (and picks up the "From Pin Drop" label).
   const handleAddToRoadmap = useCallback(
-    (item: PinItem) => {
-      const title = item.opportunityDetails?.name || item.title;
-      const noteLines: string[] = [];
-      if (item.opportunityDetails) {
-        if (item.opportunityDetails.description) noteLines.push(item.opportunityDetails.description);
-        if (item.opportunityDetails.requirements.length > 0) {
-          noteLines.push(`Requirements: ${item.opportunityDetails.requirements.join(", ")}`);
-        }
-        if (item.opportunityDetails.contact) noteLines.push(`Contact: ${item.opportunityDetails.contact}`);
-      }
-      pendingLinksRef.current.set(item.id, title);
-      addCustomStep({
-        title,
-        note: noteLines.length > 0 ? noteLines.join("\n") : undefined,
-        targetDate: item.opportunityDetails?.deadline || item.detectedDate || undefined,
-        source: "pin-drop",
-      });
+    (_item: PinItem) => {
+      navigate({ to: "/progress" });
     },
-    [addCustomStep],
+    [navigate],
   );
 
   // Group items by topic

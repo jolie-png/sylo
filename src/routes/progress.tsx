@@ -337,6 +337,9 @@ function Progress() {
                 </span>
               </span>
             </div>
+            <p className="px-1 pb-2 text-[11px] leading-relaxed text-muted-foreground">
+              Drag a pin into <span className="font-medium text-foreground/70">Not Started</span>, <span className="font-medium text-foreground/70">In Progress</span>, or <span className="font-medium text-foreground/70">Complete</span> to add it to your roadmap and start tracking it.
+            </p>
             <div className="space-y-2">
               {pinItems.filter((p) => !p.linkedStepId).map((pin) => (
                 <div
@@ -396,7 +399,7 @@ function Progress() {
                         if (pinnedItem.opportunityDetails.description) noteLines.push(pinnedItem.opportunityDetails.description);
                         if (pinnedItem.opportunityDetails.requirements.length > 0) noteLines.push("Requirements: " + pinnedItem.opportunityDetails.requirements.join(", "));
                       }
-                      addCustomStep({ title, note: noteLines.join("\n") || undefined, targetDate: pinnedItem.detectedDate || undefined });
+                      addCustomStep({ title, note: noteLines.join("\n") || undefined, targetDate: pinnedItem.detectedDate || undefined, source: "pin-drop" });
                       linkToRoadmap(pinnedItem.id, "custom-" + Date.now());
                     } else {
                       if (col.key === "complete") {

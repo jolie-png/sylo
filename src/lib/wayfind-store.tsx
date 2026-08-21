@@ -579,9 +579,34 @@ export function WayfindProvider({ children }: { children: ReactNode }) {
         ? ["op-gt-createx-learn", "op-gt-coop", "op-gt-grip"]
         : ["op-ucla-bisep", "op-ucla-hhmi-pathways", "op-ucla-mcdb-research"],
     );
-    // Seed Pin Drop with demo data
+    // Seed Pin Drop with demo data, PRE-CONNECTED to the roadmap. Each real
+    // opportunity pin is linked to a matching "pin-drop" roadmap step (the same
+    // shape produced when a student clicks "Add to roadmap"), so the progress
+    // board shows them as From-Pin-Drop step cards — consistent with the manual
+    // flow — instead of leaving them stranded in the staging column. Reference
+    // pins (resource hubs, program lists) stay unlinked so they remain in the
+    // staging column and the board isn't cluttered with non-actionable items.
     const demoPins = persona.id === "maya" ? MAYA_PINS : ALEX_PINS;
-    localStorage.setItem("catch:state:v1", JSON.stringify({ items: demoPins }));
+    const pinSteps: CustomStep[] = [];
+    const linkedPins = demoPins.map((p, i) => {
+      if (!p.isOpportunityLike) return p; // stays unlinked → shows in the staging column
+      const stepId = `custom-pin-${persona.id}-${i}`;
+      const noteLines: string[] = [];
+      if (p.opportunityDetails?.description) noteLines.push(p.opportunityDetails.description);
+      if (p.opportunityDetails?.requirements?.length) noteLines.push(`Requirements: ${p.opportunityDetails.requirements.join(", ")}`);
+      if (p.opportunityDetails?.contact) noteLines.push(`Contact: ${p.opportunityDetails.contact}`);
+      pinSteps.push({
+        id: stepId,
+        title: p.opportunityDetails?.name || p.title,
+        note: noteLines.length ? noteLines.join("\n") : undefined,
+        targetDate: p.opportunityDetails?.deadline || p.detectedDate || undefined,
+        status: "not-started" as StepStatus,
+        source: "pin-drop",
+      });
+      return { ...p, linkedStepId: stepId };
+    });
+    setCustomSteps((prev) => [...prev, ...pinSteps]);
+    localStorage.setItem("catch:state:v1", JSON.stringify({ items: linkedPins }));
     // Force PinProvider to re-hydrate by dispatching a storage event
     window.dispatchEvent(new CustomEvent("pin-store-updated"));
   }, []);

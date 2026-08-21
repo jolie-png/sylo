@@ -245,7 +245,10 @@ function Progress() {
 
       {showAddForm && (
         <div className="mt-3 space-y-4">
-          {/* Link extractor */}
+          {/* Link extractor is disabled here for now. Flip to `true` to bring back
+              "Paste a link — Sylo extracts the details" and the divider. */}
+          {false && (
+          <>
           <LinkExtractor
             onExtracted={(details) => {
               const noteLines = [details.description];
@@ -270,6 +273,8 @@ function Progress() {
             <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">or add manually</span>
             <div className="h-px flex-1 bg-border" />
           </div>
+          </>
+          )}
 
           {/* Manual form */}
           <form

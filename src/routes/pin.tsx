@@ -137,7 +137,7 @@ function PinPage() {
         title="Pin Drop"
         subtitle={
           <>
-            Screenshot or paste a link to anything — a program, a deadline, a reminder. Sylo extracts the title, deadline, and details, and when the item lists requirements it checks whether you&apos;re eligible. Add any of it to your{" "}
+            Screenshot or paste a link to anything — a program, a deadline, a reminder. Sylo extracts the title, deadline, and details. Add any of it to your{" "}
             <Link to="/dashboard" className="font-medium text-primary underline-offset-4 hover:underline">roadmap</Link>
             {" "}and track it in your{" "}
             <Link to="/progress" className="font-medium text-primary underline-offset-4 hover:underline">progress board</Link>.

@@ -44,20 +44,20 @@ export type ExtractResult = ExtractedProgram | { error: string };
 // Prompt
 // ---------------------------------------------------------------------------
 
-const SYSTEM_PROMPT = `You are a program details extractor for undergraduate students. Given the text content of a webpage about a university program, fellowship, internship, or opportunity, extract and return a JSON object with:
+const SYSTEM_PROMPT = `You are an opportunity extractor for undergraduate students. You are given the text of ANY webpage a student wants to save: a single program/fellowship/internship page, a job posting, an aggregator or listing page (many openings), a club or org page, or a general career resource. Return a JSON object with:
 
-- name: The official program name
-- deadline: Application deadline in YYYY-MM-DD format. If no exact date, use empty string ""
-- requirements: Array of eligibility requirements (major, year, GPA, etc.)
-- description: 1-2 sentence summary of what the program offers
-- category: Exactly one of: Research, Internship, Fellowship, Club, Funding, Advising, Course
-- timeframe: When the program runs (e.g. "Summer - 8 weeks", "Fall semester", "Rolling")
-- contact: Program contact info (office, email, or department)
+- name: The most specific title of what the page is about. For a single program or posting, its official name. For a listing/aggregator/resource page, the page or resource title (e.g. "2027 U.S. & Canada Internships List", "Morgan Stanley Career Opportunities"). Use the page's main heading or <title> if there is no formal program name.
+- deadline: Application deadline in YYYY-MM-DD format ONLY if explicitly stated. Otherwise "".
+- requirements: Array of eligibility requirements explicitly stated (major, year, GPA, etc.). Empty array [] if none.
+- description: 1-2 sentence, student-facing summary of what this page or opportunity offers.
+- category: Best-fit single value from exactly: Research, Internship, Fellowship, Club, Funding, Advising, Course. If unclear, pick the closest fit.
+- timeframe: When it runs if stated (e.g. "Summer - 8 weeks", "Fall semester", "Rolling"). Otherwise "".
+- contact: Contact info (office, email, or department) if stated. Otherwise "".
 
 Rules:
 1. Return ONLY a JSON object. No markdown, no explanation.
-2. Only extract information explicitly stated on the page. Never invent details.
-3. If a field has no information on the page, use empty string "" (or empty array for requirements).
+2. Never invent specific facts. Deadlines, GPA cutoffs, requirements, and contacts must be "" or [] unless explicitly present on the page.
+3. ALWAYS produce a usable name and description from whatever the page is about. A listing, aggregator, or resource page is still worth saving — summarize what it is. Only leave name and description empty if the page has no readable content at all.
 4. For deadline, prefer the next upcoming deadline. Convert to YYYY-MM-DD format.
 5. Keep description concise and student-facing.`;
 
@@ -93,6 +93,7 @@ export const extractOpportunity = createServerFn({ method: "POST" })
 
     // Step 1: Fetch the page
     let pageText: string;
+    let pageTitle = "";
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10_000);
@@ -111,6 +112,19 @@ export const extractOpportunity = createServerFn({ method: "POST" })
       }
 
       const html = await response.text();
+
+      // Grab the <title> up front so we can fall back to it if the model can't
+      // find a formal program name (aggregator/listing/JS-shell pages).
+      const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+      if (titleMatch) {
+        pageTitle = titleMatch[1]
+          .replace(/&nbsp;/g, " ")
+          .replace(/&amp;/g, "&")
+          .replace(/&#\d+;/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
       pageText = htmlToText(html);
 
       // Cap at ~12k chars to stay within token limits
@@ -171,14 +185,22 @@ export const extractOpportunity = createServerFn({ method: "POST" })
         return { error: "The page didn't have enough program details to extract. Try a specific program page with deadlines and requirements." };
       }
 
-      // Only treat it as a failure when nothing meaningful came back — a name or a
-      // description is enough to make a usable pin, even if the deadline or
-      // requirements are missing.
-      if (!parsed.data.name.trim() && !parsed.data.description.trim()) {
-        return { error: "The page didn't have enough program details to extract. Try a specific program page with deadlines and requirements." };
+      const result = parsed.data;
+
+      // Last-resort fallback: if the model returned no name/description at all but
+      // we did fetch readable text, salvage a usable pin from the page's <title>
+      // and the first slice of text rather than rejecting the link outright. This
+      // is what keeps aggregator/listing/JS-shell pages from erroring.
+      if (!result.name.trim()) {
+        result.name = pageTitle || "Saved link";
+      }
+      if (!result.description.trim()) {
+        result.description = pageTitle
+          ? `Saved from ${pageTitle}.`
+          : "Saved link — add details below.";
       }
 
-      return parsed.data;
+      return result;
     } catch {
       return { error: "Extraction failed. Try again in a moment." };
     }

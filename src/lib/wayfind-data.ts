@@ -85,6 +85,63 @@ export type Opportunity = {
   singleSourced?: boolean;
 };
 
+/** True when `raw` is a well-formed http(s) URL. */
+function isValidHttpUrl(raw: string | undefined | null): boolean {
+  if (!raw) return false;
+  try {
+    const u = new URL(raw.trim());
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/** A Google search URL for a program — always resolves to something useful. */
+export function programSearchUrl(name: string, school?: string): string {
+  const q = [name, school && school !== "any" ? school : ""].filter(Boolean).join(" ").trim();
+  return `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+}
+
+/**
+ * Resolve a guaranteed-usable link for an opportunity — never a dead end.
+ * - Curated (seed) opportunities: trust their hand-verified link.
+ * - Live (AI-generated) opportunities: trust the link only when a real search
+ *   source backs the same domain; otherwise use the first real search-result
+ *   URL, and finally fall back to a program search that always resolves.
+ */
+export function opportunityLink(op: Opportunity): string {
+  const link = op.link?.trim();
+  const linkValid = isValidHttpUrl(link);
+  const isLive = op.origin === "live";
+
+  // Curated data links are hand-checked — trust them.
+  if (linkValid && !isLive) return link!;
+
+  // A live link is trustworthy only if a real source corroborates its domain.
+  if (linkValid && isLive && op.sources?.length) {
+    try {
+      const host = new URL(link!).host.replace(/^www\./, "");
+      const corroborated = op.sources.some((s) => {
+        try {
+          return new URL(s.url).host.replace(/^www\./, "") === host;
+        } catch {
+          return false;
+        }
+      });
+      if (corroborated) return link!;
+    } catch {
+      /* fall through to fallbacks */
+    }
+  }
+
+  // Next best: a real URL that actually came from search results.
+  const source = op.sources?.find((s) => isValidHttpUrl(s.url));
+  if (source) return source.url;
+
+  // Guaranteed fallback — a search that always resolves to the real program.
+  return programSearchUrl(op.name, op.school);
+}
+
 
 export type Course = {
   code: string;

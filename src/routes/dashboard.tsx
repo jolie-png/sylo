@@ -28,7 +28,7 @@ import {
   CuratedBadge,
 } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
-import { getTrack, milestonesForTrack, POST_GRAD_YEARS, GRAD_YEARS, YEARS, isGradStudent, opportunityReach } from "@/lib/wayfind-data";
+import { getTrack, milestonesForTrack, POST_GRAD_YEARS, GRAD_YEARS, YEARS, isGradStudent, opportunityReach, opportunityLink } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
 import { formatTargetDate } from "@/lib/terms";
 import { useRoadmapGeneration, useSearchProgressLabel } from "@/lib/use-roadmap-generation";
@@ -272,7 +272,7 @@ function Dashboard() {
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Tag tone="amber">{topOp.timeframe}</Tag>
             <DeadlinePill deadline={topOp.deadline} recurring={false} />
-            <CalendarButton name={topOp.name} deadline={topOp.deadline} description={topOp.leverage} url={topOp.link} compact />
+            <CalendarButton name={topOp.name} deadline={topOp.deadline} description={topOp.leverage} url={opportunityLink(topOp)} compact />
             <Link
               to="/opportunity-details"
               search={{ id: topOp.id }}
@@ -931,7 +931,7 @@ function SortableStep({
               </Link>
               <span className="text-xs text-muted-foreground">{op.timeframe}</span>
               <DeadlinePill deadline={op.deadline} recurring={false} />
-              <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={op.link} compact />
+              <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={opportunityLink(op)} compact />
               <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
               {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}
             </div>

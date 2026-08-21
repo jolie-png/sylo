@@ -25,7 +25,7 @@ import {
 } from "@/components/workspace";
 import { LongViewBoard } from "@/components/long-view-board";
 import { useWayfind } from "@/lib/sylo-store";
-import { type StepStatus } from "@/lib/wayfind-data";
+import { type StepStatus, opportunityLink } from "@/lib/wayfind-data";
 import { cn } from "@/lib/utils";
 import { LinkExtractor } from "@/components/link-extractor";
 import { AcademicTermSelector } from "@/components/academic-term-selector";
@@ -586,7 +586,7 @@ function Progress() {
                               {due.text}
                             </span>
                           ) : null}
-                          <CalendarButton name={op.name} deadline={op.deadline} description={s.reasoning} url={op.link} compact />
+                          <CalendarButton name={op.name} deadline={op.deadline} description={s.reasoning} url={opportunityLink(op)} compact />
                         </div>
                       </div>
                     );

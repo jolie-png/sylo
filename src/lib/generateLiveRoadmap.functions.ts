@@ -504,10 +504,11 @@ function buildSystemPrompt() {
     "- ALWAYS include a 'gapAnalysis' object: strengths (2-3 strings citing SPECIFIC things from their profile), gaps (2-3 items of {gap, why, action} — what's actually missing given their background), bottomLine (one sentence on their single biggest focus).",
     "- In each opportunity's reasoning, reference the student's specific background and name the gap this step fills.",
     "",
-    "LINKS (this is what makes each card useful — do not skip):",
-    "- Every opportunity MUST have a 'link' that is the DIRECT official application or program page (the program's own page on the company/organization site) — NOT a search-result page, article, or generic careers homepage.",
-    "- Prefer an official URL present in the SEARCH RESULTS. If search doesn't contain it, use the program's real official URL from your knowledge (its canonical domain, e.g. a company's careers/programs page or the program's own site).",
-    "- Put that official link in 'link' and also list it in 'sources'. NEVER link to job boards or aggregators (Indeed, LinkedIn, ZipRecruiter, GitHub lists, Reddit, 'top 10' articles).",
+    "LINKS (this is what makes each card useful):",
+    "- For 'link', give the DIRECT official application or program page (the program's own page on the company/organization site) — NOT a search-result page, article, or generic careers homepage.",
+    "- Prefer an official URL present in the SEARCH RESULTS. If search doesn't contain it, use the program's real official URL from your knowledge ONLY when you are confident it is correct.",
+    "- CRITICAL — never guess or fabricate a URL. If you are not confident of the exact official URL, leave 'link' as an empty string \"\" and rely on 'sources' instead. A wrong link is worse than no link; the app will fall back to the real source or a program search.",
+    "- Put any official link in 'link' and also list it (plus any backing pages) in 'sources'. NEVER link to job boards or aggregators (Indeed, LinkedIn, ZipRecruiter, GitHub lists, Reddit, 'top 10' articles).",
     "",
     "PER-OPPORTUNITY FIELDS:",
     "- name: the official program name (e.g. 'Meta Rotational Product Manager (RPM) Program').",
@@ -638,7 +639,7 @@ function buildUserPrompt(data: z.infer<typeof Input>, searchResults: string) {
     "",
     "Use these results to confirm which programs are live and to find official application links. Then produce the definitive ranked list of REAL, NAMED opportunities for this student — drawing on your own knowledge of the landscape, not just what appears above. Match the caliber of a curated advisor's list.",
     "Rank by leverage and fit to their background. Include 1-2 candid lower-fit options with honest reasoning about why they rank lower.",
-    "For EVERY opportunity, give a DIRECT official application/program link (from the results if present, otherwise the program's real official URL), plus upstream (what it builds on), unlocks (what it opens), and window (timing). If no prerequisite exists, set upstream to 'None — open to all eligible students'.",
+    "For EVERY opportunity, give a DIRECT official application/program link when you are confident of it (from the results if present, otherwise the program's real official URL); if unsure, leave 'link' empty and rely on 'sources'. Also give upstream (what it builds on), unlocks (what it opens), and window (timing). If no prerequisite exists, set upstream to 'None — open to all eligible students'.",
     "ALWAYS include a gapAnalysis object — strengths must cite SPECIFIC things from their profile, gaps must identify what's ACTUALLY missing given their background.",
     "Only include a deadline when you're confident it's the current cycle; otherwise leave it empty and rely on timeframe. Never guess a date.",
     "Return strict JSON.",
@@ -672,8 +673,12 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     // sometimes ends the name like a sentence ("...Analyst Program."), which
     // reads oddly as a card title. Keep internal punctuation intact.
     const name = trim(raw.name, 120).replace(/\s*\.+\s*$/, "").trim();
-    const link = safeUrl(raw.link);
-    if (!name || !link) continue;
+    // Keep the model's link only when it's a well-formed URL; otherwise leave it
+    // empty and let opportunityLink() fall back to a real source URL or a program
+    // search at render time. We no longer drop a card just for a missing/bad link
+    // — that was leaving users with dead-end opportunities.
+    const link = safeUrl(raw.link) ?? "";
+    if (!name) continue;
 
     // Reject generic career portal pages that aren't specific programs
     const genericPageNames = /^(students?|careers?|early\s*careers?|internships?\s*(&|and)\s*programs?|programs?|opportunities|jobs?)$/i;
@@ -715,7 +720,7 @@ function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof 
     // A knowledge-named program may arrive without a separate sources array — its
     // official 'link' is the source of truth, so synthesize one rather than drop
     // the card.
-    if (sources.length === 0) {
+    if (sources.length === 0 && link) {
       const host = hostOf(link);
       sources.push({ title: host || name, url: link });
     }

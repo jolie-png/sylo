@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Heart, Pin, PinOff, SlidersHorizontal, Search, Plus, Check } from "lucide-react";
 import { Tag, FoundViaSearchBadge } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
+import { opportunityLink } from "@/lib/wayfind-data";
 import { OPPORTUNITIES } from "@/lib/opportunities-db";
 import { type Opportunity, type TrackId } from "@/lib/wayfind-data";
 import { Input } from "@/components/ui/input";
@@ -291,7 +292,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
                           e.stopPropagation();
                           addCustomStep({
                             title: op.name,
-                            note: `${full?.leverage || op.leverage || ""}\n\nLink: ${op.link}`,
+                            note: `${full?.leverage || op.leverage || ""}\n\nLink: ${opportunityLink(full ?? op)}`,
                             targetDate: op.deadline || undefined,
                             source: "opportunity",
                           });

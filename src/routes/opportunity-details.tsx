@@ -11,7 +11,7 @@ import {
   FoundViaSearchBadge,
 } from "@/components/workspace";
 import { useWayfind } from "@/lib/sylo-store";
-import { getTrack } from "@/lib/wayfind-data";
+import { getTrack, opportunityLink } from "@/lib/wayfind-data";
 import { OpportunityBrowser } from "@/components/opportunity-browser";
 import { DeadlinePill } from "@/components/deadline-badges";
 import { LinkifyText } from "@/components/linkify-text";
@@ -243,7 +243,7 @@ function Details() {
           <PropertyRow label="Deadline">
             <Tag tone="amber">{op.timeframe}</Tag>
             <DeadlinePill deadline={op.deadline} />
-            <CalendarButton name={op.name} deadline={op.deadline} description={op.leverage} url={op.link} compact />
+            <CalendarButton name={op.name} deadline={op.deadline} description={op.leverage} url={opportunityLink(op)} compact />
           </PropertyRow>
           {/* <PropertyRow label="Timeline"><LinkifyText text={op.timeline} /></PropertyRow> */}
           {/* <PropertyRow label="Link">
@@ -270,22 +270,15 @@ function Details() {
         </div>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          {(() => {
-            const urlMatch = !op.link && op.leverage ? op.leverage.match(/https?:\/\/[^\s,)]+/) : null;
-            const noteMatch = custom?.note ? custom.note.match(/https?:\/\/[^\s,)]+/) : null;
-            const displayLink = (op.link && !op.link.includes("campus.edu")) ? op.link : urlMatch?.[0] ?? noteMatch?.[0] ?? null;
-            return displayLink ? (
-              <a
-                href={displayLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="tap group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
-              >
-                Open program page
-                <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
-              </a>
-            ) : null;
-          })()}
+          <a
+            href={opportunityLink(op)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tap group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+          >
+            Open program page
+            <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
+          </a>
 
           {step === undefined && roadmap && !justAdded && !customSteps.some((s) => s.title === op.name) && (
             <button
@@ -293,7 +286,7 @@ function Details() {
               onClick={() => {
                 addCustomStep({
                   title: op.name,
-                  note: `${op.leverage}\n\nLink: ${op.link}`,
+                  note: `${op.leverage}\n\nLink: ${opportunityLink(op)}`,
                   targetDate: op.deadline || undefined,
                   source: "opportunity",
                 });
@@ -400,7 +393,7 @@ function Details() {
         <PropertyRow label="Deadline">
           <Tag tone="amber">{op.timeframe}</Tag>
           <DeadlinePill deadline={op.deadline} />
-          <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={op.link} compact />
+          <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={opportunityLink(op)} compact />
         </PropertyRow>
         {/* <PropertyRow label="Timeline"><LinkifyText text={op.timeline} /></PropertyRow> */}
         {/* <PropertyRow label="Link">
@@ -447,14 +440,10 @@ function Details() {
       </div>
 
       {(() => {
-        // Extract link from op.link, or from leverage/note text as fallback (for demoted steps)
-        const urlMatch = !op.link && op.leverage ? op.leverage.match(/https?:\/\/[^\s,)]+/) : null;
-        const displayLink = (op.link && !op.link.includes("campus.edu")) ? op.link : urlMatch?.[0] ?? null;
-
-        return displayLink ? (
+        return (
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <a
-            href={displayLink}
+            href={opportunityLink(op)}
             target="_blank"
             rel="noopener noreferrer"
             className="tap group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
@@ -462,26 +451,6 @@ function Details() {
             Open program page
             <ExternalLink className="h-4 w-4 opacity-70 transition-opacity group-hover:opacity-100" />
           </a>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">
-            <Check className="h-4 w-4" />
-            On your roadmap & track
-          </span>
-          <button
-            type="button"
-            onClick={() => togglePinned(op.id)}
-            className={cn(
-              "tap inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm",
-              pinnedIds.includes(op.id)
-                ? "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100"
-                : "border-muted-foreground/30 text-muted-foreground hover:bg-muted/50"
-            )}
-          >
-            {pinnedIds.includes(op.id) ? <Heart className="h-4 w-4 fill-current" /> : <Heart className="h-4 w-4" />}
-            {pinnedIds.includes(op.id) ? "Saved" : "Save"}
-          </button>
-        </div>
-        ) : (
-        <div className="mt-6 flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">
             <Check className="h-4 w-4" />
             On your roadmap & track

@@ -513,7 +513,7 @@ function buildSystemPrompt() {
     "PER-OPPORTUNITY FIELDS:",
     "- name: the official program name (e.g. 'Meta Rotational Product Manager (RPM) Program').",
     "- category: exactly one of " + CATEGORIES.join(", ") + ".",
-    "- timeframe: a stable, knowledge-based descriptor of format/length (e.g. 'Full-time rotational (2 years)', 'Summer (12 weeks)', 'Self-paced (40 hours)', 'Semester-long (team-based)'). This is NOT a calendar date.",
+    "- timeframe: a stable descriptor of format/length AND, when there's no sourced deadline, the application window (when to apply/prepare). E.g. 'Summer (12 weeks) — applications typically open in winter', 'Full-time rotational (2 years) — recruits in early fall', 'Rolling — apply anytime'. This is NOT a fabricated calendar date.",
     "",
     "WHAT COUNTS AS AN OPPORTUNITY (name real programs, not noise):",
     "- Each card must be a specific, named program, role, competition, fellowship, or certification a student can actually apply to — e.g. 'Meta RPM Program', 'Insight Data Science Fellowship', 'Kaggle competition', a named company new-grad/rotational program.",
@@ -537,14 +537,15 @@ function buildSystemPrompt() {
     "- Connect each opportunity to the SPECIFIC gap it closes. If an opportunity doesn't close a named gap, it's lower priority.",
     "- Think like a career advisor who's seen 100 students make this transition: what did the ones who succeeded have in common? What's this student missing from that pattern?",
     "",
-    "DEADLINE RULES (students want a concrete date — give them one):",
-    "- Fill 'deadline' with a full ISO date (YYYY-MM-DD) for the program's typical CURRENT-cycle application deadline, using the search results and your own knowledge of how the program runs (e.g. Google APM closes in early fall, most APM cohorts recruit Aug–Oct). Relative to today's date in the user prompt, pick the next upcoming occurrence.",
-    "- It is better to give your best-estimate current-cycle date than to leave it blank. Only leave 'deadline' empty when the program is genuinely rolling/continuous — in that case set 'window' to 'Rolling'.",
-    "- Never output a date in the past relative to today, and never use a year more than ~1 cycle out.",
+    "DEADLINE RULES (accuracy over specificity — a wrong date is worse than no date):",
+    "- TIER 1 (sourced date): Fill 'deadline' with a full ISO date (YYYY-MM-DD) ONLY when a specific application deadline for the CURRENT/upcoming cycle appears in the SEARCH RESULTS above. The date must come from a search-result snippet — not from memory, not a prior cycle, not an estimate.",
+    "- TIER 2 (no sourced date): If the search results do NOT contain a specific current-cycle deadline, leave 'deadline' as an empty string \"\". DO NOT guess or estimate a calendar date from general knowledge — that produces false dates.",
+    "- When 'deadline' is empty, set 'timeframe' to an honest application WINDOW that tells the student when to prepare/apply, phrased as guidance, not a hard date. Examples: 'Applications typically open in early fall', 'Rolling — apply anytime', 'Summer program — applications usually open in winter'.",
+    "- Never output a date in the past relative to today, and never use a year more than ~1 cycle out. When in doubt, prefer an empty 'deadline' + a 'timeframe' window over a specific date you can't source.",
     "",
     "reasoning: 2 COMPLETE sentences, plain second person. MUST reference something specific from the student's profile. Never leave a sentence unfinished.",
     "summary: 1-2 forward-framed sentences that reference the student's specific background. Do NOT describe the results as 'live search leads' or mention searching — write it as a confident, curated set of recommendations.",
-    "deadline: best current-cycle ISO YYYY-MM-DD (see DEADLINE RULES); empty only if truly rolling.",
+    "deadline: ISO YYYY-MM-DD ONLY when a specific current-cycle date appears in the search results (see DEADLINE RULES); otherwise empty string.",
     "category: exactly one of " + CATEGORIES.join(", ") + ".",
     "",
     "Chain reasoning fields: gapLabel ONLY on the first opportunity. upstream, unlocks, and window on EVERY opportunity.",
@@ -661,6 +662,65 @@ function slug(name: string, i: number) {
 }
 
 const trim = (s: string, max: number) => cleanText(s, max);
+
+// --- Link reachability verification -----------------------------------------
+// AI-named programs can carry a well-formed but dead URL. We check each live
+// link server-side and, when it clearly fails, swap in a verified source URL or
+// clear it so the UI falls back to a program search — never a 404.
+
+async function urlStatus(url: string, timeoutMs = 3500): Promise<number | "error"> {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), timeoutMs);
+  const headers = { "User-Agent": "Mozilla/5.0 (compatible; Sylo/1.0; link-check)" };
+  try {
+    let res = await fetch(url, { method: "HEAD", redirect: "follow", signal: controller.signal, headers });
+    // Some servers reject HEAD — retry once with GET.
+    if (res.status === 405 || res.status === 501) {
+      res = await fetch(url, { method: "GET", redirect: "follow", signal: controller.signal, headers });
+    }
+    return res.status;
+  } catch {
+    return "error";
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+/** Dead only on clear signals: 404/410, 5xx, or a network/timeout error. We keep
+ *  401/403 (page exists but blocks bots) and any 2xx/3xx as usable. */
+function isDeadStatus(s: number | "error"): boolean {
+  if (s === "error") return true;
+  return s === 404 || s === 410 || s >= 500;
+}
+
+/** Verify every live opportunity's link; replace dead ones with a working source
+ *  URL, or clear the link so the UI resolves a guaranteed program-search fallback. */
+async function verifyOpportunityLinks(result: LiveRoadmap): Promise<void> {
+  await Promise.all(
+    result.opportunities.map(async (op) => {
+      // Curated/seed links are hand-verified — leave them alone.
+      if (op.origin !== "live") return;
+      const link = op.link?.trim();
+      if (link) {
+        const status = await urlStatus(link);
+        if (!isDeadStatus(status)) return; // usable (or blocked-but-exists)
+      }
+      // Primary link dead or empty — try a real source URL (max 2 checks).
+      for (const s of (op.sources ?? []).slice(0, 2)) {
+        const u = s.url?.trim();
+        if (u && u !== link) {
+          const st = await urlStatus(u);
+          if (!isDeadStatus(st)) {
+            op.link = u;
+            return;
+          }
+        }
+      }
+      // Nothing verified — clear the link; opportunityLink() falls back to search.
+      op.link = "";
+    }),
+  );
+}
 
 function clean(parsed: z.infer<typeof LiveResponseSchema>, data: z.infer<typeof Input>): LiveRoadmap | null {
   const track = TRACKS.find((t) => t.id === data.trackId) ?? TRACKS[0];
@@ -1276,6 +1336,17 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
       }
 
       if (result) {
+        // Verify live links resolve (no 404s / error pages). Capped so a slow or
+        // hanging host can never block the response — any links not checked in
+        // time keep their value and the UI fallback still protects them.
+        try {
+          await Promise.race([
+            verifyOpportunityLinks(result),
+            new Promise((r) => setTimeout(r, 9000)),
+          ]);
+        } catch (verifyErr) {
+          console.error("[LIVE-ROADMAP] link verification skipped:", verifyErr instanceof Error ? verifyErr.message : verifyErr);
+        }
         console.error("[LIVE-ROADMAP] success!", { opportunities: result.opportunities.length, curated: curatedResults.length });
         writeCache(cacheKey, result);
       }

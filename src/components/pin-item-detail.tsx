@@ -42,6 +42,10 @@ export function PinItemDetail({
   const [tagInput, setTagInput] = useState("");
   const [showEligibility, setShowEligibility] = useState(false);
 
+  // Temporarily hide the Opportunity badge and "Am I eligible?" button on Pin
+  // Drop. Flip this to `true` to bring both back.
+  const SHOW_OPPORTUNITY_FEATURES: boolean = false;
+
   // Any pinned item can be added to the roadmap (roadmap steps carry notes), so
   // this is no longer gated on whether the item looks like a formal opportunity.
   const showAddButton = !item.linkedStepId;
@@ -123,7 +127,7 @@ export function PinItemDetail({
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
-            {item.isOpportunityLike && (
+            {SHOW_OPPORTUNITY_FEATURES && item.isOpportunityLike && (
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
                 <Sparkles className="h-2.5 w-2.5" />
                 Opportunity
@@ -272,8 +276,8 @@ export function PinItemDetail({
           </div>
         )}
 
-        {/* Eligibility check */}
-        {item.isOpportunityLike && item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && (
+        {/* Eligibility check — temporarily hidden on Pin Drop via SHOW_OPPORTUNITY_FEATURES. */}
+        {SHOW_OPPORTUNITY_FEATURES && item.isOpportunityLike && item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && (
           <div className="mt-4">
             {!showEligibility ? (
               <button

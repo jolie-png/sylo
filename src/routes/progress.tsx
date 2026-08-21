@@ -62,11 +62,18 @@ const COLUMNS: { key: StepStatus; label: string }[] = [
 
 
 
-/** "Due in 3 days" reads faster than a raw date. Derived from data we already have. */
-function relativeDue(iso?: string) {
+/** "Due in 3 days" reads faster than a raw date. Derived from data we already have.
+ *  For `trusted` dates we assert a real countdown; for unverified (AI-found) dates
+ *  we still surface the date but present it as "reported · verify" rather than a
+ *  countdown we can't stand behind. */
+function relativeDue(iso?: string, trusted = true) {
   if (!iso) return null;
   const target = new Date(`${iso}T00:00:00`);
   if (Number.isNaN(target.getTime())) return null;
+  if (!trusted) {
+    const formatted = target.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return { text: `Listed ${formatted} · verify`, urgent: false };
+  }
   const today = new Date();
   const days = Math.round(
     (target.getTime() - new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()) /
@@ -459,7 +466,7 @@ function Progress() {
                   {items.map((s) => {
                     const op = resolveOpportunity(s.opportunityId);
                     if (!op) return null;
-                    const due = relativeDue(op.deadline);
+                    const due = relativeDue(op.deadline, op.origin !== "live");
                     const expanded = !dense && !!openCards[s.id];
                     const isDragging = drag?.id === s.opportunityId;
                     return (

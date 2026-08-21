@@ -25,7 +25,15 @@ export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility
   const showLinkedLabel = !!item.linkedStepId;
   // The eligibility check only makes sense for actual opportunities that list
   // requirements to check against.
-  const showEligibility = item.isOpportunityLike && item.opportunityDetails?.requirements && item.opportunityDetails.requirements.length > 0 && onCheckEligibility;
+  // Temporarily hide the Opportunity badge and "Am I eligible?" button on Pin
+  // Drop. Flip this to `true` to bring both back.
+  const SHOW_OPPORTUNITY_FEATURES: boolean = false;
+  const showEligibility =
+    SHOW_OPPORTUNITY_FEATURES &&
+    item.isOpportunityLike &&
+    item.opportunityDetails?.requirements &&
+    item.opportunityDetails.requirements.length > 0 &&
+    onCheckEligibility;
 
   return (
     <div
@@ -66,7 +74,7 @@ export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility
             <h3 className="line-clamp-2 text-sm font-semibold leading-tight">
               {item.title}
             </h3>
-            {item.isOpportunityLike && (
+            {SHOW_OPPORTUNITY_FEATURES && item.isOpportunityLike && (
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
                 <Sparkles className="h-2.5 w-2.5" />
                 Opportunity

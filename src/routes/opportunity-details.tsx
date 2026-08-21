@@ -242,7 +242,7 @@ function Details() {
           </PropertyRow>
           <PropertyRow label="Deadline">
             <Tag tone="amber">{op.timeframe}</Tag>
-            <DeadlinePill deadline={op.deadline} />
+            <DeadlinePill deadline={op.deadline} unverified={op.origin === "live"} />
             <CalendarButton name={op.name} deadline={op.deadline} description={op.leverage} url={opportunityLink(op)} compact />
           </PropertyRow>
           {/* <PropertyRow label="Timeline"><LinkifyText text={op.timeline} /></PropertyRow> */}
@@ -392,7 +392,7 @@ function Details() {
         </PropertyRow>
         <PropertyRow label="Deadline">
           <Tag tone="amber">{op.timeframe}</Tag>
-          <DeadlinePill deadline={op.deadline} />
+          <DeadlinePill deadline={op.deadline} unverified={op.origin === "live"} />
           <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={opportunityLink(op)} compact />
         </PropertyRow>
         {/* <PropertyRow label="Timeline"><LinkifyText text={op.timeline} /></PropertyRow> */}

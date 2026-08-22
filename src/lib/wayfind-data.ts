@@ -81,7 +81,7 @@ export type Opportunity = {
   origin?: "seed" | "live";
   /** Deadline provenance. "verified" means the date was confirmed on the program's
    *  official page; anything else is a rough anchor and the UI says "verify". */
-  confidence?: "verified" | "estimated";
+  confidence?: "verified" | "estimated" | "curated" | "live" | "community";
   /** Pages found in search that back this opportunity. Live results only. */
   sources?: OpportunitySource[];
   /** Only one independent source could be confirmed after a follow-up search. */

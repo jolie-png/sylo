@@ -85,7 +85,7 @@ export const OpportunityRecordSchema = z.object({
     .array(z.enum(["Freshman", "Sophomore", "Junior", "Senior", "Graduate"]))
     .default([]),
   region: z.string().default("National"),
-  confidence: z.enum(["estimated", "curated", "live", "community"]).default("estimated"),
+  confidence: z.enum(["estimated", "verified", "curated", "live", "community"]).default("estimated"),
   lastVerified: z.string().default(""),
   recurring: z.boolean().default(false),
   source: z.string().default(""),

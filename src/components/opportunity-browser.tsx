@@ -8,6 +8,7 @@ import { OPPORTUNITIES } from "@/lib/opportunities-db";
 import { type Opportunity, type TrackId } from "@/lib/wayfind-data";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { DeadlineText } from "@/components/deadline-text";
 
 const CATEGORIES = ["Research", "Internship", "Fellowship", "Club", "Funding", "Advising", "Course"];
 
@@ -330,7 +331,7 @@ export function OpportunityBrowser({ trackId }: { trackId: string }) {
 
                 <div className="mt-2.5 flex flex-wrap items-center gap-1.5 [&>*]:max-w-full [&>*]:whitespace-normal [&>*]:break-words">
                   <Tag tone="blue">{op.category}</Tag>
-                  <Tag tone="amber">{op.timeframe}</Tag>
+                  <Tag tone="amber"><DeadlineText text={op.timeframe} link={op.link} /></Tag>
                   {trackLabel && <Tag tone="green">{trackLabel}</Tag>}
                   {op.origin === "live" ? <FoundViaSearchBadge /> : null}
                 </div>

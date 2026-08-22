@@ -17,6 +17,7 @@ import { DeadlinePill, isDeadlineUnverified } from "@/components/deadline-badges
 import { LinkifyText } from "@/components/linkify-text";
 import { CalendarButton } from "@/components/calendar-button";
 import { cn } from "@/lib/utils";
+import { DeadlineText } from "@/components/deadline-text";
 
 export const Route = createFileRoute("/opportunity-details")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -241,7 +242,7 @@ function Details() {
             </span>
           </PropertyRow>
           <PropertyRow label="Deadline">
-            <Tag tone="amber">{op.timeframe}</Tag>
+            <Tag tone="amber"><DeadlineText text={op.timeframe} link={opportunityLink(op)} /></Tag>
             <DeadlinePill deadline={op.deadline} unverified={isDeadlineUnverified(op)} />
             <CalendarButton name={op.name} deadline={op.deadline} description={op.leverage} url={opportunityLink(op)} compact />
           </PropertyRow>
@@ -391,7 +392,7 @@ function Details() {
           </span>
         </PropertyRow>
         <PropertyRow label="Deadline">
-          <Tag tone="amber">{op.timeframe}</Tag>
+          <Tag tone="amber"><DeadlineText text={op.timeframe} link={opportunityLink(op)} /></Tag>
           <DeadlinePill deadline={op.deadline} unverified={isDeadlineUnverified(op)} />
           <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={opportunityLink(op)} compact />
         </PropertyRow>
@@ -501,9 +502,9 @@ function Details() {
                 ) : null}
                 <li>• Your school ({profile?.school}) {op.access === "translated" ? `does not host ${op.brandEquivalent}, so this stands in for it.` : "offers this directly — no substitution needed."}</li>
                 {op.window ? (
-                  <li>• <span className="font-medium text-foreground/80">Timing:</span> {op.window}{op.window.endsWith(".") ? "" : "."}</li>
+                  <li>• <span className="font-medium text-foreground/80">Timing:</span> <DeadlineText text={op.window} link={opportunityLink(op)} /></li>
                 ) : op.timeframe ? (
-                  <li>• <span className="font-medium text-foreground/80">Window:</span> {op.timeframe}.</li>
+                  <li>• <span className="font-medium text-foreground/80">Window:</span> <DeadlineText text={op.timeframe} link={opportunityLink(op)} /></li>
                 ) : null}
               </ul>
             ) : null}

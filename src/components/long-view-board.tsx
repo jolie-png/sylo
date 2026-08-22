@@ -15,6 +15,7 @@ import {
 } from "@/lib/wayfind-data";
 import { useWayfind } from "@/lib/sylo-store";
 import { usePostGradProjections } from "@/lib/use-postgrad-projections";
+import { DeadlineText } from "@/components/deadline-text";
 
 type Selection =
   | { kind: "opportunity"; op: Opportunity; status: StepStatus; reasoning?: string }
@@ -244,7 +245,7 @@ export function LongViewBoard({
                   <StatusTag status={selected.status} />
                 </InspectorField>
                 <InspectorField label="Deadline">{selected.op.deadline}</InspectorField>
-                <InspectorField label="Window">{selected.op.timeframe}</InspectorField>
+                <InspectorField label="Window"><DeadlineText text={selected.op.timeframe} link={selected.op.link} /></InspectorField>
                 <InspectorField label="Category">
                   <Tag>{selected.op.category}</Tag>
                 </InspectorField>

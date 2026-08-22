@@ -566,7 +566,8 @@ function Progress() {
                             <Pencil className="h-3 w-3" />
                           </button>
                           {stepNotes[s.opportunityId] ? (
-                            <NoteIndicator note={stepNotes[s.opportunityId]} />
+                            // NoteIndicator commented out per user request
+                            // <NoteIndicator note={stepNotes[s.opportunityId]} />
                           ) : null}
                         </div>
                         {editingStepId === s.id ? (

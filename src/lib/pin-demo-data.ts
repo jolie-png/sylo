@@ -111,7 +111,7 @@ export const ALEX_PINS: PinItem[] = [
       requirements: ["Biology or related STEM major", "Sophomore standing or above", "Current research involvement", "3.5 GPA or higher"],
       description: "Two-quarter fellowship supporting STEM undergrads conducting research with UCLA faculty. Includes professional development seminar and financial support.",
       category: "Research",
-      timeframe: "Applications are typically accepted in fall for a winter-spring cohort — aim to have your materials ready 2-3 weeks before the listed date, and confirm the exact deadline on the URC-Sciences page.",
+      timeframe: "Typical deadline: Fall (for a winter-spring cohort) · Verify date",
       contact: "sciences.ugresearch.ucla.edu",
     },
     createdAt: "2026-08-10T10:00:00.000Z",

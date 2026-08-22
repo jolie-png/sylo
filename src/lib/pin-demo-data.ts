@@ -39,7 +39,7 @@ export const MAYA_PINS: PinItem[] = [
       requirements: ["Computer Science major", "Freshman standing or above", "Faculty research mentor", "3.5 GPA or higher"],
       description: "$1,500 salary award for undergraduates conducting research with GT faculty. 200-300 awards given per year.",
       category: "Research",
-      timeframe: "Applications typically close in early fall — aim to have your faculty mentor commitment and materials ready 2-3 weeks before then, and confirm the exact date on the UROP page (it moves every cycle).",
+      timeframe: "Typical deadline: Early Fall · Verify date",
       contact: "undergradresearch.gatech.edu",
     },
     createdAt: "2026-08-12T09:15:00.000Z",

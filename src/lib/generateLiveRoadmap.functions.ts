@@ -1309,7 +1309,7 @@ export const generateLiveRoadmap = createServerFn({ method: "POST" })
               tags: [],
               yearRelevance: [],
               region: "National",
-              confidence: "curated" as const,
+              confidence: "estimated" as const,
               lastVerified: "",
               recurring: false,
               source: "",

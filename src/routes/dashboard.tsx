@@ -41,7 +41,7 @@ import { WavyConnector, StatusAccentBar } from "@/components/roadmap-connector";
 import { InlineNoteEditor } from "@/components/inline-note-editor";
 import { NoteIndicator } from "@/components/note-indicator";
 import { LinkifyText } from "@/components/linkify-text";
-import { DeadlinePill } from "@/components/deadline-badges";
+import { DeadlinePill, isDeadlineUnverified } from "@/components/deadline-badges";
 import { CalendarButton } from "@/components/calendar-button";
 import { ProgressNudge } from "@/components/progress-nudge";
 import { useConfettiBurst } from "@/components/confetti-burst";
@@ -271,7 +271,7 @@ function Dashboard() {
           <CascadePanel upstream={topOp.upstream} unlocks={topOp.unlocks} window={topOp.window} />
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Tag tone="amber">{topOp.timeframe}</Tag>
-            <DeadlinePill deadline={topOp.deadline} recurring={false} unverified={topOp.origin === "live"} />
+            <DeadlinePill deadline={topOp.deadline} recurring={false} unverified={isDeadlineUnverified(topOp)} />
             <CalendarButton name={topOp.name} deadline={topOp.deadline} description={topOp.leverage} url={opportunityLink(topOp)} compact />
             <Link
               to="/opportunity-details"
@@ -930,7 +930,7 @@ function SortableStep({
                 {op.name}
               </Link>
               <span className="text-xs text-muted-foreground">{op.timeframe}</span>
-              <DeadlinePill deadline={op.deadline} recurring={false} unverified={op.origin === "live"} />
+              <DeadlinePill deadline={op.deadline} recurring={false} unverified={isDeadlineUnverified(op)} />
               <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={opportunityLink(op)} compact />
               <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
               {op.access === "translated" ? <Tag tone="amber">Local equivalent</Tag> : null}

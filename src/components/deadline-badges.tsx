@@ -5,6 +5,20 @@ import { cn } from "@/lib/utils";
 // Deadline status logic
 // ---------------------------------------------------------------------------
 
+/**
+ * Deadlines we have not individually verified against the program's official page.
+ * Our seed/curated dataset was assembled by hand, not scraped per cycle, and live
+ * AI results have had even less scrutiny — so neither earns a confident countdown.
+ * Only a deadline explicitly marked `confidence: "verified"` may assert one.
+ */
+export function isDeadlineUnverified(op: {
+  origin?: string;
+  confidence?: string;
+} | null | undefined): boolean {
+  if (!op) return true;
+  return op.confidence !== "verified";
+}
+
 export type DeadlineState = "urgent" | "soon" | "open" | "expired" | "recurring";
 
 export function getDeadlineStatus(deadline: string, recurring = false) {

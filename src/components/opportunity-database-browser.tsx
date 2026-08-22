@@ -49,6 +49,7 @@ import {
 
 function ConfidenceBadge({ confidence }: { confidence: string }) {
   const styles = {
+    estimated: "bg-muted text-muted-foreground border-border",
     curated: "bg-emerald-100 text-emerald-800 border-emerald-200",
     live: "bg-blue-100 text-blue-800 border-blue-200",
     community: "bg-amber-100 text-amber-800 border-amber-200",
@@ -60,8 +61,8 @@ function ConfidenceBadge({ confidence }: { confidence: string }) {
         styles[confidence as keyof typeof styles] ?? styles.community,
       )}
     >
-      {confidence === "curated" && <CheckCircle2 className="h-2.5 w-2.5" />}
-      {confidence}
+      {confidence === "verified" && <CheckCircle2 className="h-2.5 w-2.5" />}
+      {confidence === "estimated" ? "date estimated" : confidence}
     </span>
   );
 }
@@ -94,8 +95,29 @@ function getDeadlineStatus(deadline: string, recurring: boolean) {
   };
 }
 
-function DeadlinePill({ deadline, recurring }: { deadline: string; recurring: boolean }) {
+function DeadlinePill({
+  deadline,
+  recurring,
+  unverified = false,
+}: {
+  deadline: string;
+  recurring: boolean;
+  /** Date we have not confirmed on the official page — show it as reported, not as a countdown. */
+  unverified?: boolean;
+}) {
   if (!deadline) return null;
+  if (unverified) {
+    const dl = /^\d{4}-\d{2}-\d{2}$/.test(deadline) ? new Date(`${deadline}T00:00:00`) : new Date(deadline);
+    const formatted = Number.isNaN(dl.getTime())
+      ? deadline
+      : dl.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+        <Clock className="h-2.5 w-2.5" />
+        Listed {formatted} · verify
+      </span>
+    );
+  }
   const { label, state } = getDeadlineStatus(deadline, recurring);
   const colors = {
     urgent: "bg-red-100 text-red-800",
@@ -539,7 +561,7 @@ function OpportunityCard({
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">
           <ConfidenceBadge confidence={record.confidence} />
-          <DeadlinePill deadline={record.deadline} recurring={record.recurring} />
+          <DeadlinePill deadline={record.deadline} recurring={record.recurring} unverified={record.confidence !== "verified"} />
         </div>
       </div>
       <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
@@ -579,7 +601,7 @@ function OpportunityDetailPanel({
             <h2 className="text-lg font-bold tracking-tight">{record.name}</h2>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               <ConfidenceBadge confidence={record.confidence} />
-              <DeadlinePill deadline={record.deadline} recurring={record.recurring} />
+              <DeadlinePill deadline={record.deadline} recurring={record.recurring} unverified={record.confidence !== "verified"} />
               <StalenessIndicator lastVerified={record.lastVerified} />
             </div>
           </div>

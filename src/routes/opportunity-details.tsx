@@ -13,7 +13,7 @@ import {
 import { useWayfind } from "@/lib/sylo-store";
 import { getTrack, opportunityLink } from "@/lib/wayfind-data";
 import { OpportunityBrowser } from "@/components/opportunity-browser";
-import { DeadlinePill } from "@/components/deadline-badges";
+import { DeadlinePill, isDeadlineUnverified } from "@/components/deadline-badges";
 import { LinkifyText } from "@/components/linkify-text";
 import { CalendarButton } from "@/components/calendar-button";
 import { cn } from "@/lib/utils";
@@ -242,7 +242,7 @@ function Details() {
           </PropertyRow>
           <PropertyRow label="Deadline">
             <Tag tone="amber">{op.timeframe}</Tag>
-            <DeadlinePill deadline={op.deadline} unverified={op.origin === "live"} />
+            <DeadlinePill deadline={op.deadline} unverified={isDeadlineUnverified(op)} />
             <CalendarButton name={op.name} deadline={op.deadline} description={op.leverage} url={opportunityLink(op)} compact />
           </PropertyRow>
           {/* <PropertyRow label="Timeline"><LinkifyText text={op.timeline} /></PropertyRow> */}
@@ -392,7 +392,7 @@ function Details() {
         </PropertyRow>
         <PropertyRow label="Deadline">
           <Tag tone="amber">{op.timeframe}</Tag>
-          <DeadlinePill deadline={op.deadline} unverified={op.origin === "live"} />
+          <DeadlinePill deadline={op.deadline} unverified={isDeadlineUnverified(op)} />
           <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={opportunityLink(op)} compact />
         </PropertyRow>
         {/* <PropertyRow label="Timeline"><LinkifyText text={op.timeline} /></PropertyRow> */}

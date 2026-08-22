@@ -99,7 +99,7 @@ export function PinItemCard({ item, onSelect, onAddToRoadmap, onCheckEligibility
           {/* Deadline pill */}
           {item.detectedDate && (
             <div className="mt-0.5">
-              <DeadlinePill deadline={item.detectedDate} />
+              <DeadlinePill deadline={item.detectedDate} unverified />
             </div>
           )}
         </div>

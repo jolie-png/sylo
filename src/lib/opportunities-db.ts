@@ -85,7 +85,7 @@ export const OpportunityRecordSchema = z.object({
     .array(z.enum(["Freshman", "Sophomore", "Junior", "Senior", "Graduate"]))
     .default([]),
   region: z.string().default("National"),
-  confidence: z.enum(["curated", "live", "community"]).default("curated"),
+  confidence: z.enum(["estimated", "curated", "live", "community"]).default("estimated"),
   lastVerified: z.string().default(""),
   recurring: z.boolean().default(false),
   source: z.string().default(""),
@@ -117,7 +117,7 @@ function seedToRecord(op: SeedOpportunity): OpportunityRecord {
     tags: [],
     yearRelevance: [],
     region: "National",
-    confidence: "curated" as const,
+    confidence: "estimated" as const,
     lastVerified: "2026-01-01",
     recurring: false,
     source: "wayfind-data.ts",
@@ -329,7 +329,7 @@ export function searchOpportunities(filters: OpportunityFilters = {}): Opportuni
     }
 
     // Confidence boost
-    if (rec.confidence === "curated") score += 2;
+    if (rec.confidence === "curated" || rec.confidence === "estimated") score += 2;
 
     results.push({ record: rec, score });
   }

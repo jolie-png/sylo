@@ -210,7 +210,7 @@ export function PinItemDetail({
         {item.detectedDate && (
           <div className="mt-3 flex items-center gap-2">
             <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-            <DeadlinePill deadline={item.detectedDate} />
+            <DeadlinePill deadline={item.detectedDate} unverified />
           </div>
         )}
 

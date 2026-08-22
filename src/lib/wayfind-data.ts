@@ -79,6 +79,9 @@ export type Opportunity = {
   // below. "live" means it was found by search at runtime and has had less
   // scrutiny applied than anything in this file — the UI says so.
   origin?: "seed" | "live";
+  /** Deadline provenance. "verified" means the date was confirmed on the program's
+   *  official page; anything else is a rough anchor and the UI says "verify". */
+  confidence?: "verified" | "estimated";
   /** Pages found in search that back this opportunity. Live results only. */
   sources?: OpportunitySource[];
   /** Only one independent source could be confirmed after a follow-up search. */
@@ -515,8 +518,9 @@ export const OPPORTUNITIES: Opportunity[] = [
     category: "Funding",
     access: "direct",
     school: "Georgia Institute of Technology",
-    deadline: "2026-09-15",
-    timeframe: "Apply early Fall semester",
+    deadline: "2026-03-02",
+    timeframe: "Applications for Fall 2026 closed March 2, 2026 at 5 p.m. ET",
+    confidence: "verified",
     requirements: ["Enrolled undergraduate", "Faculty research mentor", "Minimum 10 hrs/week commitment"],
     contact: "Undergraduate Research Opportunities Program (UROP)",
     link: "https://undergradresearch.gatech.edu/pura-salary",
@@ -525,7 +529,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     gapLabel: "No funded research experience yet — the single biggest gap for top internship applications",
     upstream: "Faculty mentor identified (cold-email 2–3 CS professors with a specific research interest)",
     unlocks: ["Research Option credit", "GRIP eligibility (requires active research)", "Strong faculty rec letter for internship apps"],
-    window: "Applications typically close around mid September — one shot per semester, Fall window closes first; aim to have your materials ready 2-3 weeks before then, and confirm the exact date on the official page.",
+    window: "Applications for Fall 2026 closed March 2, 2026 at 5 p.m. ET. Deadlines move every cycle (Sept. 22 one term, March 6 another) — check UROP for the next open window.",
   },
   {
     id: "op-gt-createx-learn",
@@ -535,7 +539,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     access: "direct",
     school: "Georgia Institute of Technology",
     deadline: "2027-03-15",
-    timeframe: "Spring or Summer semester",
+    timeframe: "Offered in Spring and Summer; enrollment/application deadlines vary by term",
     requirements: ["Any major", "Enrolled undergraduate", "3 credit hours"],
     contact: "CREATE-X Program Office",
     link: "https://create-x.gatech.edu/about-us",
@@ -544,7 +548,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     courseCode: "CS 2699",
     upstream: "None — open to any GT undergraduate",
     unlocks: ["CREATE-X Startup Launch eligibility", "Portfolio project for internship apps", "Working prototype required for Launch"],
-    window: "Applications typically close around mid March — aim to have your materials ready 2-3 weeks before then, and confirm the exact date on the official page.",
+    window: "Offered in Spring and Summer — enrollment and application deadlines vary by term; confirm the current term's date with the CREATE-X program office.",
   },
   {
     id: "op-gt-createx-launch",
@@ -553,8 +557,9 @@ export const OPPORTUNITIES: Opportunity[] = [
     category: "Internship",
     access: "direct",
     school: "Georgia Institute of Technology",
-    deadline: "2027-03-17",
-    timeframe: "Summer — 12 weeks",
+    deadline: "2026-03-17",
+    timeframe: "Summer 2026 — 12 weeks. Apply by March 17, 2026",
+    confidence: "verified",
     requirements: ["Completed Startup Lab or equivalent", "Working prototype", "Team of 2-4 students"],
     contact: "CREATE-X Launch Team",
     link: "https://create-x.gatech.edu/launch/startup-launch",
@@ -562,7 +567,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     leverage: "Founding a company (even a failed one) during undergrad sets you apart from every other candidate with just internships.",
     upstream: "CREATE-X Startup Lab completed (or equivalent prototype experience)",
     unlocks: ["Seed funding + legal support", "Demo Day exposure to investors", "Founder credential on resume — strongest differentiator for top-tier SWE roles"],
-    window: "Applications typically close around mid March — teams that wait miss the cohort; aim to have your materials ready 2-3 weeks before then, and confirm the exact date on the official page.",
+    window: "Summer 2026 cohort closes March 17, 2026 — teams that wait miss the cohort.",
   },
   {
     id: "op-gt-coop",
@@ -572,7 +577,8 @@ export const OPPORTUNITIES: Opportunity[] = [
     access: "direct",
     school: "Georgia Institute of Technology",
     deadline: "",
-    timeframe: "Alternating semesters — apply anytime",
+    timeframe: "Applications accepted year-round; start timing and employer deadlines vary",
+    confidence: "verified",
     requirements: ["Completed 2 semesters", "Good academic standing", "CS or related major"],
     contact: "Career Center — C2D2",
     link: "https://live.ttl.gatech.edu/co-op-internships",
@@ -580,7 +586,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     leverage: "Three rotations of real engineering work before you graduate. Most co-op students get return offers without ever doing a traditional job search.",
     upstream: "Completed 2 semesters + at least one project or research experience to discuss in interviews",
     unlocks: ["3 industry rotations before graduation", "Return offer (most co-op students never cold-apply again)", "Senior-level engineering experience by junior year"],
-    window: "Rolling, but the best companies fill co-op slots by mid-Fall — start early",
+    window: "Applications accepted year-round, but start timing and employer deadlines vary — the best companies fill co-op slots by mid-Fall, so start early.",
   },
   {
     id: "op-gt-uroc",
@@ -590,7 +596,8 @@ export const OPPORTUNITIES: Opportunity[] = [
     access: "direct",
     school: "Georgia Institute of Technology",
     deadline: "",
-    timeframe: "Rolling — contact faculty",
+    timeframe: "Research opportunities vary by faculty; contact prospective mentors directly",
+    confidence: "verified",
     requirements: ["Interest in a CS research area", "Willingness to commit 10+ hrs/week"],
     contact: "College of Computing Advising",
     link: "https://www.cc.gatech.edu/undergraduate-research-opportunities-computing-uroc",
@@ -598,7 +605,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     leverage: "If you're considering grad school or want to stand out for research-heavy roles (ML, systems), this is the on-ramp.",
     upstream: "None — but having taken one upper-level CS course in your area of interest makes cold-emails far more effective",
     unlocks: ["Faculty mentor for PURA application", "Publication co-authorship", "NSF REU competitiveness (REUs prefer students with existing lab experience)"],
-    window: "Rolling — but faculty take fewer students mid-semester. Reach out at the start of Fall or Spring",
+    window: "No fixed deadline — opportunities vary by faculty and program status, so contact prospective mentors directly. Faculty take fewer students mid-semester; reach out at the start of Fall or Spring.",
   },
   {
     id: "op-gt-grip",
@@ -607,8 +614,9 @@ export const OPPORTUNITIES: Opportunity[] = [
     category: "Internship",
     access: "direct",
     school: "Georgia Institute of Technology",
-    deadline: "2027-10-01",
-    timeframe: "Apply Fall for Spring/Summer",
+    deadline: "2027-01-07",
+    timeframe: "Summer projects: apply by early January (the Summer 2026 deadline was extended to Jan. 7)",
+    confidence: "verified",
     requirements: ["US citizen or permanent resident", "Enrolled GT undergraduate", "Interest in applied research"],
     contact: "GTRI Student Programs",
     link: "https://grip.gtri.gatech.edu/",
@@ -616,7 +624,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     leverage: "Applied research with real clients (defense, government). Unique resume line that signals you can ship in constrained environments.",
     upstream: "Active research experience (PURA or UROC) — GRIP prefers students who've already worked in a lab",
     unlocks: ["Security clearance eligibility", "Government/defense industry network", "Full-time GTRI offer pipeline after graduation"],
-    window: "Applications typically close around early October — late applications rarely considered; aim to have your materials ready 2-3 weeks before then, and confirm the exact date on the official page.",
+    window: "Summer projects close in early January — the Summer 2026 deadline was extended to Jan. 7. Late applications are rarely considered.",
   },
   // ===== Indiana (Kelley) — Business Analyst track =====
   {

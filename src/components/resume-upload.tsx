@@ -31,8 +31,10 @@ export function ResumeUpload({ onParsed, onStatusChange, onRemove, disabled }: R
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [fileName, setFileName] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const cancelledRef = useRef(false);
+
 
   const callParseResume = useServerFn(parseResume);
 
@@ -136,16 +138,41 @@ export function ResumeUpload({ onParsed, onStatusChange, onRemove, disabled }: R
           type="button"
           onClick={triggerFileSelect}
           disabled={disabled}
+          onDragOver={(e) => {
+            e.preventDefault();
+            if (!disabled) setIsDragging(true);
+          }}
+          onDragEnter={(e) => {
+            e.preventDefault();
+            if (!disabled) setIsDragging(true);
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            setIsDragging(false);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDragging(false);
+            if (disabled) return;
+            const file = e.dataTransfer?.files?.[0];
+            if (file) handleFileSelected(file);
+          }}
           className={cn(
             "flex w-full cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-muted-foreground/25 px-6 py-8 text-center transition-colors hover:border-primary/40 hover:bg-accent/50",
+            isDragging && "border-primary bg-accent/60",
             disabled && "cursor-not-allowed opacity-50",
           )}
         >
-          <Upload className="h-8 w-8 text-muted-foreground" />
-          <span className="text-sm font-medium text-foreground">Upload your resume</span>
-          <span className="text-xs text-muted-foreground">PDF &middot; max 5 MB</span>
+          <Upload className={cn("h-8 w-8 text-muted-foreground", isDragging && "text-primary")} />
+          <span className="text-sm font-medium text-foreground">
+            {isDragging ? "Drop your resume here" : "Upload your resume"}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            Drag &amp; drop or click &middot; PDF &middot; max 5 MB
+          </span>
         </button>
       )}
+
 
       {/* Uploading state */}
       {status === "uploading" && (

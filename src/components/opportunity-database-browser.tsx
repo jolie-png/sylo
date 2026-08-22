@@ -38,6 +38,7 @@ const OPPORTUNITY_CATEGORIES: { id: string; label: string; trackIds: TrackId[] }
 const TRACK_TO_CATEGORY: Record<string, string> = Object.fromEntries(
   OPPORTUNITY_CATEGORIES.flatMap((c) => c.trackIds.map((tid) => [tid, c.label])),
 );
+import { DeadlineText } from "@/components/deadline-text";
 import {
   searchRedditOpportunities,
   type RedditOpportunityPost,
@@ -639,7 +640,7 @@ function OpportunityDetailPanel({
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Timeline
             </p>
-            <p className="mt-1.5 text-sm text-foreground">{record.timeline || record.timeframe}</p>
+            <p className="mt-1.5 text-sm text-foreground"><DeadlineText text={record.timeline || record.timeframe} link={record.link} /></p>
 
             {record.contact && (
               <>

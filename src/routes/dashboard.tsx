@@ -46,6 +46,7 @@ import { CalendarButton } from "@/components/calendar-button";
 import { ProgressNudge } from "@/components/progress-nudge";
 import { useConfettiBurst } from "@/components/confetti-burst";
 import { LinkExtractor } from "@/components/link-extractor";
+import { DeadlineText } from "@/components/deadline-text";
 
 
 
@@ -270,7 +271,7 @@ function Dashboard() {
           <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground"><LinkifyText text={top.reasoning} /></p>
           <CascadePanel upstream={topOp.upstream} unlocks={topOp.unlocks} window={topOp.window} />
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <Tag tone="amber">{topOp.timeframe}</Tag>
+            <Tag tone="amber"><DeadlineText text={topOp.timeframe} link={opportunityLink(topOp)} /></Tag>
             <DeadlinePill deadline={topOp.deadline} recurring={false} unverified={isDeadlineUnverified(topOp)} />
             <CalendarButton name={topOp.name} deadline={topOp.deadline} description={topOp.leverage} url={opportunityLink(topOp)} compact />
             <Link
@@ -588,7 +589,7 @@ function Dashboard() {
                       {op.name}
                     </Link>
                     <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      <Tag tone="amber">{op.timeframe}</Tag>
+                      <Tag tone="amber"><DeadlineText text={op.timeframe} link={opportunityLink(op)} /></Tag>
                       {opportunityReach(op) === "school" ? (
                         <Tag tone="green">{op.school}</Tag>
                       ) : (
@@ -929,7 +930,7 @@ function SortableStep({
               >
                 {op.name}
               </Link>
-              <span className="text-xs text-muted-foreground">{op.timeframe}</span>
+              <DeadlineText text={op.timeframe} link={opportunityLink(op)} className="text-xs text-muted-foreground" />
               <DeadlinePill deadline={op.deadline} recurring={false} unverified={isDeadlineUnverified(op)} />
               <CalendarButton name={op.name} deadline={op.deadline} description={step.reasoning} url={opportunityLink(op)} compact />
               <StatusTag status={step.status} onChange={(s) => setStatus(step.opportunityId, s)} />
@@ -1239,7 +1240,7 @@ function ProgressTileButton({
                   {op.leverage}
                 </p>
                 <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
-                  {op.timeframe}
+                  <DeadlineText text={op.timeframe} link={opportunityLink(op)} />
                 </p>
                 <button
                   type="button"

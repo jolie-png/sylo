@@ -58,9 +58,9 @@ function Landing() {
             <span className="text-sm font-medium tracking-tight">Sylo</span>
 
           </div>
-          <Link to="/about" className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground">
+          {/* <Link to="/about" className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground">
             Why Sylo?
-          </Link>
+          </Link> */}
         </div>
       </header>
 
@@ -275,10 +275,10 @@ function Landing() {
             </h2>
             <p className="mt-3 text-[28px] font-bold tracking-tight text-primary sm:text-[38px]">Now one you can follow.</p>
             <p className="mx-auto mt-5 max-w-md text-base text-muted-foreground text-balance">
-              No sign-up required. Real roadmaps in minutes.{" "}
-              <Link to="/about" className="font-medium text-primary underline-offset-4 hover:underline">
+              No sign-up required. Real roadmaps in minutes.
+              {/* <Link to="/about" className="font-medium text-primary underline-offset-4 hover:underline">
                 Learn more.
-              </Link>
+              </Link> */}
             </p>
             <div className="mt-8 pb-40">
               <Link

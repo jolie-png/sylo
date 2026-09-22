@@ -13,7 +13,7 @@ const NAV = [
   { to: "/pin", label: "Pin Drop", icon: MapPin },
   { to: "/progress", label: "Progress Board", icon: KanbanSquare },
   { to: "/profile", label: "Profile", icon: User },
-  { to: "/about", label: "About", icon: Info },
+  // { to: "/about", label: "About", icon: Info },
 ] as const;
 
 export function Workspace({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
